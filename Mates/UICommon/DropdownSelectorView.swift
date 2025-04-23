@@ -12,6 +12,7 @@ struct DropdownSelectorView: View {
             TextField("", text: $searchText, prompt: Text("Search \(title)").foregroundColor(.black))
                 .padding()
                 .background(Color.white)
+                .foregroundColor(.black)
                 .cornerRadius(8)
                 .padding(.horizontal)
 
@@ -36,7 +37,7 @@ struct DropdownSelectorView: View {
                 }
                 .background(Color.white)
             }
-            .frame(maxHeight: 300)
+            .frame(maxHeight: .infinity, alignment: .top)
             .background(Color.white)
             .cornerRadius(10)
             .padding(.horizontal)
