@@ -63,11 +63,11 @@ struct SignInView: View {
             Spacer()
                  
             HStack{
-                Text("Already have an account?")
+                Text("Don't have an account?")
                     .foregroundColor(.white)
                     .font(.customfont(.semibold, fontSize: 20))
                 
-                NavigationLink(destination: SignUpView()) {
+                NavigationLink(destination: GetStartedView()) {
                     Text("Sign Up")
                         .font(.customfont(.semibold, fontSize: 20))
                         .foregroundColor(Color.blue)

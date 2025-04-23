@@ -13,17 +13,18 @@ struct CustomButton: View {
     var didTap: (() -> Void)?
 
     var body: some View {
-        Button {
+        Button (action: {
             didTap?()
-        } label: {
-            Text(title)
-                .font(.customfont(.semibold, fontSize: 22))
-                .foregroundColor(color)
-                .multilineTextAlignment(.center)
+        }) {
+            ZStack{
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(.blue)
+                Text(title)
+                    .font(.customfont(.semibold, fontSize: 22))
+                    .foregroundColor(.white)
+            }
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
         }
-        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
-        .background(.blue)
-        .cornerRadius(20)
     }
 }
 

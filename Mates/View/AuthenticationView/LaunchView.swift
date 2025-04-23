@@ -8,8 +8,27 @@
 import SwiftUI
 
 struct LaunchView: View {
+    @State private var isReady = false
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Group {
+            if isReady {
+                SignInView()
+            } else {
+                VStack {
+                    Image("AppIcon1")
+                        .resizable()
+                        .frame(width: 120, height: 120)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black)
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        isReady = true
+                    }
+                }
+            }
+        }
     }
 }
 
