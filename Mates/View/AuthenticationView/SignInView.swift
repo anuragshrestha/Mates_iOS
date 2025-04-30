@@ -19,7 +19,11 @@ import SwiftUI
 /// Layout is vertically stacked and optimized for mobile view with proper spacing, styling, and safe area handling.
 
 struct SignInView: View {
+    
+    
     @StateObject var signInVM = SignInViewModel()
+    @State var showAlert:Bool = false
+    @State var alertMessage:String = ""
 
     var body: some View {
         VStack {
@@ -40,12 +44,10 @@ struct SignInView: View {
                 HStack{
                     
                     Spacer()
-                    Button {
-                        print("pressed forgot password")
-                    } label: {
+                    NavigationLink(destination: ForgotPasswordView()){
                         Text("Forgot Password?")
-                            .font(.customfont(.regular, fontSize:18))
                             .foregroundColor(.blue)
+                            .font(.customfont(.bold, fontSize: 20))
                     }
                 }
                 .padding(.top, 8)
@@ -55,6 +57,20 @@ struct SignInView: View {
                 
                 CustomButton(title: "Sign In", color: .white) {
                     print("Pressed sign in")
+                    if signInVM.email.isEmpty {
+                       showAlert = true
+                       alertMessage = "Please enter your email"
+                    }else if signInVM.password.isEmpty {
+                        showAlert = true
+                        alertMessage = "Please enter your password"
+                    }else{
+                        //call the signin api
+                    }
+                }
+                .alert("Missing Information", isPresented: $showAlert){
+                    Button("OK", role: .cancel){}
+                } message: {
+                    Text(alertMessage)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom,10)
