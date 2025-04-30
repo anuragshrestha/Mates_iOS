@@ -9,7 +9,12 @@ import SwiftUI
 
 struct SignUpView: View {
     
+    @Environment(\.dismiss) private var dismiss
     @StateObject var signupVM = SignupViewModel()
+    @State var signUp:Bool = false
+    @State var alertMessage:String = ""
+    @State var showAlert:Bool = false
+    
     
     var body: some View {
         
@@ -27,8 +32,41 @@ struct SignUpView: View {
                 SecureTextField(password: $signupVM.password, placeholder: "Enter your password", isSecure: $signupVM.isSecure)
                     .padding(.vertical, 20)
                 
+                
+                NavigationLink(destination: ConfirmSignUpView(), isActive: $signUp){
+                    EmptyView()
+                }
+                
                 CustomButton(title: "Sign UP",color: .blue) {
-                    print("pressed signup button")
+                    
+                    
+                    //checks if any of the Input field is empty
+                    if signupVM.email.isEmpty{
+                        showAlert = true
+                        alertMessage = "Enter your school email"
+                    }else if signupVM.firstName.isEmpty {
+                        showAlert = true
+                        alertMessage = "Enter your first name"
+                    }else if signupVM.lastName.isEmpty {
+                        showAlert = true
+                        alertMessage = "Enter your last name"
+                    }else if signupVM.password.isEmpty {
+                        showAlert = true
+                        alertMessage = "Enter your password"
+                    } else if !signupVM.isValidEmail(_email: signupVM.email) {
+                        showAlert = true
+                        alertMessage = "Enter a valid school email"
+                    } else if !signupVM.isValidPassword(_password: signupVM.password){
+                        showAlert = true
+                        alertMessage = "Password must be at least 8 characters and have \n one upper, lower, digit and special character"
+                    } else{
+                        signUp = true
+                    }
+                }
+                .alert("Missing Info", isPresented: $showAlert){
+                    Button("Ok", role: .cancel) {}
+                } message: {
+                    Text(alertMessage)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 10)
@@ -36,13 +74,28 @@ struct SignUpView: View {
             
            
         }
+        .navigationBarTitle("Sign Up", displayMode: .inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.blue)
+                        .imageScale(.large)
+                }
+            }
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
         .background(Color.black)
-        .navigationTitle("")
+      
     }
 }
 
 #Preview {
-    SignUpView()
+    NavigationView {
+        SignUpView()
+    }
 }
