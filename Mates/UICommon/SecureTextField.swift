@@ -46,7 +46,7 @@ struct SecureTextField: View {
         .multilineTextAlignment(.center)
         .frame(height: 30)
         .disableAutocorrection(true)
-        .textInputAutocapitalization(.words)
+        .textInputAutocapitalization(.never)
         .modifier(ShowButton(isShow: $isSecure))
         .padding()
         .background(RoundedRectangle(cornerRadius: 12)
