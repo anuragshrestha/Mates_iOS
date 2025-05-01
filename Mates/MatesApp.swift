@@ -14,7 +14,7 @@ struct MatesApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationView{
-                SignInView()
+                LaunchView()
                     .environment(\.managedObjectContext, persistenceController.container.viewContext)
             }
         }

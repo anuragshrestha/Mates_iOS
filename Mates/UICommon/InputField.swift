@@ -26,7 +26,7 @@ struct InputField: View {
             .multilineTextAlignment(.center)
             .frame(height: 30)
             .disableAutocorrection(true)
-            .textInputAutocapitalization(.words)
+            .textInputAutocapitalization(.never)
             .padding()
             .background(RoundedRectangle(cornerRadius: 12)
                 .fill(Color.white))
