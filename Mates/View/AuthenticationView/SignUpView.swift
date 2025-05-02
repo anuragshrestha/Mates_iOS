@@ -81,8 +81,33 @@ struct SignUpView: View {
                         } else if !signupVM.isValidPassword(_password: signupVM.password){
                             showAlert = true
                             alertMessage = "Password must be at least 8 characters and have \n one upper, lower, digit and special character"
-                        } else{
-                            signUp = true
+                        } else if signupVM.universityName.isEmpty {
+                            showAlert = true
+                            alertMessage = "Select your university"
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                  dismiss()
+                              }
+                        }else if signupVM.major.isEmpty {
+                            showAlert = true
+                            alertMessage = "Select your major"
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5){
+                                dismiss()
+                            }
+                        }else if signupVM.schoolYear.isEmpty {
+                            showAlert = true
+                            alertMessage = "Select your school year"
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5){
+                                dismiss()
+                            }
+                        }else{
+                             signupVM.signUp { success, message in
+                                if success{
+                                    signUp = true
+                                }else{
+                                    alertMessage = message ?? "Signup failed"
+                                    showAlert = true
+                                }
+                            }
                         }
                     }
                     .alert("Missing Info", isPresented: $showAlert){
