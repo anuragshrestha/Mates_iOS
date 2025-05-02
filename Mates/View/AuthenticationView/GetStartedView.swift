@@ -3,13 +3,13 @@
 import SwiftUI
 
 struct GetStartedView: View {
+    
+    @StateObject var signUpVM = SignupViewModel()
+    
+    
     @State private var universities = [String]()
     @State private var majors = [String]()
     @State private var schoolYears = [String]()
-
-    @State private var selectedUniversity = ""
-    @State private var selectedMajor = ""
-    @State private var selectedYear = ""
 
     @State private var showUniversityPicker = false
     @State private var showMajorPicker = false
@@ -36,17 +36,17 @@ struct GetStartedView: View {
                     
                     Spacer().frame(height: 60)
                     
-                    DropdownField(title: "Select your university", value: selectedUniversity) {
+                    DropdownField(title: "Select your university", value: signUpVM.universityName) {
                         searchText = ""
                         showUniversityPicker.toggle()
                     }
                     
-                    DropdownField(title: "Select your major", value: selectedMajor) {
+                    DropdownField(title: "Select your major", value: signUpVM.major) {
                         searchText = ""
                         showMajorPicker.toggle()
                     }
                     
-                    DropdownField(title: "Select your school year", value: selectedYear) {
+                    DropdownField(title: "Select your school year", value: signUpVM.schoolYear) {
                         searchText = ""
                         showYearPicker.toggle()
                     }
@@ -59,13 +59,13 @@ struct GetStartedView: View {
                     
                     CustomButton(title: "Next", color: .white) {
                         
-                        if selectedUniversity.isEmpty {
+                        if signUpVM.universityName.isEmpty {
                             showAlert = true
                             alertMessage = "Select your university"
-                        }else if selectedMajor.isEmpty {
+                        }else if signUpVM.major.isEmpty {
                             showAlert = true
                             alertMessage = "Select your major"
-                        }else if selectedYear.isEmpty {
+                        }else if signUpVM.schoolYear.isEmpty {
                             showAlert = true
                             alertMessage = "Select your school year"
                         }else{
@@ -100,15 +100,15 @@ struct GetStartedView: View {
             }
 
             if showUniversityPicker {
-                DropdownSelectorView(title: "University", items: universities, selection: $selectedUniversity, isPresented: $showUniversityPicker, searchText: $searchText)
+                DropdownSelectorView(title: "University", items: universities, selection: $signUpVM.universityName, isPresented: $showUniversityPicker, searchText: $searchText)
             }
 
             if showMajorPicker {
-                DropdownSelectorView(title: "Major", items: majors, selection: $selectedMajor, isPresented: $showMajorPicker, searchText: $searchText)
+                DropdownSelectorView(title: "Major", items: majors, selection: $signUpVM.major, isPresented: $showMajorPicker, searchText: $searchText)
             }
 
             if showYearPicker {
-                DropdownSelectorView(title: "School Year", items: schoolYears, selection: $selectedYear, isPresented: $showYearPicker, searchText: $searchText)
+                DropdownSelectorView(title: "School Year", items: schoolYears, selection: $signUpVM.schoolYear, isPresented: $showYearPicker, searchText: $searchText)
             }
             
         }
