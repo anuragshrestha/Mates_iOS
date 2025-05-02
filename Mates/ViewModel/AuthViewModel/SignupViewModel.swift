@@ -57,4 +57,30 @@ class SignupViewModel:ObservableObject{
         return predicate.evaluate(with: email)
     }
     
+    func signUp(completion: @escaping(Bool, String?) -> Void) {
+        
+        let request = SignUpRequest(
+            university_name: universityName,
+            major: major,
+            school_year: schoolYear,
+            first_name: firstName,
+            last_name: lastName,
+            username: email,
+            password: password
+        )
+        
+        Task{
+            do {
+                let response = try await SignUpService.shared.signUpUser(data: request)
+                DispatchQueue.main.async{
+                    completion(response.success, response.message ?? response.error)
+                }
+            }catch{
+                DispatchQueue.main.async{
+                    completion(false, error.localizedDescription)
+                }
+            }
+        }
+    }
+    
 }
