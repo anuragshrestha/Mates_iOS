@@ -14,6 +14,8 @@ struct ConfirmSignUpView: View {
     @State var showAlert: Bool = false
     @State var alertMessage:String = ""
     
+    var email: String
+    
     var body: some View {
         
         VStack {
@@ -22,13 +24,21 @@ struct ConfirmSignUpView: View {
             
             NavigationLink(destination: MainView(), isActive: $confirmVM.isConfirmed) {
                 CustomButton(title: "Confirm") {
-                    print("pressed confirm button")
+    
                     //checks if the code is correct
-                    if !confirmVM.confirmationCode.isEmpty {
-                        confirmVM.isConfirmed = true
-                    } else{
+                    if confirmVM.confirmationCode.isEmpty {
                         showAlert = true
                         alertMessage = "Please enter a valid code"
+                    } else{
+                        confirmVM.confirmSignUp { success, message in
+                            if success{
+                                confirmVM.isConfirmed = true
+                            } else{
+                                showAlert = true
+                                alertMessage = message ?? "Error occurred"
+                            }
+                        }
+                     
                     }
                 }
                 .alert("Missing Code", isPresented: $showAlert){
@@ -40,6 +50,10 @@ struct ConfirmSignUpView: View {
                 .padding(.vertical, 10)
             }
         }
+        .onAppear{
+            print("email in view: ", email)
+            confirmVM.email = email
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
         .ignoresSafeArea()
@@ -50,6 +64,6 @@ struct ConfirmSignUpView: View {
 
 #Preview {
     NavigationView{
-        ConfirmSignUpView()
+        ConfirmSignUpView(email: "")
     }
 }
