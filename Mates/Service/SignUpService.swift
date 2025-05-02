@@ -23,7 +23,7 @@ struct SignUpResponse: Codable{
     let message: String?
     let error: String?
 }
-
+    
 
 class SignUpService{
     static let shared = SignUpService()
