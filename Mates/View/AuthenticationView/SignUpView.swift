@@ -10,7 +10,7 @@ import SwiftUI
 struct SignUpView: View {
     
     @Environment(\.dismiss) private var dismiss
-    @StateObject var signupVM = SignupViewModel()
+    @ObservedObject var signUpVM = SignupViewModel()
     @State var signUp:Bool = false
     @State var alertMessage:String = ""
     @State var showAlert:Bool = false
@@ -25,20 +25,20 @@ struct SignUpView: View {
             
             ScrollView{
                 VStack{
-                    InputField(text: $signupVM.email, placeholder: "Enter your school email")
+                    InputField(text: $signUpVM.email, placeholder: "Enter your school email")
                         .padding(.vertical, 10)
                     
-                    InputField(text: $signupVM.firstName, placeholder: "Enter your first name")
+                    InputField(text: $signUpVM.firstName, placeholder: "Enter your first name")
                         .padding(.vertical, 10)
                     
-                    InputField(text: $signupVM.lastName, placeholder: "Enter your last name")
+                    InputField(text: $signUpVM.lastName, placeholder: "Enter your last name")
                         .padding(.vertical, 10)
                     
-                    SecureTextField(password: $signupVM.password, placeholder: "Enter your password", isSecure: $signupVM.isSecure)
+                    SecureTextField(password: $signUpVM.password, placeholder: "Enter your password", isSecure: $signUpVM.isSecure)
                         .padding(.vertical, 10)
                     
                     
-                    NavigationLink(destination: ConfirmSignUpView(), isActive: $signUp){
+                    NavigationLink(destination: ConfirmSignUpView(email: signUpVM.email), isActive: $signUp){
                         EmptyView()
                     }
                     
@@ -63,44 +63,44 @@ struct SignUpView: View {
                         
                         
                         //checks if any of the Input field is empty
-                        if signupVM.email.isEmpty{
+                        if signUpVM.email.isEmpty{
                             showAlert = true
                             alertMessage = "Enter your school email"
-                        }else if signupVM.firstName.isEmpty {
+                        }else if signUpVM.firstName.isEmpty {
                             showAlert = true
                             alertMessage = "Enter your first name"
-                        }else if signupVM.lastName.isEmpty {
+                        }else if signUpVM.lastName.isEmpty {
                             showAlert = true
                             alertMessage = "Enter your last name"
-                        }else if signupVM.password.isEmpty {
+                        }else if signUpVM.password.isEmpty {
                             showAlert = true
                             alertMessage = "Enter your password"
-                        } else if !signupVM.isValidEmail(_email: signupVM.email) {
+                        } else if !signUpVM.isValidEmail(_email: signUpVM.email) {
                             showAlert = true
                             alertMessage = "Enter a valid school email"
-                        } else if !signupVM.isValidPassword(_password: signupVM.password){
+                        } else if !signUpVM.isValidPassword(_password: signUpVM.password){
                             showAlert = true
                             alertMessage = "Password must be at least 8 characters and have \n one upper, lower, digit and special character"
-                        } else if signupVM.universityName.isEmpty {
+                        } else if signUpVM.universityName.isEmpty {
                             showAlert = true
                             alertMessage = "Select your university"
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                   dismiss()
                               }
-                        }else if signupVM.major.isEmpty {
+                        }else if signUpVM.major.isEmpty {
                             showAlert = true
                             alertMessage = "Select your major"
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5){
                                 dismiss()
                             }
-                        }else if signupVM.schoolYear.isEmpty {
+                        }else if signUpVM.schoolYear.isEmpty {
                             showAlert = true
                             alertMessage = "Select your school year"
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5){
                                 dismiss()
                             }
                         }else{
-                             signupVM.signUp { success, message in
+                             signUpVM.signUp { success, message in
                                 if success{
                                     signUp = true
                                 }else{

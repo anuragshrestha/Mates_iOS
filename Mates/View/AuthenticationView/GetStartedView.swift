@@ -53,7 +53,7 @@ struct GetStartedView: View {
                     
                     
                     
-                    NavigationLink(destination: SignUpView(), isActive: $pressedSignUp) {
+                    NavigationLink(destination: SignUpView(signUpVM: signUpVM), isActive: $pressedSignUp) {
                         EmptyView()
                     }
                     
