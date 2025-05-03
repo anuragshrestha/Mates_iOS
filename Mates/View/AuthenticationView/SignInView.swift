@@ -24,6 +24,7 @@ struct SignInView: View {
     @StateObject var signInVM = SignInViewModel()
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
+  
 
     var body: some View {
         VStack {
@@ -55,6 +56,10 @@ struct SignInView: View {
                 .padding(.bottom, 20)
                 
                 
+                NavigationLink(destination: MainView(), isActive: $signInVM.isSignedIn) {
+                    EmptyView()
+                }
+                
                 CustomButton(title: "Sign In", color: .white) {
                     print("Pressed sign in")
                     if signInVM.email.isEmpty {
@@ -65,6 +70,23 @@ struct SignInView: View {
                         alertMessage = "Please enter your password"
                     }else{
                         //call the signin api
+                        signInVM.signIn { success, message in
+                            if success{
+                                print("Signed in successfully")
+                                signInVM.isSignedIn = true
+                            }else{
+                                if message == "Account not confirmed"{
+                                    showAlert = true
+                                    alertMessage = "Please check your email and confirm your account"
+                                }else if message == "Invalid credentials"{
+                                    showAlert = true
+                                    alertMessage = "Invalid email or password"
+                                }else{
+                                    showAlert = true
+                                    alertMessage = message ?? "Sign in failed"
+                                }
+                            }
+                        }
                     }
                 }
                 .alert("Missing Information", isPresented: $showAlert){
