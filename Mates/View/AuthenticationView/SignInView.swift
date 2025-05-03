@@ -24,6 +24,7 @@ struct SignInView: View {
     @StateObject var signInVM = SignInViewModel()
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
+    @State var isConfirmed:Bool = false
   
 
     var body: some View {
@@ -60,6 +61,10 @@ struct SignInView: View {
                     EmptyView()
                 }
                 
+                NavigationLink(destination: ConfirmView(email: signInVM.email),isActive: $isConfirmed){
+                    EmptyView()
+                }
+                
                 CustomButton(title: "Sign In", color: .white) {
                     print("Pressed sign in")
                     if signInVM.email.isEmpty {
@@ -68,16 +73,30 @@ struct SignInView: View {
                     }else if signInVM.password.isEmpty {
                         showAlert = true
                         alertMessage = "Please enter your password"
+                    }else if !signInVM.isValidEmail(_email: signInVM.email){
+                        showAlert = true
+                        alertMessage = "Incorrect email"
+                    }else if !signInVM.isValidPassword(_password: signInVM.password){
+                        showAlert = true
+                        alertMessage = "Incorrect password format"
                     }else{
                         //call the signin api
                         signInVM.signIn { success, message in
                             if success{
                                 print("Signed in successfully")
-                                signInVM.isSignedIn = true
+                                DispatchQueue.main.async {
+                                    signInVM.isSignedIn = true
+                                }
                             }else{
                                 if message == "Account not confirmed"{
-                                    showAlert = true
-                                    alertMessage = "Please check your email and confirm your account"
+                                    signInVM.resendConfirmationCode { success, message in
+                                        if success{
+                                            isConfirmed = true
+                                        }else{
+                                            showAlert = true
+                                            alertMessage = message ?? "Error confirming account"
+                                        }
+                                    }
                                 }else if message == "Invalid credentials"{
                                     showAlert = true
                                     alertMessage = "Invalid email or password"
@@ -89,7 +108,7 @@ struct SignInView: View {
                         }
                     }
                 }
-                .alert("Missing Information", isPresented: $showAlert){
+                .alert("Invalid Credentials", isPresented: $showAlert){
                     Button("OK", role: .cancel){}
                 } message: {
                     Text(alertMessage)
