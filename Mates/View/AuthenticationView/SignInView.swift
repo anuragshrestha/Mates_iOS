@@ -25,119 +25,140 @@ struct SignInView: View {
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State var isConfirmed:Bool = false
+    @State private var isLoading:Bool = false
   
 
     var body: some View {
-        VStack {
-            Text("Welcome to Mates")
-                .font(.customfont(.semibold, fontSize: 36))
-                .multilineTextAlignment(.center)
-                .foregroundColor(.white)
-                .padding(.top, 150)
-
-            Spacer().frame(height: 100)
-
+        
+        ZStack{
             VStack {
-                InputField(text: $signInVM.email, placeholder: "Enter your school email")
-                    .padding(.vertical, 10)
+                Text("Welcome to Mates")
+                    .font(.customfont(.semibold, fontSize: 36))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.white)
+                    .padding(.top, 150)
                 
-                SecureTextField(password: $signInVM.password, placeholder: "Enter your password", isSecure: $signInVM.isSecure)
+                Spacer().frame(height: 100)
                 
-                HStack{
+                VStack {
+                    InputField(text: $signInVM.email, placeholder: "Enter your school email")
+                        .padding(.vertical, 10)
                     
-                    Spacer()
-                    NavigationLink(destination: ForgotPasswordView()){
-                        Text("Forgot Password?")
-                            .foregroundColor(.blue)
-                            .font(.customfont(.bold, fontSize: 20))
+                    SecureTextField(password: $signInVM.password, placeholder: "Enter your password", isSecure: $signInVM.isSecure)
+                    
+                    HStack{
+                        
+                        Spacer()
+                        NavigationLink(destination: ForgotPasswordView()){
+                            Text("Forgot Password?")
+                                .foregroundColor(.blue)
+                                .font(.customfont(.bold, fontSize: 20))
+                        }
                     }
-                }
-                .padding(.top, 8)
-                .padding(.trailing, 20)
-                .padding(.bottom, 20)
-                
-                
-                NavigationLink(destination: MainView(), isActive: $signInVM.isSignedIn) {
-                    EmptyView()
-                }
-                
-                NavigationLink(destination: ConfirmView(email: signInVM.email),isActive: $isConfirmed){
-                    EmptyView()
-                }
-                
-                CustomButton(title: "Sign In", color: .white) {
-                    print("Pressed sign in")
-                    if signInVM.email.isEmpty {
-                       showAlert = true
-                       alertMessage = "Please enter your email"
-                    }else if signInVM.password.isEmpty {
-                        showAlert = true
-                        alertMessage = "Please enter your password"
-                    }else if !signInVM.isValidEmail(_email: signInVM.email){
-                        showAlert = true
-                        alertMessage = "Incorrect email"
-                    }else if !signInVM.isValidPassword(_password: signInVM.password){
-                        showAlert = true
-                        alertMessage = "Incorrect password format"
-                    }else{
-                        //call the signin api
-                        signInVM.signIn { success, message in
-                            if success{
-                                print("Signed in successfully")
-                                DispatchQueue.main.async {
-                                    signInVM.isSignedIn = true
-                                }
-                            }else{
-                                if message == "Account not confirmed"{
-                                    signInVM.resendConfirmationCode { success, message in
-                                        if success{
-                                            isConfirmed = true
-                                        }else{
-                                            showAlert = true
-                                            alertMessage = message ?? "Error confirming account"
-                                        }
+                    .padding(.top, 8)
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 20)
+                    
+                    
+                    NavigationLink(destination: MainView(), isActive: $signInVM.isSignedIn) {
+                        EmptyView()
+                    }
+                    
+                    NavigationLink(destination: ConfirmView(email: signInVM.email),isActive: $isConfirmed){
+                        EmptyView()
+                    }
+                    
+                    CustomButton(title: "Sign In", color: .white) {
+                        print("Pressed sign in")
+                        if signInVM.email.isEmpty {
+                            showAlert = true
+                            alertMessage = "Please enter your email"
+                        }else if signInVM.password.isEmpty {
+                            showAlert = true
+                            alertMessage = "Please enter your password"
+                        }else if !signInVM.isValidEmail(_email: signInVM.email){
+                            showAlert = true
+                            alertMessage = "Incorrect email"
+                        }else if !signInVM.isValidPassword(_password: signInVM.password){
+                            showAlert = true
+                            alertMessage = "Incorrect password format"
+                        }else{
+                            
+                            isLoading = true
+                            //call the signin api
+                            signInVM.signIn { success, message in
+                                isLoading = false
+                                if success{
+                                    print("Signed in successfully")
+                                    DispatchQueue.main.async {
+                                        signInVM.isSignedIn = true
                                     }
-                                }else if message == "Invalid credentials"{
-                                    showAlert = true
-                                    alertMessage = "Invalid email or password"
                                 }else{
-                                    showAlert = true
-                                    alertMessage = message ?? "Sign in failed"
+                                    ///checks if the user account is not confirmed. If not confirmed then resends the
+                                    ///confirmation code.
+                                    if message == "Account not confirmed"{
+                                        isLoading = true
+                                        signInVM.resendConfirmationCode { success, message in
+                                            isLoading = false
+                                            if success{
+                                                isConfirmed = true
+                                            }else{
+                                                showAlert = true
+                                                alertMessage = message ?? "Error confirming account"
+                                            }
+                                        }
+                                    }else if message == "Invalid credentials"{
+                                        showAlert = true
+                                        alertMessage = "Invalid email or password"
+                                    }else{
+                                        showAlert = true
+                                        alertMessage = message ?? "Sign in failed"
+                                    }
                                 }
                             }
                         }
                     }
+                    .alert("Invalid Credentials", isPresented: $showAlert){
+                        Button("OK", role: .cancel){}
+                    } message: {
+                        Text(alertMessage)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom,10)
                 }
-                .alert("Invalid Credentials", isPresented: $showAlert){
-                    Button("OK", role: .cancel){}
-                } message: {
-                    Text(alertMessage)
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom,10)
-            }
                 
-            Spacer()
-                 
-            HStack{
-                Text("Don't have an account?")
-                    .foregroundColor(.white)
-                    .font(.customfont(.semibold, fontSize: 20))
+                Spacer()
                 
-                NavigationLink(destination: GetStartedView()) {
-                    Text("Sign Up")
+                HStack{
+                    Text("Don't have an account?")
+                        .foregroundColor(.white)
                         .font(.customfont(.semibold, fontSize: 20))
-                        .foregroundColor(Color.blue)
+                    
+                    NavigationLink(destination: GetStartedView()) {
+                        Text("Sign Up")
+                            .font(.customfont(.semibold, fontSize: 20))
+                            .foregroundColor(Color.blue)
+                    }
                 }
+                .padding(.bottom,50)
             }
-            .padding(.bottom,50)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black)
+            .ignoresSafeArea()
+            .navigationTitle("")
+            .navigationBarBackButtonHidden(true)
+            .navigationBarHidden(true)
+            
+            
+            if isLoading {
+                Color.black.opacity(0.6)
+                    .ignoresSafeArea()
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(2)
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
-        .ignoresSafeArea()
-        .navigationTitle("")
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
     }
 }
 
