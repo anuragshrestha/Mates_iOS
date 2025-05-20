@@ -13,9 +13,14 @@ struct SignInRequest:Codable {
 }
 
 struct SignInResponse: Codable {
-    let success:Bool
-    let message:String?
-    let error:String?
+    let success: Bool
+    let message: String?
+    let accessToken: String
+    let idToken: String?
+    let refreshToken: String?
+    let expiresIn: Int?
+    let tokenType: String?
+    let error: String?
 }
 
 struct ResendEmail:Codable{
@@ -44,7 +49,7 @@ class SignInService{
     func signInService(data:SignInRequest)  async throws -> SignInResponse {
         
         //checks if the url is a valid url
-        guard let url = URL(string: "http://10.0.0.225:4000/signin") else {
+        guard let url = URL(string: "http://127.0.0.1:4000/signin") else {
             throw URLError(.badURL)
         }
         
@@ -64,7 +69,7 @@ class SignInService{
     
     func resendEmailConfirmation(data:ResendEmail) async throws -> ResendEmailResponse {
         
-        guard let url = URL(string: "http://10.0.0.225:4000/resend-confirmation-code") else {
+        guard let url = URL(string: "http://127.0.0.1:4000/resend-confirmation-code") else {
             throw URLError(.badURL)
         }
         
