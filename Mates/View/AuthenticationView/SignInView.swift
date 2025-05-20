@@ -68,7 +68,7 @@ struct SignInView: View {
                         EmptyView()
                     }
                     
-                    CustomButton(title: "Sign In", color: .white) {
+                    CustomButton(title: "Sign In", color: .blue) {
                         print("Pressed sign in")
                         if signInVM.email.isEmpty {
                             showAlert = true

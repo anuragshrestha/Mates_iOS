@@ -1,3 +1,4 @@
+
 //
 //  SignupViewModel.swift
 //  Mates
@@ -17,7 +18,6 @@ class SignupViewModel:ObservableObject{
     @Published var universityName:String = ""
     @Published var major:String = ""
     @Published var schoolYear:String = ""
-    @Published var isSignUp:Bool = false
     
     
     
