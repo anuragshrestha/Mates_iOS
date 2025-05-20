@@ -6,13 +6,16 @@
 //
 
 import Foundation
+import SwiftUI
 
+
+@MainActor
 class SignInViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var isSecure: Bool = false
     @Published var isSignedIn:Bool = false
-    
+    @AppStorage("isSignedIn") var isSigned: Bool = false
     
     
     ///Checks if the password meets the AWS cognito password requirement
@@ -63,9 +66,23 @@ class SignInViewModel: ObservableObject {
         Task{
             do{
                 let response = try await SignInService.shared.signInService(data: request)
-                completion(response.success, response.message ?? response.error)
+                
+                if response.success {
+                    KeychainHelper.saveAccessToken(response.accessToken)
+                    DispatchQueue.main.async{
+                        self.isSigned = true
+                    }
+                    print("saved access token: \(response.accessToken)")
+                }
+                
+                DispatchQueue.main.async {
+                    completion(response.success, response.message ?? response.error)
+                }
+               
             }catch{
-                completion(false, error.localizedDescription)
+                DispatchQueue.main.async {
+                    completion(false, error.localizedDescription)
+                }
             }
         }
     }
