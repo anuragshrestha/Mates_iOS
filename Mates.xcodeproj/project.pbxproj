@@ -29,9 +29,22 @@
 		E94FC8642DB1E09800E09409 /* MatesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E98F2CD12DDBAB7600BF8B0D /* Exceptions for "Mates" folder in "Mates" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E94FC8472DB1E09600E09409 /* Mates */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E94FC84A2DB1E09600E09409 /* Mates */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E98F2CD12DDBAB7600BF8B0D /* Exceptions for "Mates" folder in "Mates" target */,
+			);
 			path = Mates;
 			sourceTree = "<group>";
 		};
@@ -400,6 +413,7 @@
 				DEVELOPMENT_TEAM = A56296FFDN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mates/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Mates;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -434,6 +448,7 @@
 				DEVELOPMENT_TEAM = A56296FFDN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mates/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Mates;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

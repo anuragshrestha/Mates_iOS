@@ -1,5 +1,5 @@
 //
-//  ConfirmSignUpView.swift
+//  ConfirmView.swift
 //  Mates
 //
 //  Created by Anurag Shrestha on 4/17/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ConfirmSignUpView: View {
+struct ConfirmView: View {
     
     
     @StateObject var confirmVM = ConfirmSignUpViewModel()
@@ -51,7 +51,6 @@ struct ConfirmSignUpView: View {
             }
         }
         .onAppear{
-            print("email in view: ", email)
             confirmVM.email = email
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -64,6 +63,6 @@ struct ConfirmSignUpView: View {
 
 #Preview {
     NavigationView{
-        ConfirmSignUpView(email: "")
+        ConfirmView(email: "")
     }
 }

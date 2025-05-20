@@ -1,3 +1,4 @@
+
 //
 //  SignUpView.swift
 //  Mates
@@ -38,7 +39,7 @@ struct SignUpView: View {
                         .padding(.vertical, 10)
                     
                     
-                    NavigationLink(destination: ConfirmSignUpView(email: signUpVM.email), isActive: $signUp){
+                    NavigationLink(destination: ConfirmView(email: signUpVM.email), isActive: $signUp){
                         EmptyView()
                     }
                     
