@@ -13,10 +13,8 @@ struct MatesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationView{
                 LaunchView()
                     .environment(\.managedObjectContext, persistenceController.container.viewContext)
-            }
         }
     }
 }
