@@ -1,3 +1,4 @@
+
 //
 //  SignUpView.swift
 //  Mates
@@ -11,6 +12,7 @@ struct SignUpView: View {
     
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var signUpVM = SignupViewModel()
+    @State var signUp:Bool = false
     @State var alertMessage:String = ""
     @State var showAlert:Bool = false
     
@@ -37,7 +39,7 @@ struct SignUpView: View {
                         .padding(.vertical, 10)
                     
                     
-                    NavigationLink(destination: ConfirmView(email: signUpVM.email), isActive: $signUpVM.isSignUp){
+                    NavigationLink(destination: ConfirmView(email: signUpVM.email), isActive: $signUp){
                         EmptyView()
                     }
                     
@@ -101,9 +103,7 @@ struct SignUpView: View {
                         }else{
                              signUpVM.signUp { success, message in
                                 if success{
-                                    DispatchQueue.main.async {
-                                        signUpVM.isSignUp = true
-                                    }
+                                    signUp = true
                                 }else{
                                     alertMessage = message ?? "Signup failed"
                                     showAlert = true
