@@ -57,7 +57,7 @@ struct GetStartedView: View {
                         EmptyView()
                     }
                     
-                    CustomButton(title: "Next", color: .white) {
+                    CustomButton(title: "Next", color: .blue) {
                         
                         if signUpVM.universityName.isEmpty {
                             showAlert = true

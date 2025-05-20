@@ -8,12 +8,20 @@
 import SwiftUI
 
 struct LaunchView: View {
+    
+    
     @State private var isReady = false
-
+    @AppStorage("isSignedIn") var isSignedIn: Bool = false
+    
+    
     var body: some View {
         Group {
             if isReady {
-                SignInView()
+                if isSignedIn && KeychainHelper.loadAccessToken() != nil {
+                    MainView()
+                }else{
+                    SignInView()
+                }
             } else {
                 VStack {
                     Image("AppIcon1")
@@ -23,7 +31,7 @@ struct LaunchView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.black)
                 .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         isReady = true
                     }
                 }

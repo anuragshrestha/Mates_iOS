@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CustomButton: View {
     @State var title: String = "Title"
-    @State var color: Color = .white
+    @State var color: Color = .blue
     var didTap: (() -> Void)?
 
     var body: some View {
@@ -18,9 +18,9 @@ struct CustomButton: View {
         }) {
             ZStack{
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(.blue)
+                    .fill(color)
                 Text(title)
-                    .font(.customfont(.semibold, fontSize: 22))
+                    .font(.customfont(.semibold, fontSize: 24))
                     .foregroundColor(.white)
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
