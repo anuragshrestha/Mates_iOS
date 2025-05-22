@@ -24,7 +24,7 @@ class SignInViewModel: ObservableObject {
 
     func isValidPassword(_password: String) -> Bool {
         
-        guard password.count >= 8 else { return false}
+        guard password.count >= 6 else { return false}
         
         let uppercasePattern = ".*[A-Z]+.*"
         let lowercasePattern = ".*[a-z]+.*"
@@ -66,7 +66,7 @@ class SignInViewModel: ObservableObject {
         Task{
             do{
                 let response = try await SignInService.shared.signInService(data: request)
-                
+                print("in signin viewmodel")
                 if response.success {
                     KeychainHelper.saveAccessToken(response.accessToken)
                     DispatchQueue.main.async{

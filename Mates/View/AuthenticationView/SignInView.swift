@@ -96,23 +96,32 @@ struct SignInView: View {
                                 }else{
                                     ///checks if the user account is not confirmed. If not confirmed then resends the
                                     ///confirmation code.
-                                    if message == "Account not confirmed"{
-                                        isLoading = true
-                                        signInVM.resendConfirmationCode { success, message in
-                                            isLoading = false
-                                            if success{
-                                                isConfirmed = true
-                                            }else{
+                                    guard let message = message else {
+                                                alertMessage = "An unknown error occurred"
                                                 showAlert = true
-                                                alertMessage = message ?? "Error confirming account"
+                                                return
+                                            }
+
+                                    switch message {
+                                    case "Account not confirmed":
+                                        isLoading = true
+                                        signInVM.resendConfirmationCode { success, resendMessage in
+                                            isLoading = false
+                                            if success {
+                                                isConfirmed = true
+                                            } else {
+                                                alertMessage = resendMessage ?? "Error confirming account"
+                                                showAlert = true
                                             }
                                         }
-                                    }else if message == "Invalid credentials"{
-                                        showAlert = true
+                                        
+                                    case "Invalid credentials", "User not found":
                                         alertMessage = "Invalid email or password"
-                                    }else{
                                         showAlert = true
-                                        alertMessage = message ?? "Sign in failed"
+                                        
+                                    default:
+                                        alertMessage = message
+                                        showAlert = true
                                     }
                                 }
                             }

@@ -25,9 +25,9 @@ class SignupViewModel:ObservableObject{
     ///If the count is less than 8 or doesn't contain a upper, lower,digit or special character then
     ///it return false else true
 
-    func isValidPassword(_password: String) -> Bool {
+    func isValidPassword(_ password: String) -> Bool {
         
-        guard password.count >= 8 else { return false}
+        guard password.count >= 6 else { return false}
         
         let uppercasePattern = ".*[A-Z]+.*"
         let lowercasePattern = ".*[a-z]+.*"

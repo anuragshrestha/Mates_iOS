@@ -32,7 +32,7 @@ class SignUpService{
     func signUpUser(data: SignUpRequest) async throws -> SignUpResponse {
         
         //check if the url is valid
-        guard let url = URL(string: "http://127.0.0.1:4000/signup") else {
+        guard let url = URL(string: "http://10.0.0.225:4000/signup") else {
             throw URLError(.badURL)
         }
         

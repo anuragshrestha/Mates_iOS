@@ -79,9 +79,9 @@ struct SignUpView: View {
                         } else if !signUpVM.isValidEmail(_email: signUpVM.email) {
                             showAlert = true
                             alertMessage = "Enter a valid school email"
-                        } else if !signUpVM.isValidPassword(_password: signUpVM.password){
+                        } else if !signUpVM.isValidPassword(signUpVM.password){
                             showAlert = true
-                            alertMessage = "Password must be at least 8 characters and have \n one upper, lower, digit and special character"
+                            alertMessage = "Password must be at least 6 characters and have \n one upper, lower, digit and special character"
                         } else if signUpVM.universityName.isEmpty {
                             showAlert = true
                             alertMessage = "Select your university"
