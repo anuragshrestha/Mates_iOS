@@ -18,7 +18,7 @@ struct ForgotPasswordView: View {
             
             InputField(text: $forgotPasswordVM.email, placeholder: "Enter your email")
             
-            NavigationLink(destination: ResetPasswordScreen(), isActive: $forgotPasswordVM.isConfirmed) {
+            NavigationLink(destination: ResetPasswordScreen(forgotVM: forgotPasswordVM), isActive: $forgotPasswordVM.isConfirmed) {
                 CustomButton(title: "Send verification code") {
                     print("pressed code")
                     
