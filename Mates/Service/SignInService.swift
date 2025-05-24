@@ -15,7 +15,7 @@ struct SignInRequest:Codable {
 struct SignInResponse: Codable {
     let success: Bool
     let message: String?
-    let accessToken: String
+    let accessToken: String?
     let idToken: String?
     let refreshToken: String?
     let expiresIn: Int?
