@@ -97,11 +97,11 @@ struct SignInView: View {
                                     ///checks if the user account is not confirmed. If not confirmed then resends the
                                     ///confirmation code.
                                     guard let message = message else {
-                                                alertMessage = "An unknown error occurred"
+                                                alertMessage = "An unknown error occurred. Try again"
                                                 showAlert = true
                                                 return
                                             }
-
+                    
                                     switch message {
                                     case "Account not confirmed":
                                         isLoading = true
@@ -115,8 +115,12 @@ struct SignInView: View {
                                             }
                                         }
                                         
-                                    case "Invalid credentials", "User not found":
-                                        alertMessage = "Invalid email or password"
+                                    case "Invalid credentials":
+                                        alertMessage = "Invalid email or password. \n Please try again."
+                                        showAlert = true
+                                    
+                                    case "User not found":
+                                        alertMessage = "User doesnot exists. \n Please create a account first."
                                         showAlert = true
                                         
                                     default:
@@ -127,7 +131,7 @@ struct SignInView: View {
                             }
                         }
                     }
-                    .alert("Invalid Credentials", isPresented: $showAlert){
+                    .alert("", isPresented: $showAlert){
                         Button("OK", role: .cancel){}
                     } message: {
                         Text(alertMessage)
