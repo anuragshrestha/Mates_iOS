@@ -105,8 +105,20 @@ struct SignUpView: View {
                                 if success{
                                     signUp = true
                                 }else{
-                                    alertMessage = message ?? "Signup failed"
-                                    showAlert = true
+                                
+                                    guard let message = message?.lowercased() else {
+                                        alertMessage = "An error occured. \n Please try again."
+                                        showAlert = true
+                                        return
+                                    }
+                                    
+                                    if message.contains("email already registered") || message.contains("Account already created"){
+                                        alertMessage = "Email already registered. \n Please sign in."
+                                        showAlert = true
+                                    } else{
+                                        alertMessage  = message
+                                        showAlert = true
+                                    }
                                 }
                             }
                         }
