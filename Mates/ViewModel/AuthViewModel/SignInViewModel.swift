@@ -68,13 +68,20 @@ class SignInViewModel: ObservableObject {
                 let response = try await SignInService.shared.signInService(data: request)
                 print("in signin viewmodel")
                 if response.success {
-                    KeychainHelper.saveAccessToken(response.accessToken)
+                    
+                    guard let accessToken = response.accessToken, !accessToken.isEmpty else {
+                           print("❗ Access token is missing even though success is true. Aborting.")
+                           completion(false, "Login failed: missing token")
+                           return
+                       }
+                    KeychainHelper.saveAccessToken(accessToken)
                     DispatchQueue.main.async{
                         self.isSigned = true
                     }
-                    print("saved access token: \(response.accessToken)")
+                    print("saved access token: \(String(describing: response.accessToken))")
                 }
-                
+                print("response messsage \(String(describing: response.message))")
+                print("response error \(String(describing: response.error))")
                 DispatchQueue.main.async {
                     completion(response.success, response.message ?? response.error)
                 }
