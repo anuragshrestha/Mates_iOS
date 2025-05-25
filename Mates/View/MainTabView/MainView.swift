@@ -20,9 +20,10 @@ struct MainView: View {
             VStack {
                 TabView(selection: $mainTabVM.selectedTabIndex) {
                     HomeView().tag(0)
-                    PostView().tag(1)
-                    ChatView().tag(2)
-                    ProfileView().tag(3)
+                    SeacrhView().tag(1)
+                    PostView().tag(2)
+                    ChatView().tag(3)
+                    ProfileView().tag(4)
                 }
                 .tabViewStyle(.automatic)
                 
@@ -32,31 +33,39 @@ struct MainView: View {
                         .background(Color.white)
                     
                     HStack{
-                        TabButton(title: "Home", filledIcon: "house.fill", unFilledIcon: "house", isSelect: mainTabVM.selectedTabIndex == 0) {
+                        TabButton(title: "", filledIcon: "house.fill", unFilledIcon: "house", isSelect: mainTabVM.selectedTabIndex == 0) {
                             withAnimation {
                                 mainTabVM.selectedTabIndex = 0
                             }
                         }
                         
-                        TabButton(title: "Post",filledIcon: "plus.circle.fill",unFilledIcon: "plus.circle", isSelect: mainTabVM.selectedTabIndex == 1) {
+                        TabButton(title: "",  filledIcon: "magnifyingglass",  unFilledIcon: "magnifyingglass", isSelect: mainTabVM.selectedTabIndex == 1) {
                             withAnimation {
                                 mainTabVM.selectedTabIndex = 1
                             }
                         }
+
                         
-                        TabButton(title: "Chat", filledIcon: "message.fill", unFilledIcon: "message", isSelect: mainTabVM.selectedTabIndex == 2) {
+                        TabButton(title: "",filledIcon: "plus.circle.fill",unFilledIcon: "plus.circle", isSelect: mainTabVM.selectedTabIndex == 2) {
                             withAnimation {
                                 mainTabVM.selectedTabIndex = 2
                             }
                         }
                         
-                        TabButton(title: "Profile", filledIcon: "person.crop.circle.fill", unFilledIcon: "person.crop.circle", isSelect: mainTabVM.selectedTabIndex == 3) {
+                        TabButton(title: "", filledIcon: "ellipsis.message.fill", unFilledIcon: "ellipsis.message", isSelect: mainTabVM.selectedTabIndex == 3) {
                             withAnimation {
                                 mainTabVM.selectedTabIndex = 3
                             }
                         }
+                        
+                        
+                        TabButton(title: "", filledIcon: "person.fill", unFilledIcon: "person", isSelect: mainTabVM.selectedTabIndex == 4) {
+                            withAnimation {
+                                mainTabVM.selectedTabIndex = 4
+                            }
+                        }
                     }
-                    .padding(.bottom, 10)
+                    
                     .padding(.top, 10)
                 }
             }

@@ -9,7 +9,16 @@ import SwiftUI
 
 struct SeacrhView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack{
+            
+            Color.black.ignoresSafeArea()
+            
+            VStack{
+                Text("Seacrh View")
+                    .font(.customfont(.bold, fontSize: 22))
+                    .foregroundColor(.white)
+            }
+        }
     }
 }
 
