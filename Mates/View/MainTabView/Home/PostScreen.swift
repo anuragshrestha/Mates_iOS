@@ -14,7 +14,7 @@ struct PostScreen: View {
     var body: some View {
         
         ZStack{
-            Color.black.ignoresSafeArea()
+           // Color.black.ignoresSafeArea()
             
             VStack(alignment: .leading, spacing: 4) {
                 VStack(alignment: .leading, spacing: 10){

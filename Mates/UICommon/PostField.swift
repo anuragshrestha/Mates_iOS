@@ -24,7 +24,7 @@ struct PostField: View {
                      .focused($isFocused)
                      .foregroundColor(.white)
                      .font(.customfont(.semibold, fontSize: 20))
-                     .frame(height: 160)
+                     .frame(height: 130)
                      .padding(.horizontal, 10)
                      .padding(.vertical, 12)
                      .background(Color.clear)
@@ -42,7 +42,7 @@ struct PostField: View {
                           .allowsHitTesting(false)
                   }
           }
-          .frame(height: 160)
+          .frame(height: 130)
           .padding(.horizontal, 6)
     
  
