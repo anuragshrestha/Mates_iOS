@@ -46,13 +46,13 @@ struct PostScreen: View {
                         .padding(.horizontal, 2)
                         
                        
-                        
+                 
         
                     if let image = post.imageName {
                         Image(image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(maxWidth: .infinity, maxHeight: 40)
+                            .frame(maxWidth: .infinity, minHeight: 120)
                             .cornerRadius(12)
                             .clipped() //what is does
                         
