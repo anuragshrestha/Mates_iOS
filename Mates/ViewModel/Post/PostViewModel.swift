@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+class PostViewModel: ObservableObject{
+    
+    @Published var postText:String = ""
+}
