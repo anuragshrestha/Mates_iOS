@@ -18,7 +18,7 @@ struct ForgotPasswordView: View {
             
             InputField(text: $forgotPasswordVM.email, placeholder: "Enter your email")
             
-            NavigationLink(destination: ResetPasswordScreen(forgotVM: forgotPasswordVM), isActive: $forgotPasswordVM.isConfirmed) {
+
                 CustomButton(title: "Send verification code") {
                     print("pressed code")
                     
@@ -46,16 +46,18 @@ struct ForgotPasswordView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
-            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
         .ignoresSafeArea()
+        .navigationDestination(isPresented: $forgotPasswordVM.isConfirmed) {
+            ResetPasswordScreen(forgotVM: forgotPasswordVM)
+        }
     }
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ForgotPasswordView()
     }
    

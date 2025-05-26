@@ -91,7 +91,10 @@ struct PostScreen: View {
                 
             }
             .padding(.horizontal, 2)
+            .navigationBarBackButtonHidden(true)
+            .navigationBarHidden(true)
          }
+        
     }
 }
 

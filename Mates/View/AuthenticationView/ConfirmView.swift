@@ -21,8 +21,6 @@ struct ConfirmView: View {
         VStack {
             InputField(text: $confirmVM.confirmationCode, placeholder: "Enter confirmation code")
             
-            
-            NavigationLink(destination: MainView(), isActive: $confirmVM.isConfirmed) {
                 CustomButton(title: "Confirm") {
     
                     //checks if the code is correct
@@ -48,7 +46,6 @@ struct ConfirmView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
-            }
         }
         .onAppear{
             confirmVM.email = email
@@ -58,13 +55,15 @@ struct ConfirmView: View {
         .ignoresSafeArea()
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
-      
+        .navigationDestination(isPresented: $confirmVM.isConfirmed) {
+            MainView()
+        }
     }
     
 }
 
 #Preview {
-    NavigationView{
+    NavigationStack{
         ConfirmView(email: "")
     }
 }

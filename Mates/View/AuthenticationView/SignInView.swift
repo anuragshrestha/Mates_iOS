@@ -60,13 +60,7 @@ struct SignInView: View {
                     .padding(.bottom, 20)
                     
                     
-                    NavigationLink(destination: MainView(), isActive: $signInVM.isSignedIn) {
-                        EmptyView()
-                    }
-                    
-                    NavigationLink(destination: ConfirmView(email: signInVM.email),isActive: $isConfirmed){
-                        EmptyView()
-                    }
+         
                     
                     CustomButton(title: "Sign In", color: .blue) {
                         print("Pressed sign in")
@@ -172,12 +166,19 @@ struct SignInView: View {
                     .scaleEffect(2)
             }
         }
+        .navigationDestination(isPresented: $signInVM.isSignedIn) {
+            MainView()
+        }
+        .navigationDestination(isPresented: $isConfirmed) {
+            ConfirmView(email: signInVM.email)
+        }
     }
 }
 
 #Preview {
     
-    NavigationView{
+        
+    NavigationStack{
         SignInView()
     }
 }

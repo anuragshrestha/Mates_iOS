@@ -38,11 +38,7 @@ struct SignUpView: View {
                     SecureTextField(password: $signUpVM.password, placeholder: "Enter your password", isSecure: $signUpVM.isSecure)
                         .padding(.vertical, 10)
                     
-                    
-                    NavigationLink(destination: ConfirmView(email: signUpVM.email), isActive: $signUp){
-                        EmptyView()
-                    }
-                    
+             
                     HStack {
                         Text("By continuing you agree to our ")
                             .font(.customfont(.semibold, fontSize: 20))
@@ -146,12 +142,15 @@ struct SignUpView: View {
                     }
                 }
             }
-       
-    }
+            .navigationDestination(isPresented: $signUp) {
+                ConfirmView(email: signUpVM.email)
+            }
+     }
 }
 
 #Preview {
-    NavigationView {
+
+    NavigationStack {
         SignUpView()
     }
 }

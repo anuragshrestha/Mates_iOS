@@ -52,11 +52,7 @@ struct GetStartedView: View {
                     }
                     
                     
-                    
-                    NavigationLink(destination: SignUpView(signUpVM: signUpVM), isActive: $pressedSignUp) {
-                        EmptyView()
-                    }
-                    
+                                        
                     CustomButton(title: "Next", color: .blue) {
                         
                         if signUpVM.universityName.isEmpty {
@@ -80,7 +76,9 @@ struct GetStartedView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                
+                .navigationDestination(isPresented: $pressedSignUp) {
+                    SignUpView(signUpVM: signUpVM)
+                }
             }
             
             VStack{
@@ -132,7 +130,7 @@ struct GetStartedView: View {
 
 #Preview {
     
-    NavigationView{
+    NavigationStack{
         GetStartedView()
     }
 }

@@ -28,7 +28,7 @@ struct ResetPasswordScreen: View {
             SecureTextField(password: $forgotVM.confirmNewPassword, placeholder: "Confirm the password", isSecure: $forgotVM.isSecure2)
                 .padding(.bottom, 10)
             
-            NavigationLink(destination: SignInView(), isActive: $forgotVM.isConfirmedForgotPassword){
+          
                 CustomButton(title: "Reset Password") {
                     if forgotVM.confirmationCode.isEmpty {
                         alertMessage = "Enter confirmation code"
@@ -70,17 +70,16 @@ struct ResetPasswordScreen: View {
                     Text("Successfully reset password")
                 }
               
-            }
-           
-            
             Spacer()
         }
         .padding(.top, 200)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
         .ignoresSafeArea()
+        .navigationDestination(isPresented: $forgotVM.isConfirmedForgotPassword) {
+            SignInView()
+        }
     }
-   
 }
 
 #Preview {

@@ -25,6 +25,7 @@ struct MainView: View {
                     ChatView().tag(3)
                     ProfileView().tag(4)
                 }
+                .environmentObject(mainTabVM)
                 .tabViewStyle(.automatic)
                 
                 VStack(spacing: 0){

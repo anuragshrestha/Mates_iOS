@@ -48,6 +48,8 @@ struct HomeView: View {
                
             }
         }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
 }
 #Preview {
