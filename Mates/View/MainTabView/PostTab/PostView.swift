@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct PostView: View {
     
@@ -14,6 +15,9 @@ struct PostView: View {
     @StateObject var postVM = PostViewModel()
     @State var cancelPost:Bool = false
     @Environment(\.dismiss) private var dismiss
+    
+    @State private var selectedItem: PhotosPickerItem? = nil
+    @State private var selectedImage: UIImage? = nil
     
     var body: some View {
         ZStack{
@@ -57,15 +61,56 @@ struct PostView: View {
                 
                 PostField(text: $postVM.postText, placeholder: "What's on your mind?")
                 
+                HStack{
+                    if let image = selectedImage {
+                        Image(uiImage: image)
+                            .resizable()
+                            .frame(minWidth: 120, maxWidth: 160, minHeight: 140, maxHeight: 160)
+                            .padding(.horizontal, 4)
+                            .padding(.top, 20)
+                            .cornerRadius(14)
+                         
+                        
+                    }
+                    Spacer()
+                }
+                .padding()
+          
                 
-                Spacer()
+                HStack {
+                    PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()){
+                        VStack(alignment: .leading){
+                            Image(systemName: "photo.on.rectangle.angled")
+                                .font(.system(size: 24))
+                                .padding(10)
+                                .background(Color.white.opacity(0.2))
+                                .clipShape(Circle())
+                        
+                            
+                            Text("Add image")
+                                .font(.customfont(.semibold, fontSize: 22))
+                                .foregroundColor(.white)
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    Spacer()
+                }
+                .padding(.top, 20)
+      
+     
+               Spacer()
                 
-    
             }
          }
-//        .navigationDestination(isPresented: $cancelPost) {
-//            HomeView()
-//        }
+        .onChange(of: selectedItem) { newItem in
+            Task{
+                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                   let uiImage = UIImage(data: data){
+                    selectedImage = uiImage
+                }
+            }
+        }
      }
 }
 
