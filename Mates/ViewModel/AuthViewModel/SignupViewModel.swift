@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import _PhotosUI_SwiftUI
 
 class SignupViewModel:ObservableObject{
     
@@ -18,6 +19,9 @@ class SignupViewModel:ObservableObject{
     @Published var universityName:String = ""
     @Published var major:String = ""
     @Published var schoolYear:String = ""
+    
+    @Published var selectedItem:PhotosPickerItem? = nil
+    @Published var selectedImage:UIImage? = nil
     
     
     
