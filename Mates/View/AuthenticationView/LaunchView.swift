@@ -41,5 +41,7 @@ struct LaunchView: View {
 }
 
 #Preview {
-    LaunchView()
+    NavigationStack{
+        LaunchView()
+    }
 }

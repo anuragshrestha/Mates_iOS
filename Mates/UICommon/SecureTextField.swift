@@ -31,7 +31,7 @@ struct SecureTextField: View {
                 TextField("",
                           text: $password,
                           prompt: Text(placeholder)
-                    .foregroundColor(Color.black.opacity(0.8))
+                              .foregroundColor(Color.black.opacity(0.8))
                               .font(.customfont(.semibold, fontSize: 20)))
             } else {
                 SecureField("",

@@ -84,7 +84,7 @@ struct ResetPasswordScreen: View {
 
 #Preview {
     
-    NavigationView {
+    NavigationStack {
         ResetPasswordScreen()
     }
 }
