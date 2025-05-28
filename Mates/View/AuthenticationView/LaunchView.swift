@@ -30,14 +30,24 @@ struct LaunchView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.black)
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        isReady = true
-                    }
+                .onAppear{
+                    handleLaunchTokenCheck()
                 }
             }
         }
     }
+    
+    private func handleLaunchTokenCheck() {
+         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+             if let token = KeychainHelper.loadAccessToken(),
+                JWTHelper.isTokenExpired(token) {
+                 print("Access token expired. Logging out user.")
+                 KeychainHelper.deleteAccessToken()
+                 isSignedIn = false
+             }
+             isReady = true
+         }
+     }
 }
 
 #Preview {
