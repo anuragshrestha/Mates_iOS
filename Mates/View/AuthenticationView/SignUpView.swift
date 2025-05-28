@@ -8,6 +8,7 @@
 
 import SwiftUI
 import PhotosUI
+import UniformTypeIdentifiers
 
 struct SignUpView: View {
     
@@ -18,7 +19,41 @@ struct SignUpView: View {
     @State var showAlert:Bool = false
 
     
-    
+    //allows user to select profile image
+    @ViewBuilder
+    private func profileImagePickerView() -> some View {
+        if signUpVM.selectedItem == nil {
+            PhotosPicker(selection: $signUpVM.selectedItem, matching: PHPickerFilter.any(of: [.images]), photoLibrary: .shared()) {
+                VStack {
+                    Image(systemName: "photo.badge.plus")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 100, height: 100)
+                        .foregroundColor(.gray.opacity(0.8))
+                        .background(Color.white.opacity(0.1))
+                        .clipShape(Circle())
+
+                    Text("Upload Profile Image")
+                        .font(.customfont(.bold, fontSize: 24))
+                        .foregroundColor(.gray)
+                }
+                .padding(.bottom, 10)
+            }
+        } else if let image = signUpVM.selectedImage {
+            PhotosPicker(selection: $signUpVM.selectedItem, matching: PHPickerFilter.any(of: [.images]), photoLibrary: .shared()) {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .clipShape(Circle())
+                    .frame(width: 120, height: 120)
+                    .shadow(radius: 4)
+                    .overlay(
+                        Circle().stroke(Color.white.opacity(0.3), lineWidth: 2)
+                    )
+                    .padding(.top, 10)
+            }
+        }
+    }
     
     var body: some View {
         
@@ -30,42 +65,8 @@ struct SignUpView: View {
                 ScrollView{
                     VStack{
                         
-                        if signUpVM.selectedItem == nil{
-                            PhotosPicker(selection: $signUpVM.selectedItem, matching: .images, photoLibrary: .shared()) {
-                                VStack{
-                                    Image(systemName: "photo.badge.plus")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 120, height: 120)
-                                        .foregroundColor(.gray.opacity(0.8))
-                                        .background(Color.white.opacity(0.1))
-                                        .clipShape(Circle())
-                                    
-                                    Text("Upload Profile Image")
-                                        .font(.customfont(.bold, fontSize: 24))
-                                        .foregroundColor(.white)
-                                }
-                                .padding(.bottom, 10)
-                            }
-                        }else{
-                            if let image = signUpVM.selectedImage{
-                                PhotosPicker(selection: $signUpVM.selectedItem,matching: .images, photoLibrary: .shared()) {
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .clipShape(Circle())
-                                        .frame(width: 120, height: 120)
-                                        .shadow(radius: 4)
-                                        .overlay(
-                                            Circle().stroke(Color.white.opacity(0.3), lineWidth: 2)
-                                        )
-                                        .padding(.top, 10)
-                                    
-                                }
-                            }
-                        }
-                        
-                        
+                        profileImagePickerView()
+                    
                         InputField(text: $signUpVM.email, placeholder: "Enter your school email")
                             .padding(.vertical, 10)
                         
@@ -190,16 +191,28 @@ struct SignUpView: View {
                 ConfirmView(email: signUpVM.email)
             }
             .onChange(of: signUpVM.selectedItem) { newItem in
-                Task{
+                Task{ @MainActor in
                     if let data = try? await newItem?.loadTransferable(type: Data.self),
-                       let uiImage = UIImage(data: data){
-                        signUpVM.selectedImage = uiImage
+                       let uiImage = UIImage(data: data),
+                       let typeIdentifier = newItem?.supportedContentTypes.first?.identifier{
+                        
+                        let allowedTypes = ["public.jpeg", "public.png", "public.heif"]
+                        if allowedTypes.contains(typeIdentifier){
+                            signUpVM.selectedImage = uiImage
+                        }else{
+                            alertMessage = "Unsupported image format. \n Please select a JPG, PNG, or HEIF image."
+                            showAlert = true
+                            signUpVM.selectedItem = nil
+                        }
                     }
                 }
                 
             }
          }
   }
+
+
+
 
 #Preview {
 
