@@ -74,8 +74,28 @@ struct KeychainHelper{
         
         SecItemDelete(query)
     }
-    
-    
-    
-    
+}
+
+import Foundation
+
+struct JWTHelper {
+    static func isTokenExpired(_ token: String) -> Bool {
+        let segments = token.split(separator: ".")
+        guard segments.count == 3 else { return true }
+
+        let payloadSegment = segments[1]
+        var padded = String(payloadSegment)
+        while padded.count % 4 != 0 {
+            padded += "="
+        }
+
+        guard let data = Data(base64Encoded: padded, options: [.ignoreUnknownCharacters]),
+              let payload = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+              let exp = payload["exp"] as? TimeInterval else {
+            return true
+        }
+
+        let expirationDate = Date(timeIntervalSince1970: exp)
+        return Date() >= expirationDate
+    }
 }
