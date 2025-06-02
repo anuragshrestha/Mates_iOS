@@ -8,6 +8,8 @@
 
 import Foundation
 import _PhotosUI_SwiftUI
+import UIKit
+
 
 class SignupViewModel:ObservableObject{
     
@@ -64,6 +66,14 @@ class SignupViewModel:ObservableObject{
     
     func signUp(completion: @escaping(Bool, String?) -> Void) {
         
+        guard let image = selectedImage else {
+            completion(false, "Profile image is required")
+            return
+        }
+        
+        let resizedImage = resizeImage(image)
+        
+        
         let request = SignUpRequest(
             university_name: universityName,
             major: major,
@@ -71,6 +81,7 @@ class SignupViewModel:ObservableObject{
             first_name: firstName,
             last_name: lastName,
             username: email,
+            image: resizedImage,
             password: password
         )
         
@@ -88,4 +99,24 @@ class SignupViewModel:ObservableObject{
         }
     }
     
+    
+
+    func resizeImage(_ image: UIImage, maxDimension: CGFloat = 512) -> UIImage {
+        let size = image.size
+        let aspectRatio = size.width / size.height
+
+        var newSize: CGSize
+        if aspectRatio > 1 {
+            // Landscape
+            newSize = CGSize(width: maxDimension, height: maxDimension / aspectRatio)
+        } else {
+            // Portrait or square
+            newSize = CGSize(width: maxDimension * aspectRatio, height: maxDimension)
+        }
+
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
+        }
+    }
 }
