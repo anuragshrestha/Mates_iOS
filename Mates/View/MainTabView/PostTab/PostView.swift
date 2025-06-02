@@ -15,9 +15,9 @@ struct PostView: View {
     @StateObject var postVM = PostViewModel()
     @State var cancelPost:Bool = false
     @Environment(\.dismiss) private var dismiss
-    
-    @State private var selectedItem: PhotosPickerItem? = nil
-    @State private var selectedImage: UIImage? = nil
+    @State var showAlert:Bool = false
+    @State var alertMessage:String = ""
+
     
     var body: some View {
         ZStack{
@@ -33,6 +33,9 @@ struct PostView: View {
                     
                     HStack{
                         Button(action: {
+                            postVM.postText = ""
+                            postVM.selectedImage = nil
+                            postVM.selectedItem = nil
                             mainTabVM.selectedTabIndex = 0
                         }){
                             Image(systemName: "xmark")
@@ -45,6 +48,27 @@ struct PostView: View {
                    
                         Button(action: {
                             print("prressed post text")
+                            
+                            if postVM.postText.isEmpty {
+                               showAlert = true
+                                alertMessage = "Please enter text to post"
+                                return
+                            }
+                            
+                            
+                            postVM.submitPost() { success, message in
+                                DispatchQueue.main.async {
+                                    if success {
+                                        showAlert = true
+                                        alertMessage = "Successfully uploaded post"
+                                        mainTabVM.selectedTabIndex = 0
+                                    }else{
+                                        showAlert = true
+                                        alertMessage = "Failed to upload post. \n Try again"
+                                    }
+                                }
+                                
+                            }
                         }) {
                             Text("Post")
                                 .foregroundColor(.white)
@@ -62,7 +86,7 @@ struct PostView: View {
                 PostField(text: $postVM.postText, placeholder: "What's on your mind?")
                 
                 HStack{
-                    if let image = selectedImage {
+                    if let image = postVM.selectedImage {
                         Image(uiImage: image)
                             .resizable()
                             .frame(minWidth: 120, maxWidth: 160, minHeight: 140, maxHeight: 160)
@@ -78,7 +102,7 @@ struct PostView: View {
           
                 
                 HStack {
-                    PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()){
+                    PhotosPicker(selection: $postVM.selectedItem, matching: .images, photoLibrary: .shared()){
                         VStack(alignment: .leading){
                             Image(systemName: "photo.on.rectangle.angled")
                                 .font(.system(size: 24))
@@ -102,12 +126,35 @@ struct PostView: View {
                Spacer()
                 
             }
+            
+            
+            //shows progress view until we get response from backend
+            if postVM.isLoading{
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .blur(radius: 4)
+                    .transition(.opacity)
+                
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(2.0)
+                    .padding()
+                    .background(Color.black.opacity(0.7))
+                    .cornerRadius(12)
+                
+            }
          }
-        .onChange(of: selectedItem) { newItem in
+        .alert("", isPresented: $showAlert){
+            Button("Ok", role: .cancel){}
+        }message: {
+            Text(alertMessage)
+        }
+        .onChange(of: postVM.selectedItem) { newItem in
             Task{
                 if let data = try? await newItem?.loadTransferable(type: Data.self),
                    let uiImage = UIImage(data: data){
-                    selectedImage = uiImage
+                    postVM.selectedImage = uiImage
                 }
             }
         }
