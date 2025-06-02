@@ -31,7 +31,7 @@ class SignOutViewModel:ObservableObject{
                     let response = try await SignOutService.shared.signout(data: request)
                     
                 
-                
+                    print("response: ", response)
                     if response.success {
                         print("removing access token")
                         KeychainHelper.deleteAccessToken()

@@ -70,7 +70,7 @@ class SignInViewModel: ObservableObject {
                 if response.success {
                     
                     guard let accessToken = response.accessToken, !accessToken.isEmpty else {
-                           print("❗ Access token is missing even though success is true. Aborting.")
+                           print("Access token is missing even though success is true. Aborting.")
                            completion(false, "Login failed: missing token")
                            return
                        }
