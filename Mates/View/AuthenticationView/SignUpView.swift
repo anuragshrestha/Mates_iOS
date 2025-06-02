@@ -105,7 +105,7 @@ struct SignUpView: View {
                             if signUpVM.selectedImage == nil{
                                 alertMessage = "Please upload a picture"
                                 showAlert = true
-                            }else if signUpVM.email.isEmpty{
+                            } else if signUpVM.email.isEmpty{
                                 showAlert = true
                                 alertMessage = "Enter your school email"
                             }else if signUpVM.firstName.isEmpty {
@@ -196,7 +196,18 @@ struct SignUpView: View {
                        let uiImage = UIImage(data: data),
                        let typeIdentifier = newItem?.supportedContentTypes.first?.identifier{
                         
-                        let allowedTypes = ["public.jpeg", "public.png", "public.heif"]
+                        let allowedTypes = ["public.jpeg", "public.png", "public.heif", "public.jpg"]
+                        let maxSize = 10 * 1024 * 1024
+                        
+                        // checks if the image is less than 10 MB
+                        if data.count > maxSize{
+                            alertMessage = "Image should be less than 10 MB."
+                            showAlert = true
+                            signUpVM.selectedItem = nil
+                            return
+                        }
+                        
+                        //checks if the selected image is one of the allowed types
                         if allowedTypes.contains(typeIdentifier){
                             signUpVM.selectedImage = uiImage
                         }else{
