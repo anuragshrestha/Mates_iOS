@@ -57,11 +57,17 @@ struct PostView: View {
                             
                             
                             postVM.submitPost() { success, message in
+                                print("success: ", success)
                                 DispatchQueue.main.async {
                                     if success {
                                         showAlert = true
                                         alertMessage = "Successfully uploaded post"
-                                        mainTabVM.selectedTabIndex = 0
+                                        postVM.postText = ""
+                                        postVM.selectedImage = nil
+                                        postVM.selectedImage = nil
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5){
+                                            mainTabVM.selectedTabIndex = 0
+                                        }
                                     }else{
                                         showAlert = true
                                         alertMessage = "Failed to upload post. \n Try again"
