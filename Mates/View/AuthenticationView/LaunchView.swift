@@ -14,40 +14,77 @@ struct LaunchView: View {
     @AppStorage("isSignedIn") var isSignedIn: Bool = false
     
     
-    var body: some View {
-        Group {
-            if isReady {
-                if isSignedIn && KeychainHelper.loadAccessToken() != nil {
-                    MainView()
-                }else{
-                    SignInView()
-                }
+    @ViewBuilder
+        private var destinationView: some View {
+            if isSignedIn && KeychainHelper.loadAccessToken() != nil {
+                MainView()
             } else {
-                VStack {
-                    Image("AppIcon1")
-                        .resizable()
-                        .frame(width: 120, height: 120)
+                SignInView()
+            }
+        }
+
+        var body: some View {
+            Group {
+                if isReady {
+                    destinationView
+                } else {
+                    VStack {
+                        Image("AppIcon1")
+                            .resizable()
+                            .frame(width: 120, height: 120)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black)
+                    .onAppear {
+                        handleLaunchTokenCheck()
+                    }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.black)
-                .onAppear{
-                    handleLaunchTokenCheck()
+            }
+        }
+    
+//    var body: some View {
+//        Group {
+//            if isReady {
+//                if isSignedIn && KeychainHelper.loadAccessToken() != nil {
+//                    MainView()
+//                }else{
+//                    SignInView()
+//                }
+//            } else {
+//                VStack {
+//                    Image("AppIcon1")
+//                        .resizable()
+//                        .frame(width: 120, height: 120)
+//                }
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                .background(Color.black)
+//                .onAppear{
+//                    handleLaunchTokenCheck()
+//                }
+//            }
+//        }
+//    }
+    
+    private func handleLaunchTokenCheck() {
+        DispatchQueue.global(qos: .userInitiated).async {
+            var signedIn = false
+            if let token = KeychainHelper.loadAccessToken(),
+               JWTHelper.isTokenExpired(token) {
+                print("Access token expired. Logging out user.")
+                KeychainHelper.deleteAccessToken()
+                signedIn = false
+            } else if KeychainHelper.loadAccessToken() != nil {
+                signedIn = true
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    isSignedIn = signedIn
+                    isReady = true
                 }
             }
         }
     }
-    
-    private func handleLaunchTokenCheck() {
-         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-             if let token = KeychainHelper.loadAccessToken(),
-                JWTHelper.isTokenExpired(token) {
-                 print("Access token expired. Logging out user.")
-                 KeychainHelper.deleteAccessToken()
-                 isSignedIn = false
-             }
-             isReady = true
-         }
-     }
 }
 
 #Preview {
