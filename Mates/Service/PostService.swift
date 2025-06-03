@@ -63,7 +63,7 @@ class PostService {
             body.append("--\(boundary)\r\n".data(using: .utf8)!)
             body.append("Content-Disposition: form-data; name=\"image\"; filename=\"post.jpg\"\r\n".data(using: .utf8)!)
             body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-            body.append("\(imageData)")
+            body.append(imageData)
             body.append("\r\n".data(using: .utf8)!)
         }
         
