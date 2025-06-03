@@ -12,8 +12,7 @@ class PostViewModel: ObservableObject{
     
     @Published var postText:String = ""
     @Published var isLoading:Bool = false
-    @Published var uploadPost:Bool = false
-    
+  
     @Published var selectedItem: PhotosPickerItem? = nil
     @Published var selectedImage: UIImage? = nil
     
@@ -28,14 +27,13 @@ class PostViewModel: ObservableObject{
             DispatchQueue.main.async {
                 self.isLoading = false
                 if success {
-                    self.uploadPost = true
                     print("Successfully uploaded post \(String(describing: message))")
                 }else{
                     print("Failed to upload post \(String(describing: message))")
                 }
             }
             
-            
+            completion(success, message)
             
         }
     }
