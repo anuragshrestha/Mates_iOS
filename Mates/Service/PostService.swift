@@ -71,11 +71,17 @@ class PostService {
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         urlRequest.httpBody = body
         
+     
         
         if let token = KeychainHelper.loadAccessToken() {
             urlRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            print("token: ", token)
+            
+        }else{
+            print("no access token found")
         }
         
+    
         
         //sends the URL request to the backend
         URLSession.shared.dataTask(with: urlRequest) { data, response, error in

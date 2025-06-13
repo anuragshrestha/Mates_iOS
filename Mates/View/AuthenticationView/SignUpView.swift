@@ -117,9 +117,9 @@ struct SignUpView: View {
                             }else if signUpVM.password.isEmpty {
                                 showAlert = true
                                 alertMessage = "Enter your password"
-                            } else if !signUpVM.isValidEmail(_email: signUpVM.email) {
-                                showAlert = true
-                                alertMessage = "Enter a valid school email"
+//                            } else if !signUpVM.isValidEmail(_email: signUpVM.email) {
+//                                showAlert = true
+//                                alertMessage = "Enter a valid school email"
                             } else if !signUpVM.isValidPassword(signUpVM.password){
                                 showAlert = true
                                 alertMessage = "Password must be at least 6 characters and have \n one upper, lower, digit and special character"
@@ -157,7 +157,7 @@ struct SignUpView: View {
                                             alertMessage = "Email already registered. \n Please sign in."
                                             showAlert = true
                                         } else{
-                                            alertMessage  = message
+                                            alertMessage  = "here"
                                             showAlert = true
                                         }
                                     }

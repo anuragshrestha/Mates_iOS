@@ -70,9 +70,9 @@ struct SignInView: View {
                         }else if signInVM.password.isEmpty {
                             showAlert = true
                             alertMessage = "Please enter your password"
-                        }else if !signInVM.isValidEmail(_email: signInVM.email){
-                            showAlert = true
-                            alertMessage = "Incorrect email"
+//                        }else if !signInVM.isValidEmail(_email: signInVM.email){
+//                            showAlert = true
+//                            alertMessage = "Incorrect email"
                         }else if !signInVM.isValidPassword(_password: signInVM.password){
                             showAlert = true
                             alertMessage = "Incorrect password format"

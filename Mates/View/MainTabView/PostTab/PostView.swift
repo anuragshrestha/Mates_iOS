@@ -17,6 +17,7 @@ struct PostView: View {
     @Environment(\.dismiss) private var dismiss
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
+    @State private var navigateToHome:Bool = false
 
     
     var body: some View {
@@ -65,9 +66,6 @@ struct PostView: View {
                                         postVM.postText = ""
                                         postVM.selectedImage = nil
                                         postVM.selectedImage = nil
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5){
-                                            mainTabVM.selectedTabIndex = 0
-                                        }
                                     }else{
                                         showAlert = true
                                         alertMessage = "Failed to upload post. \n Try again"
@@ -152,7 +150,11 @@ struct PostView: View {
             }
          }
         .alert("", isPresented: $showAlert){
-            Button("Ok", role: .cancel){}
+            Button("Ok"){
+                if alertMessage == "Successfully uploaded post"{
+                    navigateToHome = true
+                }
+            }
         }message: {
             Text(alertMessage)
         }
@@ -162,6 +164,12 @@ struct PostView: View {
                    let uiImage = UIImage(data: data){
                     postVM.selectedImage = uiImage
                 }
+            }
+        }
+        .onChange(of: navigateToHome) { newValue in
+            if newValue{
+                mainTabVM.selectedTabIndex = 0
+                navigateToHome = false
             }
         }
      }

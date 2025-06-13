@@ -66,6 +66,9 @@ class SignupViewModel:ObservableObject{
     
     func signUp(completion: @escaping(Bool, String?) -> Void) {
         
+        
+        print("hit signup api in viewmodel")
+        
         guard let image = selectedImage else {
             completion(false, "Profile image is required")
             return
