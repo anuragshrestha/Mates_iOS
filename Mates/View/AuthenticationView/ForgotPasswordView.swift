@@ -12,13 +12,16 @@ struct ForgotPasswordView: View {
     @StateObject var forgotPasswordVM = ForgotPasswordViewModel()
     @State var showAlert: Bool = false
     @State var alertMessage: String = ""
+    @State private var isLoading:Bool = false
     
     var body: some View {
-        VStack {
-            
-            InputField(text: $forgotPasswordVM.email, placeholder: "Enter your email")
-            
-
+        
+        ZStack{
+            VStack {
+                
+                InputField(text: $forgotPasswordVM.email, placeholder: "Enter your email")
+                
+                
                 CustomButton(title: "Send verification code") {
                     print("pressed code")
                     
@@ -29,7 +32,9 @@ struct ForgotPasswordView: View {
                         showAlert = true
                         alertMessage = "Invalid email"
                     } else{
+                        isLoading = true
                         forgotPasswordVM.forgotPassword { success, message in
+                            isLoading = false
                             if success{
                                 forgotPasswordVM.isConfirmed = true
                             }else{
@@ -46,12 +51,24 @@ struct ForgotPasswordView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
-        .ignoresSafeArea()
-        .navigationDestination(isPresented: $forgotPasswordVM.isConfirmed) {
-            ResetPasswordScreen(forgotVM: forgotPasswordVM)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black)
+            .ignoresSafeArea()
+            .navigationDestination(isPresented: $forgotPasswordVM.isConfirmed) {
+                ResetPasswordScreen(forgotVM: forgotPasswordVM)
+            }
+            
+            
+            //Shows Progress view until we get response from backend after sending the request
+            if isLoading {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(2)
+            }
         }
     }
 }

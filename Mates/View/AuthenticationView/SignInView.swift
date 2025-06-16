@@ -157,6 +157,7 @@ struct SignInView: View {
             .navigationBarHidden(true)
             
             
+            //Shows Progress view until we get response from backend after sending the request
             if isLoading {
                 Color.black.opacity(0.6)
                     .ignoresSafeArea()

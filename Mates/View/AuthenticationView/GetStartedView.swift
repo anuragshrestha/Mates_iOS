@@ -21,6 +21,7 @@ struct GetStartedView: View {
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
 
+
     var body: some View {
         ZStack {
             
@@ -122,13 +123,6 @@ struct GetStartedView: View {
             }
             
         }
-//        .background(Color.black.opacity(showUniversityPicker || showMajorPicker || showYearPicker ? 0.4 : 1.0)
-//            .ignoresSafeArea()
-//            .onTapGesture {
-//                showUniversityPicker = false
-//                showMajorPicker = false
-//                showYearPicker = false
-//            })
         .onAppear {
             universities = DataLoader.loadUniversityNames()
             majors = DataLoader.loadArray(from: "schoolMajors")

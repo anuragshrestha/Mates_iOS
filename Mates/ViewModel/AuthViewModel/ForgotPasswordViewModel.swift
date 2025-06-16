@@ -54,6 +54,8 @@ class ForgotPasswordViewModel: ObservableObject {
     }
 
     
+    
+    //checks if the new password matches with the confirm new password
     func checkPassword(password: String, confirmPassword:String) -> Bool {
         
         return password == confirmPassword
@@ -61,6 +63,7 @@ class ForgotPasswordViewModel: ObservableObject {
     }
     
     
+    //calls the /forgot password api
     func forgotPassword(completion: @escaping(Bool, String?) -> Void) {
         
         let request = ForgotRequest(username: email)
@@ -77,6 +80,8 @@ class ForgotPasswordViewModel: ObservableObject {
         }
     }
     
+    
+    //confirms the forgot password
     func confirmForgotPassword(completion: @escaping(Bool, String?) -> Void) {
         
         let request = ConfirmForgotRequest(username: email, confirmationCode: confirmationCode, password: newPassword)

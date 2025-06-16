@@ -13,22 +13,25 @@ struct ResetPasswordScreen: View {
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State private var showSuccessAlert:Bool = false
+    @State private var isLoading:Bool = false
     
     var body: some View {
-       
-        VStack{
+        
+        ZStack{
             
-            InputField(text: $forgotVM.confirmationCode, placeholder: "Enter confirmation code")
-                .padding(.bottom, 10)
-            
-            
-            SecureTextField(password: $forgotVM.newPassword, placeholder: "Enter new password", isSecure: $forgotVM.isSecure)
-                .padding(.bottom, 10)
-  
-            SecureTextField(password: $forgotVM.confirmNewPassword, placeholder: "Confirm the password", isSecure: $forgotVM.isSecure2)
-                .padding(.bottom, 10)
-            
-          
+            VStack{
+                
+                InputField(text: $forgotVM.confirmationCode, placeholder: "Enter confirmation code")
+                    .padding(.bottom, 10)
+                
+                
+                SecureTextField(password: $forgotVM.newPassword, placeholder: "Enter new password", isSecure: $forgotVM.isSecure)
+                    .padding(.bottom, 10)
+                
+                SecureTextField(password: $forgotVM.confirmNewPassword, placeholder: "Confirm the password", isSecure: $forgotVM.isSecure2)
+                    .padding(.bottom, 10)
+                
+                
                 CustomButton(title: "Reset Password") {
                     if forgotVM.confirmationCode.isEmpty {
                         alertMessage = "Enter confirmation code"
@@ -46,7 +49,9 @@ struct ResetPasswordScreen: View {
                         alertMessage = "Confirm password doesnot match with new password"
                         showAlert = true
                     } else {
+                        isLoading = true
                         forgotVM.confirmForgotPassword { success, message in
+                            isLoading = false
                             if success{
                                 showSuccessAlert = true
                             }else{
@@ -69,16 +74,30 @@ struct ResetPasswordScreen: View {
                 }message: {
                     Text("Successfully reset password")
                 }
-              
-            Spacer()
+                
+                Spacer()
+            }
+            .padding(.top, 200)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black)
+            .ignoresSafeArea()
+            .navigationDestination(isPresented: $forgotVM.isConfirmedForgotPassword) {
+                SignInView()
+            }
+            
+            
+            //Shows Progress view until we get response from backend after sending the request
+            if isLoading {
+                
+                Color.black.opacity(0.6)
+                    .ignoresSafeArea()
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(2)
+            }
         }
-        .padding(.top, 200)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black)
-        .ignoresSafeArea()
-        .navigationDestination(isPresented: $forgotVM.isConfirmedForgotPassword) {
-            SignInView()
-        }
+        
     }
 }
 
