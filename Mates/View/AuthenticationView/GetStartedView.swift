@@ -97,6 +97,18 @@ struct GetStartedView: View {
                 .padding(.bottom, 50)
             }
 
+            
+            //Removes the dropdown view when user clicks outside of the screen
+            if showUniversityPicker || showMajorPicker || showYearPicker {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        showUniversityPicker = false
+                        showMajorPicker = false
+                        showYearPicker = false
+                    }
+            }
+            
             if showUniversityPicker {
                 DropdownSelectorView(title: "University", items: universities, selection: $signUpVM.universityName, isPresented: $showUniversityPicker, searchText: $searchText)
             }
@@ -110,13 +122,13 @@ struct GetStartedView: View {
             }
             
         }
-        .background(Color.black.opacity(showUniversityPicker || showMajorPicker || showYearPicker ? 0.4 : 1.0)
-            .ignoresSafeArea()
-            .onTapGesture {
-                showUniversityPicker = false
-                showMajorPicker = false
-                showYearPicker = false
-            })
+//        .background(Color.black.opacity(showUniversityPicker || showMajorPicker || showYearPicker ? 0.4 : 1.0)
+//            .ignoresSafeArea()
+//            .onTapGesture {
+//                showUniversityPicker = false
+//                showMajorPicker = false
+//                showYearPicker = false
+//            })
         .onAppear {
             universities = DataLoader.loadUniversityNames()
             majors = DataLoader.loadArray(from: "schoolMajors")

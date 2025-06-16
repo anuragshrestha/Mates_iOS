@@ -24,13 +24,23 @@ struct DropdownSelectorView: View {
 
                     ForEach(filtered, id: \.self) { item in
                         Button(action: {
-                            selection = item
+                            if selection == item{
+                                selection = ""
+                            }else{
+                                selection = item
+                            }
+                    
                             isPresented = false
                         }) {
                             Text(item)
                                 .foregroundColor(.black)
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                            if selection == item {
+                                Spacer()
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.black)
+                            }
                         }
                         Divider()
                     }
