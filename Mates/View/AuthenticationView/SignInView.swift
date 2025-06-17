@@ -27,6 +27,8 @@ struct SignInView: View {
     @State var isConfirmed:Bool = false
     @State private var isLoading:Bool = false
   
+    
+    
 
     var body: some View {
         
@@ -171,7 +173,7 @@ struct SignInView: View {
             MainView()
         }
         .navigationDestination(isPresented: $isConfirmed) {
-            ConfirmView(email: signInVM.email)
+            ConfirmView(email: signInVM.email, password: signInVM.password)
         }
     }
 }

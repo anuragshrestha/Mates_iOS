@@ -10,6 +10,7 @@ import Foundation
 class ConfirmSignUpViewModel: ObservableObject {
     
     @Published var email:String = ""
+    @Published var tempPassword:String = ""
     @Published var isConfirmed:Bool = false
     @Published var errorMessage:String? = ""
     @Published var confirmationCode:String = ""

@@ -14,8 +14,10 @@ struct ConfirmView: View {
     @State var showAlert: Bool = false
     @State var alertMessage:String = ""
     @State private var isLoading:Bool = false
-    
+
     var email: String
+    var password:String
+    
     
     var body: some View {
         ZStack{
@@ -31,10 +33,29 @@ struct ConfirmView: View {
                     } else{
                         isLoading = true
                         confirmVM.confirmSignUp { success, message in
-                            isLoading = false
+                       
                             if success{
-                                confirmVM.isConfirmed = true
+                                let signInRequest = SignInRequest(username: email, password: confirmVM.tempPassword)
+                                
+                                Task {
+                                    do {
+                                        let response = try await SignInService.shared.signInService(data: signInRequest)
+                                        isLoading = false
+                                        if response.success, let accessToken = response.accessToken {
+                                            KeychainHelper.saveAccessToken(accessToken)
+                                            confirmVM.isConfirmed = true
+                                        }else{
+                                            alertMessage = response.message ?? "Failed to log in"
+                                            showAlert = true
+                                        }
+                                    }catch{
+                                        isLoading = false
+                                        alertMessage = error.localizedDescription
+                                        showAlert = true
+                                    }
+                                }
                             } else{
+                                isLoading = false
                                 showAlert = true
                                 alertMessage = message ?? "Error occurred"
                             }
@@ -52,6 +73,7 @@ struct ConfirmView: View {
             }
             .onAppear{
                 confirmVM.email = email
+                confirmVM.tempPassword = password
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
@@ -78,6 +100,6 @@ struct ConfirmView: View {
 
 #Preview {
     NavigationStack{
-        ConfirmView(email: "")
+        ConfirmView(email: "", password: "")
     }
 }
