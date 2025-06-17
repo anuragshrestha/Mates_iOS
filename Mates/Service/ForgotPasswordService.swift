@@ -42,7 +42,7 @@ class ForgotPasswordService {
     func handleForgotPassword(data: ForgotRequest) async throws -> ForgotResponse {
         
         //checks if the url is a valid url
-        guard let url = URL(string: "http://10.0.0.225:4000/forgot-password") else {
+        guard let url = URL(string: "http://localhost:4000/forgot-password") else {
             throw URLError(.badURL)
         }
         
@@ -63,7 +63,7 @@ class ForgotPasswordService {
     //Makes API call for confirm forgot password
     func handleConfirmForgotPassword(data: ConfirmForgotRequest) async throws -> ConfirmForgotResponse {
         
-        guard let url = URL(string: "http://10.0.0.225:4000/confirm-forgot-password") else {
+        guard let url = URL(string: "http://localhost:4000/confirm-forgot-password") else {
             throw URLError(.badURL)
         }
         

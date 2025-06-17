@@ -14,9 +14,13 @@ struct ConfirmView: View {
     @State var showAlert: Bool = false
     @State var alertMessage:String = ""
     @State private var isLoading:Bool = false
-
+    @State var accountConfirmed:Bool = false
+    @State var confirmedMessage:String = ""
+    @State var navigateToSignIn:Bool = false
+    
     var email: String
-    var password:String
+    var password: String
+   
     
     
     var body: some View {
@@ -32,10 +36,11 @@ struct ConfirmView: View {
                         alertMessage = "Please enter a valid code"
                     } else{
                         isLoading = true
+                        
                         confirmVM.confirmSignUp { success, message in
-                       
+                         isLoading = false
                             if success{
-                                let signInRequest = SignInRequest(username: email, password: confirmVM.tempPassword)
+                                let signInRequest = SignInRequest(username: email, password: confirmVM.password)
                                 
                                 Task {
                                     do {
@@ -45,8 +50,9 @@ struct ConfirmView: View {
                                             KeychainHelper.saveAccessToken(accessToken)
                                             confirmVM.isConfirmed = true
                                         }else{
-                                            alertMessage = response.message ?? "Failed to log in"
-                                            showAlert = true
+                                            
+                                            confirmedMessage = "Successfully created account. \n Please sign in"
+                                            accountConfirmed = true
                                         }
                                     }catch{
                                         isLoading = false
@@ -55,13 +61,19 @@ struct ConfirmView: View {
                                     }
                                 }
                             } else{
-                                isLoading = false
                                 showAlert = true
                                 alertMessage = message ?? "Error occurred"
                             }
                         }
                         
                     }
+                }
+                .alert("Account created", isPresented: $accountConfirmed){
+                    Button("Ok"){
+                        navigateToSignIn = true
+                    }
+                } message: {
+                    Text(confirmedMessage)
                 }
                 .alert("Missing Code", isPresented: $showAlert){
                     Button("Ok", role: .cancel) {}
@@ -73,7 +85,7 @@ struct ConfirmView: View {
             }
             .onAppear{
                 confirmVM.email = email
-                confirmVM.tempPassword = password
+                confirmVM.password = password
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
@@ -82,6 +94,9 @@ struct ConfirmView: View {
             .navigationBarHidden(true)
             .navigationDestination(isPresented: $confirmVM.isConfirmed) {
                 MainView()
+            }
+            .navigationDestination(isPresented: $navigateToSignIn) {
+                SignInView()
             }
             
             //Shows Progress view until we get response from backend after sending the request

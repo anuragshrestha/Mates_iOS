@@ -169,9 +169,9 @@ struct SignUpView: View {
         } else if signUpVM.password.isEmpty {
             alertMessage = "Enter your password"
             showAlert = true
-        } else if !signUpVM.isValidPassword(signUpVM.password) {
-            alertMessage = "Password must be at least 6 characters and have \n one upper, lower, digit and special character"
-            showAlert = true
+//        } else if !signUpVM.isValidPassword(signUpVM.password) {
+//            alertMessage = "Password must be at least 6 characters and have \n one upper, lower, digit and special character"
+//            showAlert = true
         } else if signUpVM.universityName.isEmpty {
             alertMessage = "Select your university"
             showAlert = true

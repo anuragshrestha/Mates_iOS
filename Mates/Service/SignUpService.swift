@@ -44,7 +44,7 @@ class SignUpService{
     func signUpUser(data: SignUpRequest) async throws -> SignUpResponse {
         
         //check if the url is valid
-        guard let url = URL(string: "http://10.0.0.225:4000/signup") else {
+        guard let url = URL(string: "http://localhost:4000/signup") else {
             throw URLError(.badURL)
         }
         
@@ -63,10 +63,10 @@ class SignUpService{
         let decodedResponse = try JSONDecoder().decode(SignUpResponse.self, from: responseData)
         
         
-        // Auto-login immediately after signup
-        if decodedResponse.success {
-              try await signInUser(email: data.username, password: data.password)
-          }
+//        // Auto-login immediately after signup
+//        if decodedResponse.success {
+//              try await signInUser(email: data.username, password: data.password)
+//          }
         
         return decodedResponse
 
@@ -75,7 +75,7 @@ class SignUpService{
     
     
     private func signInUser(email: String, password: String) async throws {
-        guard let url = URL(string: "http://10.0.0.225:4000/signin") else {
+        guard let url = URL(string: "http://localhost:4000/signin") else {
             throw URLError(.badURL)
         }
 

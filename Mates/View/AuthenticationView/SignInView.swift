@@ -173,7 +173,7 @@ struct SignInView: View {
             MainView()
         }
         .navigationDestination(isPresented: $isConfirmed) {
-            ConfirmView(email: signInVM.email, password: signInVM.password)
+            ConfirmAccountView(email: signInVM.email, password: signInVM.password)
         }
     }
 }
