@@ -113,7 +113,7 @@ struct ScrollableTabContent<Content: View>: View {
                 VStack(spacing: 0) {
                     content()
                 }
-                .padding(.top, 80)
+                .padding(.top, 100)
             }
             .background(
                 GeometryReader { geometry in

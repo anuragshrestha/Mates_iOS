@@ -14,7 +14,7 @@ struct PostScreen: View {
     var body: some View {
         
         ZStack{
-           // Color.black.ignoresSafeArea()
+            //Color.black.ignoresSafeArea()
             
             VStack(alignment: .leading, spacing: 4) {
                 VStack(alignment: .leading, spacing: 10){
@@ -23,17 +23,17 @@ struct PostScreen: View {
                     HStack(alignment: .top, spacing: 12) {
                         Image(post.avatar)
                             .resizable()
-                            .aspectRatio(contentMode: .fill) //what it does
+                            .aspectRatio(contentMode: .fill)
                             .frame(width: 50, height: 50)
                             .clipShape(Circle())
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text(post.name)
-                                .font(.customfont(.semibold, fontSize: 18))
-                                .foregroundColor(.black)
+                                .font(.customfont(.bold, fontSize: 18))
+                                .foregroundColor(.white)
                             
                             Text(post.time)
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                                 .font(.subheadline)
                         }
                         
@@ -41,9 +41,10 @@ struct PostScreen: View {
                     
                     //Post Content
                     Text(post.text)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .font(.system(size: 18))
                         .padding(.horizontal, 2)
+                        .padding(.bottom, 5)
                         
                        
                  
@@ -53,16 +54,15 @@ struct PostScreen: View {
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(maxWidth: .infinity, minHeight: 120)
-                            .cornerRadius(12)
-                            .clipped() //what is does
+                            .clipped()
                         
                     }
                 }
                 .padding(.top,5)
-                .padding(.horizontal, 8)
+                //.padding(.horizontal, 8)
                 .frame(maxWidth: .infinity)
-                .background(.white)
-                .cornerRadius(5)
+                .background(.black)
+               
                 
                 
                     HStack(spacing: 24) {
@@ -86,7 +86,13 @@ struct PostScreen: View {
                     }
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(.white)
-                    .padding(.top, 2)
+                    .padding(.top, 4)
+                    .padding(.horizontal, 2)
+                
+                Divider()
+                    .frame(height: 2)
+                    .background(Color.white.opacity(0.5))
+                    .padding(.top, 5)
                   
                 
             }
