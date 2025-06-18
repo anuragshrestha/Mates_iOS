@@ -1,12 +1,3 @@
-//
-//  HomeView.swift
-//  Mates
-//
-//  Created by Anurag Shrestha on 4/30/25.
-//
-
-import SwiftUI
-
 import SwiftUI
 
 struct Post: Identifiable {
@@ -15,22 +6,20 @@ struct Post: Identifiable {
     let avatar: String
     let time: String
     let text: String
-    let imageName: String?  // optional
+    let imageName: String?
     let likes: Int
     let comments: Int
     let shares: Int
 }
 
 struct HomeView: View {
-    
-    
-    @State private var lastoffset: CGFloat = 0
+    @State private var lastOffset: CGFloat = 0
     @State private var hideHeader: Bool = false
     
     let posts: [Post] = [
         Post(name: "Ethan Carter", avatar: "ethan", time: "1d", text: "I'm looking for a study group for my Calculus class. Anyone interested?", imageName: "math", likes: 23, comments: 5, shares: 2),
         Post(name: "Sophia Clark", avatar: "sophia", time: "2d", text: "Just finished a great workout at the campus gym! Feeling energized and ready to tackle the day.", imageName: nil, likes: 18, comments: 3, shares: 1),
-        Post(name: "Ethan Harper", avatar: "ethan2", time: "2d", text: "Anyone else feel like the dining hall food has been extra bland lately? I swear, they’ve been skimping on the seasoning. #CollegeLife #FoodieProblems", imageName: "food", likes: 23, comments: 12, shares: 5),
+        Post(name: "Ethan Harper", avatar: "ethan2", time: "2d", text: "Anyone else feel like the dining hall food has been extra bland lately? I swear, they've been skimping on the seasoning. #CollegeLife #FoodieProblems", imageName: "food", likes: 23, comments: 12, shares: 5),
         Post(name: "Olivia Bennett", avatar: "olivia", time: "4d", text: "Spent the afternoon volunteering at the local community center. It's always rewarding to give back.", imageName: nil, likes: 29, comments: 6, shares: 3),
         Post(name: "Bekker kelly", avatar: "olivia", time: "4d", text: "Spent the afternoon volunteering at the local community center. It's always rewarding to give back.", imageName: nil, likes: 29, comments: 6, shares: 3),
         Post(name: "James Mathew", avatar: "olivia", time: "4d", text: "Spent the afternoon volunteering at the local community center. It's always rewarding to give back.", imageName: nil, likes: 29, comments: 6, shares: 3)
@@ -40,42 +29,52 @@ struct HomeView: View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
             
-            ScrollViewReader{ proxy in
+            ScrollViewReader { proxy in
                 ScrollView {
-                    
                     VStack(spacing: 0) {
                         ForEach(posts.indices, id: \.self) { index in
-                            PostScreen(post:posts[index])
-                                .background(
-                                  index == 0 ?
-                                      GeometryReader { geo in
-                                        Color.clear
-                                          .preference(key: ScrollOffsetPreferenceKey.self,
-                                                      value: geo.frame(in: .named("scroll")).minY)
-                                  }
-                                   : nil
-                              )
-                              .padding(.bottom, 20)
+                            PostScreen(post: posts[index])
+                                .padding(.bottom, 20)
                         }
                     }
                     .padding(.top, 80)
                 }
-                .coordinateSpace(name:"scroll")
-                .onPreferenceChange(ScrollOffsetPreferenceKey.self){ newValue in
-                    let delta = newValue - lastoffset
-                    if abs(delta) > 1 {
-                        withAnimation{
-                            // hides the header if delta value is less then 0
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .preference(key: ScrollOffsetPreferenceKey.self,
+                                      value: geometry.frame(in: .named("scroll")).minY)
+                    }
+                )
+                .coordinateSpace(name: "scroll")
+                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { newValue in
+                    let delta = newValue - lastOffset
+                    
+                    // Only update if the change is significant enough
+                    if abs(delta) > 10 {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            // Hide header when scrolling down (delta < 0)
+                            // Show header when scrolling up (delta > 0)
                             hideHeader = delta < 0
                         }
-                        lastoffset = newValue
+                        lastOffset = newValue
                     }
                 }
-                
+                .simultaneousGesture(
+                    DragGesture()
+                        .onChanged { value in
+                            let translation = value.translation.height
+                            if abs(translation) > 20 {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    hideHeader = translation < 0
+                                }
+                            }
+                        }
+                )
             }
             
+            // Header
             if !hideHeader {
-                
                 VStack(spacing: 4) {
                     Text("Mates")
                         .font(.custom("Helvetica-Bold", size: 30))
@@ -92,18 +91,14 @@ struct HomeView: View {
                         Text("Around you")
                             .frame(maxWidth: .infinity, alignment: .center)
                             .font(.customfont(.semibold, fontSize: 24))
-                                  
                     }
                     .foregroundColor(.gray)
-            
-                    
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 10)
                 .padding(.bottom, 10)
                 .background(Color.black.opacity(0.95))
                 .transition(.move(edge: .top))
-                .animation(.easeInOut(duration: 0.25), value: hideHeader)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -111,16 +106,12 @@ struct HomeView: View {
     }
 }
 
-
 struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat){
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = nextValue()
     }
-    
-    
 }
-
 
 
 #Preview {
