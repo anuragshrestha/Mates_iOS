@@ -29,6 +29,6 @@ extension KeychainHelper {
     }
     
     static func deleteAccessToken() {
-        delete(serivce: accessTokenService, account: "accessToken")
+        delete(service: accessTokenService, account: "accessToken")
     }
 }

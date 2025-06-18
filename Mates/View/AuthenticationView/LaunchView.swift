@@ -12,7 +12,7 @@ struct LaunchView: View {
     
     @State private var isReady = false
     @AppStorage("isSignedIn") var isSignedIn: Bool = false
-    
+    @State private var navTrigger = false
     
     @ViewBuilder
         private var destinationView: some View {
@@ -26,7 +26,17 @@ struct LaunchView: View {
         var body: some View {
             Group {
                 if isReady {
-                    destinationView
+                    Group {
+                        NavigationStack {
+                            destinationView
+                        }
+                    }
+                    .id(navTrigger)
+                    .onChange(of: isSignedIn) { newValue in
+                        if !newValue {
+                            navTrigger.toggle()
+                        }
+                    }
                 } else {
                     VStack {
                         Image("AppIcon1")

@@ -63,12 +63,12 @@ struct KeychainHelper{
     
     
     
-    static func delete(serivce: String, account: String) {
+    static func delete(service: String, account: String) {
         
         
         let query = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrService: serivce,
+            kSecAttrService: service,
             kSecAttrAccount: account,
         ] as CFDictionary
         
