@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PostScreen: View {
     
-    let post: Post
+    let post: PostModel
     
     var body: some View {
         
@@ -21,18 +21,20 @@ struct PostScreen: View {
                     
                     //Profile row
                     HStack(alignment: .top, spacing: 12) {
-                        Image(post.avatar)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
+                        AsyncImage(url: URL(string: post.profileImageUrl)){ image in
+                            image.image?.resizable()
+                        }
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 50, height: 50)
+                        .clipShape(Circle())
+                        
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(post.name)
+                            Text(post.fullName)
                                 .font(.customfont(.bold, fontSize: 18))
                                 .foregroundColor(.white)
                             
-                            Text(post.time)
+                            Text(post.createdAt)
                                 .foregroundColor(.white)
                                 .font(.subheadline)
                         }
@@ -40,7 +42,7 @@ struct PostScreen: View {
                     }
                     
                     //Post Content
-                    Text(post.text)
+                    Text(post.status)
                         .foregroundColor(.white)
                         .font(.system(size: 18))
                         .padding(.horizontal, 2)
@@ -49,12 +51,15 @@ struct PostScreen: View {
                        
                  
         
-                    if let image = post.imageName {
-                        Image(image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(maxWidth: .infinity, minHeight: 120)
-                            .clipped()
+                    if post.imageUrl != nil {
+                        
+                        AsyncImage(url: URL(string: post.imageUrl ?? "")) { image in
+                            image.image?.resizable()
+                            
+                        }
+                        .aspectRatio(contentMode: .fill)
+                        .frame(maxWidth: .infinity, minHeight: 120)
+                        .clipped()
                         
                     }
                 }
@@ -81,7 +86,7 @@ struct PostScreen: View {
                         HStack(spacing: 4) {
                             Image(systemName: "paperplane")
                             
-                            Text("\(post.shares)")
+                            Text("0")
                         }
                     }
                     .font(.system(size: 18, weight: .medium))
@@ -106,16 +111,18 @@ struct PostScreen: View {
 
 #Preview {
     
-    let post = Post(
-         name: "Ethan Harper",
-         avatar: "ethan",
-         time: "2d",
-         text: "Anyone else feel like the dining hall food has been extra bland lately? #CollegeLife",
-         imageName: nil,
-         likes: 23,
-         comments: 12,
-         shares: 5
-     )
-     
-     return PostScreen(post: post)
+    let samplePost = PostModel(
+        id: UUID(),
+        email: "Ethan Harper",
+        imageUrl: "ethan@unm.edu",
+        createdAt: UUID().uuidString,
+        status: "https://example.com/avatar.jpg",
+        userId: "https://example.com/dining-hall.jpg",
+        universityName: "Anyone else feel like the dining hall food has been extra bland lately? #CollegeLife",
+        fullName: "2025-06-17T12:00:00Z",
+        profileImageUrl: "University of New Mexico",
+        likes: 23,
+        comments: 12
+    )
+      PostScreen(post: samplePost)
 }
