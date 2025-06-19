@@ -62,12 +62,7 @@ class SignUpService{
         
         let decodedResponse = try JSONDecoder().decode(SignUpResponse.self, from: responseData)
         
-        
-//        // Auto-login immediately after signup
-//        if decodedResponse.success {
-//              try await signInUser(email: data.username, password: data.password)
-//          }
-        
+
         return decodedResponse
 
     }

@@ -52,28 +52,6 @@ struct LaunchView: View {
             }
         }
     
-//    var body: some View {
-//        Group {
-//            if isReady {
-//                if isSignedIn && KeychainHelper.loadAccessToken() != nil {
-//                    MainView()
-//                }else{
-//                    SignInView()
-//                }
-//            } else {
-//                VStack {
-//                    Image("AppIcon1")
-//                        .resizable()
-//                        .frame(width: 120, height: 120)
-//                }
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                .background(Color.black)
-//                .onAppear{
-//                    handleLaunchTokenCheck()
-//                }
-//            }
-//        }
-//    }
     
     private func handleLaunchTokenCheck() {
         DispatchQueue.global(qos: .userInitiated).async {

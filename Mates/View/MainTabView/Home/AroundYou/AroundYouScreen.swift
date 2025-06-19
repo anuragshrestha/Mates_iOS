@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AroundYouScreen: View {
     
-    let posts: [Post]
+    let posts: [PostModel]
     
     
     var body: some View {
@@ -25,17 +25,19 @@ struct AroundYouScreen: View {
 
 
 #Preview {
+    let samplePost = PostModel(
+        id: UUID(),
+        email: "Ethan Harper",
+        imageUrl: "ethan@unm.edu",
+        createdAt: UUID().uuidString,
+        status: "https://example.com/avatar.jpg",
+        userId: "https://example.com/dining-hall.jpg",
+        universityName: "Anyone else feel like the dining hall food has been extra bland lately? #CollegeLife",
+        fullName: "2025-06-17T12:00:00Z",
+        profileImageUrl: "University of New Mexico",
+        likes: 23,
+        comments: 12
+    )
     
-    let  samplePost = Post(
-         name: "Ethan Harper",
-         avatar: "ethan",
-         time: "2d",
-         text: "Anyone else feel like the dining hall food has been extra bland lately? #CollegeLife",
-         imageName: nil,
-         likes: 23,
-         comments: 12,
-         shares: 5
-     )
-     
-      return AroundYouScreen(posts: [samplePost])
+    AroundYouScreen(posts: [samplePost])
 }

@@ -1,16 +1,5 @@
 import SwiftUI
 
-struct Post: Identifiable {
-    let id = UUID()
-    let name: String
-    let avatar: String
-    let time: String
-    let text: String
-    let imageName: String?
-    let likes: Int
-    let comments: Int
-    let shares: Int
-}
 
 
 enum TabSelection: Hashable {
@@ -19,36 +8,36 @@ enum TabSelection: Hashable {
 
 struct HomeView: View {
     
+    @ObservedObject var aroundVM = AroundYouServiceViewModel()
     @Namespace private var underline
     @State private var lastOffset: CGFloat = 0
     @State private var hideHeader: Bool = false
     @State private var selectedTab:TabSelection = .aroundyou
     
-    let posts: [Post] = [
-        Post(name: "Ethan Carter", avatar: "ethan", time: "1d", text: "I'm looking for a study group for my Calculus class. Anyone interested?", imageName: "math", likes: 23, comments: 5, shares: 2),
-        Post(name: "Sophia Clark", avatar: "sophia", time: "2d", text: "Just finished a great workout at the campus gym! Feeling energized and ready to tackle the day.", imageName: nil, likes: 18, comments: 3, shares: 1),
-        Post(name: "Ethan Harper", avatar: "ethan2", time: "2d", text: "Anyone else feel like the dining hall food has been extra bland lately? I swear, they've been skimping on the seasoning. #CollegeLife #FoodieProblems", imageName: "food", likes: 23, comments: 12, shares: 5),
-        Post(name: "Olivia Bennett", avatar: "olivia", time: "4d", text: "Spent the afternoon volunteering at the local community center. It's always rewarding to give back.", imageName: nil, likes: 29, comments: 6, shares: 3),
-        Post(name: "Bekker kelly", avatar: "olivia", time: "4d", text: "Spent the afternoon volunteering at the local community center. It's always rewarding to give back.", imageName: nil, likes: 29, comments: 6, shares: 3),
-        Post(name: "James Mathew", avatar: "olivia", time: "4d", text: "Spent the afternoon volunteering at the local community center. It's always rewarding to give back.", imageName: nil, likes: 29, comments: 6, shares: 3)
-    ]
-    
+
     var body: some View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
             
-            
-            TabView(selection: $selectedTab) {
-                
-                ScrollableTabContent (content: {AroundYouScreen(posts: posts)}, lastOffSet: $lastOffset, hideHeader: $hideHeader)
-                    .tag(TabSelection.aroundyou)
-                
-                
-                ScrollableTabContent(content: {ForYouScreen()}, lastOffSet: $lastOffset, hideHeader: $hideHeader)
-                    .tag(TabSelection.foryou)
-                
+            if aroundVM.isLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .scaleEffect(2)
+            }else{
+                TabView(selection: $selectedTab) {
+                    
+                    ScrollableTabContent (content: {AroundYouScreen(posts: aroundVM.posts)}, lastOffSet: $lastOffset, hideHeader: $hideHeader)
+                        .tag(TabSelection.aroundyou)
+                    
+                    
+                    ScrollableTabContent(content: {ForYouScreen()}, lastOffSet: $lastOffset, hideHeader: $hideHeader)
+                        .tag(TabSelection.foryou)
+                    
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+            
+
             
             
             
@@ -97,6 +86,9 @@ struct HomeView: View {
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
+        .task{
+            await aroundVM.laodAroundYouFeed()
+        }
     }
 }
 
