@@ -8,7 +8,7 @@ enum TabSelection: Hashable {
 
 struct HomeView: View {
     
-    @ObservedObject var aroundVM = AroundYouServiceViewModel()
+    @StateObject var aroundVM = AroundYouServiceViewModel()
     @Namespace private var underline
     @State private var lastOffset: CGFloat = 0
     @State private var hideHeader: Bool = false
@@ -25,7 +25,7 @@ struct HomeView: View {
                     .scaleEffect(2)
             }else{
                 TabView(selection: $selectedTab) {
-                    
+             
                     ScrollableTabContent (content: {AroundYouScreen(posts: aroundVM.posts)}, lastOffSet: $lastOffset, hideHeader: $hideHeader)
                         .tag(TabSelection.aroundyou)
                     

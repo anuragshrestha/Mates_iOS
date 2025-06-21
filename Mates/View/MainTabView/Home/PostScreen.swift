@@ -40,12 +40,13 @@ struct PostScreen: View {
                         }
                         
                     }
+                    .padding(.horizontal, 10)
                     
                     //Post Content
                     Text(post.status)
                         .foregroundColor(.white)
                         .font(.system(size: 18))
-                        .padding(.horizontal, 2)
+                        .padding(.horizontal, 10)
                         .padding(.bottom, 5)
                         
                        
@@ -53,7 +54,7 @@ struct PostScreen: View {
         
                     if post.imageUrl != nil {
                         
-                        AsyncImage(url: URL(string: post.imageUrl ?? "")) { image in
+                        AsyncImage(url: URL(string: post.imageUrl ?? "no image")) { image in
                             image.image?.resizable()
                             
                         }
@@ -64,8 +65,7 @@ struct PostScreen: View {
                     }
                 }
                 .padding(.top,5)
-                //.padding(.horizontal, 8)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(.black)
                
                 
@@ -92,7 +92,7 @@ struct PostScreen: View {
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(.white)
                     .padding(.top, 4)
-                    .padding(.horizontal, 2)
+                    .padding(.horizontal, 10)
                 
                 Divider()
                     .frame(height: 2)
@@ -101,7 +101,7 @@ struct PostScreen: View {
                   
                 
             }
-            .padding(.horizontal, 2)
+            .padding(.horizontal, 10)
             .navigationBarBackButtonHidden(true)
             .navigationBarHidden(true)
          }

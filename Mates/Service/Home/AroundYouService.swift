@@ -10,7 +10,7 @@ import Foundation
 struct HomeFeedResponse: Decodable {
     
     let success: Bool
-    let user: [UserModel]
+    let user: UserModel
     let posts: [PostModel]
 }
 
@@ -38,7 +38,7 @@ class AroundYouService {
         
         
         //checks if its a valid url
-        guard let url = URL(string: "http://localhost:4000/aroundyou-feed") else {
+        guard let url = URL(string: "http://10.0.0.225:4000/aroundyou-feed") else {
             throw AroundYouServiceError.urlError
         }
         
@@ -50,18 +50,22 @@ class AroundYouService {
             let (data, response) = try await URLSession.shared.data(for: request)
             
             guard let httpResponse = response as? HTTPURLResponse else {
+                print("no http response")
                 throw AroundYouServiceError.invalidResponse(status: -1, error: "No HTTP Response")
             }
             
             if httpResponse.statusCode == 200 {
+                print("successfully fetched data ", "status code: \(httpResponse.statusCode)", data)
                 do {
                     let decodedResponse = try JSONDecoder().decode(HomeFeedResponse.self, from: data)
+                    print("successfully decoded")
                          return decodedResponse
                 }catch {
+                    print("decoding error")
                     throw AroundYouServiceError.decodingError
                 }
             }else{
-              
+              print("error: invalid http response")
                 let error = (try? JSONDecoder().decode([String: String].self, from: data)["error"]) ?? "Unknow error"
                 throw AroundYouServiceError.invalidResponse(status: httpResponse.statusCode, error: error)
             }

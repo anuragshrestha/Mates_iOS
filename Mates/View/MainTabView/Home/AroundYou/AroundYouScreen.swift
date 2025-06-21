@@ -15,10 +15,19 @@ struct AroundYouScreen: View {
     var body: some View {
       
         VStack(spacing: 0) {
-            ForEach(posts) { post in
-                PostScreen(post: post)
-                    .padding(.bottom, 20)
+            if posts.isEmpty {
+                Text("No posts loaded")
+                        .foregroundColor(.white)
+            }else{
+                
+                ForEach(posts) { post in
+                    PostScreen(post: post)
+                        .padding(.bottom, 20)
+                }
             }
+        }
+        .onAppear {
+            print("AroundYouScreen received \(posts.count) posts")
         }
     }
 }
