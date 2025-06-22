@@ -58,7 +58,7 @@ class AroundYouService {
                 print("successfully fetched data ", "status code: \(httpResponse.statusCode)", data)
                 do {
                     let decodedResponse = try JSONDecoder().decode(HomeFeedResponse.self, from: data)
-                    print("successfully decoded")
+                    print("successfully decoded  \(decodedResponse)")
                          return decodedResponse
                 }catch {
                     print("decoding error")

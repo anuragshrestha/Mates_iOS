@@ -9,16 +9,17 @@ import Foundation
 
 struct PostModel: Identifiable, Decodable {
     let id: UUID
-    let email: String
-    let imageUrl:String?
+    var email: String
+    var imageUrl:String?
     let createdAt: String
-    let status:String
+    var status:String
     let userId: String
-    let universityName: String
-    let fullName: String
-    let profileImageUrl: String
-    let likes: Int
-    let comments: Int
+    var universityName: String
+    var fullName: String
+    var profileImageUrl: String
+    var likes: Int
+    var comments: Int
+    var hasLiked: Bool
     
  enum CodingKeys:String, CodingKey {
     case id = "post_id"
@@ -32,6 +33,7 @@ struct PostModel: Identifiable, Decodable {
     case profileImageUrl = "profile_image_url"
     case likes
     case comments
+    case hasLiked
   }
 }
 

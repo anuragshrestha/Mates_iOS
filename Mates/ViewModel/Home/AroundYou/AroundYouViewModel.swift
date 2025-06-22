@@ -29,9 +29,7 @@ class AroundYouServiceViewModel: ObservableObject {
             self.user = data.user
             
             print("Fetched posts: \(data.posts.count)")
-            for post in data.posts {
-                print("Post: \(post.status), by \(post.fullName)")
-            }
+        
             
             if data.posts.isEmpty {
                 self.errorMessage = "No post"
