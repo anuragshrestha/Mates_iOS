@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PostScreen: View {
     
-    let post: PostModel
+    @Binding var post: PostModel
     
     var body: some View {
         
@@ -34,8 +34,8 @@ struct PostScreen: View {
                                 .font(.customfont(.bold, fontSize: 18))
                                 .foregroundColor(.white)
                             
-                            Text(post.createdAt)
-                                .foregroundColor(.white)
+                            Text(timeAgo(from: post.createdAt))
+                                .foregroundColor(.white.opacity(0.6))
                                 .font(.subheadline)
                         }
                         
@@ -72,12 +72,46 @@ struct PostScreen: View {
                 
                     HStack(spacing: 24) {
                         HStack(spacing: 4) {
-                            Image(systemName: "heart")
-                            
+                            Button(action: {
+                                Task{
+                                    if post.hasLiked {
+                                        post.hasLiked = false
+                                        if post.likes > 0 {
+                                            post.likes = post.likes - 1
+                                        }
+                                          //api call to unlike the post
+                                        LikeUnlikeService.shared.unlikePost(request: likeUnlikeRequest(post_id: post.id.uuidString.lowercased())) { success, message in
+                                            if success {
+                                                print("successfully unliked the post")
+                                            }else{
+                                                print("failed to unlike the post")
+                                            }
+                                        }
+                                    }else{
+                                        post.hasLiked = true
+                                        post.likes += 1
+                                
+                                        //api call to like the post
+                                        LikeUnlikeService.shared.likePost(request: likeUnlikeRequest(post_id: post.id.uuidString.lowercased())) { success, message in
+                                            if success {
+                                                print("successfully liked the post")
+                                            }else{
+                                                print("failed to like the post")
+                                            }
+                                        }
+                                   }
+                                }
+                            }){
+                                Image(systemName: post.hasLiked ? "heart.fill" : "heart")
+                                    .foregroundColor(post.hasLiked ? .red : .white)
+                            }
+    
                             Text("\(post.likes)")
                         }
                         
+                        
                         HStack(spacing: 4) {
+                            
                             Image(systemName: "message")
                             
                             Text("\(post.comments)")
@@ -111,18 +145,27 @@ struct PostScreen: View {
 
 #Preview {
     
-    let samplePost = PostModel(
-        id: UUID(),
-        email: "Ethan Harper",
-        imageUrl: "ethan@unm.edu",
-        createdAt: UUID().uuidString,
-        status: "https://example.com/avatar.jpg",
-        userId: "https://example.com/dining-hall.jpg",
-        universityName: "Anyone else feel like the dining hall food has been extra bland lately? #CollegeLife",
-        fullName: "2025-06-17T12:00:00Z",
-        profileImageUrl: "University of New Mexico",
-        likes: 23,
-        comments: 12
-    )
-      PostScreen(post: samplePost)
+        struct PreviewWrapper: View {
+            @State var samplePost = PostModel(
+                id: UUID(),
+                email: "ethan@unm.edu",
+                imageUrl: "https://example.com/image.jpg",
+                createdAt: "2025-06-17T12:00:00Z",
+                status: "Anyone else feel like the dining hall food has been extra bland lately? #CollegeLife",
+                userId: "user-123",
+                universityName: "University of New Mexico",
+                fullName: "Ethan Harper",
+                profileImageUrl: "https://example.com/profile.jpg",
+                likes: 23,
+                comments: 12,
+                hasLiked: true
+            )
+
+            var body: some View {
+                PostScreen(post: $samplePost)
+            }
+        }
+
+       return  PreviewWrapper()
+
 }
