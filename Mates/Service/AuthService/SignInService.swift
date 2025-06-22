@@ -49,7 +49,7 @@ class SignInService{
     func signInService(data:SignInRequest)  async throws -> SignInResponse {
         
         //checks if the url is a valid url
-        guard let url = URL(string: "http://localhost:4000/signin") else {
+        guard let url = URL(string: "http://10.0.0.225:4000/signin") else {
             throw URLError(.badURL)
         }
         
@@ -69,7 +69,7 @@ class SignInService{
     
     func resendEmailConfirmation(data:ResendEmail) async throws -> ResendEmailResponse {
         
-        guard let url = URL(string: "http://localhost:4000/resend-confirmation-code") else {
+        guard let url = URL(string: "http://10.0.0.225:4000/resend-confirmation-code") else {
             throw URLError(.badURL)
         }
         
