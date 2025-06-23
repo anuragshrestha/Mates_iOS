@@ -20,16 +20,29 @@ struct ProfileView: View {
         ZStack{
             
             Color.black.ignoresSafeArea()
+        
+            VStack(alignment: .center){
+                
+                Image(systemName: "person.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 120, height: 120)
+                    .cornerRadius(50)
+                    .font(.system(size: 60))
+                    .foregroundColor(.white)
+                    .background(
+                        Circle()
+                            .fill(Color.gray.opacity(0.6))
+                    )
+                    .clipShape(Circle())
+            }
+            .padding(.bottom)
+            
+            
+          
             
             VStack{
-                Text("Profile View")
-                    .font(.customfont(.bold, fontSize: 22))
-                    .foregroundColor(.white)
-                    .padding(.top, 100)
-                
-                Spacer()
-                
-                
+            
                 CustomButton(title: "Log Out", color: .red) {
                     print("pressed log out button")
                     isLoading = true
