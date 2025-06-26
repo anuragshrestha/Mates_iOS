@@ -27,6 +27,7 @@ struct DebouncedTextField: View {
             }
             
             TextField("", text: $text)
+                .autocorrectionDisabled(true)
                 .onChange(of: text) { newValue in
                     debounceTask?.cancel()
                     
