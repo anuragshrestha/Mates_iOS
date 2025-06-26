@@ -17,6 +17,7 @@ struct ConfirmView: View {
     @State var accountConfirmed:Bool = false
     @State var confirmedMessage:String = ""
     @State var navigateToSignIn:Bool = false
+    @AppStorage("isSignedIn") var isSignedIn:Bool = false
     
     var email: String
     var password: String
@@ -48,6 +49,9 @@ struct ConfirmView: View {
                                         isLoading = false
                                         if response.success, let accessToken = response.accessToken {
                                             KeychainHelper.saveAccessToken(accessToken)
+                                            DispatchQueue.main.async {
+                                                self.isSignedIn = true
+                                            }
                                             confirmVM.isConfirmed = true
                                         }else{
                                             
