@@ -50,6 +50,8 @@ struct ProfileView: View {
                         isLoading = false
                         if success{
                             print("successfully logout.")
+//                            KeychainHelper.deleteAccessToken()
+//                            isSignedIn = false
                         }else{
                             alertMessage = "Failed to Sign Out. \n Please try again later."
                             showAlert = true
@@ -79,9 +81,13 @@ struct ProfileView: View {
                 
             }
         }
+   
+
     }
 }
 
 #Preview {
-    ProfileView()
+   
+        ProfileView()
+    
 }
