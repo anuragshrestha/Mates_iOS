@@ -10,10 +10,12 @@ import SwiftUI
 
 struct SearchView: View {
     
+
     @State private var query:String = ""
     @State private var isLoading:Bool = false
     @State private var showResults:Bool = false
     @State private var users:[UserModel] = []
+  
     
     
     
@@ -21,9 +23,17 @@ struct SearchView: View {
      
         VStack{
             
-            TextField("Search people using name or university", text: $query)
+            DebouncedTextField(placeholder: "Search people using name or university", text: $query,
+             onDebounceChange: { newQuery in
+                if newQuery.trimmingCharacters(in: .whitespaces).isEmpty {
+                    users = []
+                    showResults = false
+                }else{
+                    fetchResults(for: newQuery)
+                }
+            })
                 .padding(22)
-                .background(Color(.systemGray6))
+                .background(.white.opacity(0.6))
                 .cornerRadius(12)
                 .padding()
             
@@ -38,7 +48,12 @@ struct SearchView: View {
                         .foregroundColor(.white)
                 }
                 .frame(maxHeight: .infinity)
-            }else if showResults{
+            }else if showResults && users.isEmpty{
+                Text("No users found")
+                    .foregroundColor(.white)
+                    .padding()
+            
+            }else if showResults && !users.isEmpty {
                 VStack(alignment: .leading, spacing: 15) {
                     
                     Text("Top Matches")
@@ -48,56 +63,53 @@ struct SearchView: View {
                     
                     ScrollView {
                         ForEach(users) { user in
-                            HStack(spacing: 15){
-                                if !user.profileImageUrl.isEmpty,
-                                   let imageUrl = URL(string: user.profileImageUrl){
-                                    AsyncImage(url: imageUrl){ image in
-                                        image.resizable()
-                                    } placeholder: {
-                                        ProgressView()
+                            NavigationLink(destination: UserProfileView(user: user)) {
+                                HStack(spacing: 15){
+                                    if !user.profileImageUrl.isEmpty,
+                                       let imageUrl = URL(string: user.profileImageUrl){
+                                        AsyncImage(url: imageUrl){ image in
+                                            image.resizable()
+                                        } placeholder: {
+                                            ProgressView()
+                                        }
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(Circle())
+                                    }else{
+                                        Image(systemName: "person.crop.circle.fill")
+                                            .resizable()
+                                            .frame(width:50, height: 50)
+                                            .foregroundColor(.gray)
                                     }
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                                }else{
-                                    Image(systemName: "person.crop.circle.fill")
-                                        .resizable()
-                                        .frame(width:40, height: 40)
-                                        .foregroundColor(.gray)
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text(user.fullName)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.white)
+                                            
+                                        Text(user.universityName)
+                                            .fontWeight(.regular)
+                                            .foregroundColor(.gray)
+        
+                                    }
+                                    
+                                    Spacer()
+                                    
                                 }
-                                
-                                VStack(aligment: .leading) {
-                                    Text(user.fullName)
-                                        .fontWeight(.medium)
-                                        .foregroundColor(.white)
-                                        
-                                    Text(user.universityName)
-                                        .fontWeight(.subheadline)
-                                        .foregroundColor(.white)
-    
-                                }
-                                
-                                Spacer()
-                                
+                                .padding(.horizontal)
                             }
-                            .padding(.horizontal)
+                        
                             
                         }
                     }
                     .padding(.top)
                 }
                 .transition(.opacity)
+          
             }
             Spacer()
         }
         .background(Color.black.ignoresSafeArea())
-        .onChange(of: query) { newQuery in
-            if newQuery.trimmingCharacters(in: .whitespaces).isEmpty{
-                users = []
-                showResults = false
-            }else{
-                fetchResults(for: newQuery)
-            }
-        }
+    
     }
     
     
@@ -117,6 +129,8 @@ struct SearchView: View {
                     self.showResults = true
                 
                 case .failure(let error):
+                    self.users = []
+                    self.showResults = true
                     print("failed while fetching users: ", error.localizedDescription)
                 }
             }
@@ -131,6 +145,9 @@ struct SearchView: View {
 
 
 #Preview {
-    SearchView()
+    NavigationStack{
+        SearchView()
+    }
+   
 }
 
