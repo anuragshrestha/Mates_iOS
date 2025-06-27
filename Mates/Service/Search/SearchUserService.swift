@@ -14,10 +14,10 @@ struct SearchResponse: Decodable {
 }
 
 class SearchUserService {
-    static func fetchUser(for query: String, completion: @escaping (Result<[UserModel], Error>) -> Void) {
+    static func fetchUser(for query: String, limit: Int = 10, offset: Int = 0, completion: @escaping (Result<[UserModel], Error>) -> Void) {
         
         guard let encodingQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "http://localhost:4000/search-user?query=\(encodingQuery)") else {
+              let url = URL(string: "\(Config.baseURL)/search-user?query=\(encodingQuery)&limit=\(limit)&offset=\(offset)") else {
             return
         }
         
@@ -33,6 +33,12 @@ class SearchUserService {
             
             guard let data = data else {
                 completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  200..<300 ~= httpResponse.statusCode else {
+                completion(.failure(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "Invalid response from server"])))
                 return
             }
             

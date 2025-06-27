@@ -15,9 +15,11 @@ struct SearchView: View {
     @State private var isLoading:Bool = false
     @State private var showResults:Bool = false
     @State private var users:[UserModel] = []
-  
+    @State private var currentOffset = 0
+    @State private var isFetchingMore = false
+    @State private var hasMoreResults = true
     
-    
+    private let limit = 10
     
     var body: some View {
      
@@ -62,44 +64,56 @@ struct SearchView: View {
                         .foregroundColor(.white)
                     
                     ScrollView {
-                        ForEach(users) { user in
-                            NavigationLink(destination: UserProfileView(user: user)) {
-                                HStack(spacing: 15){
-                                    if !user.profileImageUrl.isEmpty,
-                                       let imageUrl = URL(string: user.profileImageUrl){
-                                        AsyncImage(url: imageUrl){ image in
-                                            image.resizable()
-                                        } placeholder: {
-                                            ProgressView()
+                        LazyVStack{
+                            ForEach(users.indices, id: \.self) { index in
+                                let user = users[index]
+                                NavigationLink(destination: UserProfileView(user: user)) {
+                                    HStack(spacing: 15){
+                                        if !user.profileImageUrl.isEmpty,
+                                           let imageUrl = URL(string: user.profileImageUrl){
+                                            AsyncImage(url: imageUrl){ image in
+                                                image.resizable()
+                                            } placeholder: {
+                                                ProgressView()
+                                            }
+                                            .frame(width: 50, height: 50)
+                                            .clipShape(Circle())
+                                        }else{
+                                            Image(systemName: "person.crop.circle.fill")
+                                                .resizable()
+                                                .frame(width:50, height: 50)
+                                                .foregroundColor(.gray)
                                         }
-                                        .frame(width: 50, height: 50)
-                                        .clipShape(Circle())
-                                    }else{
-                                        Image(systemName: "person.crop.circle.fill")
-                                            .resizable()
-                                            .frame(width:50, height: 50)
-                                            .foregroundColor(.gray)
-                                    }
-                                    
-                                    VStack(alignment: .leading) {
-                                        Text(user.fullName)
-                                            .fontWeight(.medium)
-                                            .foregroundColor(.white)
+                                        
+                                        VStack(alignment: .leading) {
+                                            Text(user.fullName)
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.white)
                                             
-                                        Text(user.universityName)
-                                            .fontWeight(.regular)
-                                            .foregroundColor(.gray)
-        
+                                            Text(user.universityName)
+                                                .fontWeight(.regular)
+                                                .foregroundColor(.gray)
+                                            
+                                        }
+                                        
+                                        Spacer()
+                                        
                                     }
-                                    
-                                    Spacer()
-                                    
+                                    .padding(.horizontal)
                                 }
-                                .padding(.horizontal)
+                                .onAppear{
+                                    if index == users.count - 1{
+                                        loadMoreUsers(for: query)
+                                    }
+                                }
                             }
-                        
                             
+                            if isFetchingMore{
+                                ProgressView("Searching more users")
+                                    .padding()
+                            }
                         }
+                        
                     }
                     .padding(.top)
                 }
@@ -118,8 +132,10 @@ struct SearchView: View {
         
         isLoading = true
         showResults = false
+        currentOffset = 0
+        hasMoreResults = true
         
-        SearchUserService.fetchUser(for: query) { result in
+        SearchUserService.fetchUser(for: query, limit: limit, offset: 0) { result in
             DispatchQueue.main.async {
                 isLoading = false
                 
@@ -127,11 +143,36 @@ struct SearchView: View {
                 case .success(let users):
                     self.users = users
                     self.showResults = true
+                    self.hasMoreResults = users.count == limit
+                    self.currentOffset = users.count
                 
                 case .failure(let error):
                     self.users = []
                     self.showResults = true
                     print("failed while fetching users: ", error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    private func loadMoreUsers(for query: String) {
+        
+        guard !isFetchingMore, hasMoreResults else {return}
+        
+        isFetchingMore = true
+        
+        SearchUserService.fetchUser(for: query, limit: limit, offset: currentOffset) { result in
+            DispatchQueue.main.async {
+                isFetchingMore = false
+                print("fetching more users")
+                switch result {
+                case .success(let moreUsers):
+                    self.users.append(contentsOf: moreUsers)
+                    self.hasMoreResults = moreUsers.count == limit
+                    self.currentOffset += moreUsers.count
+                
+                case .failure(let error):
+                    print("failed to load more users: \(error)")
                 }
             }
         }
