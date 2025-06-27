@@ -44,7 +44,7 @@ class SignUpService{
     func signUpUser(data: SignUpRequest) async throws -> SignUpResponse {
         
         //check if the url is valid
-        guard let url = URL(string: "http://localhost:4000/signup") else {
+        guard let url = URL(string: "\(Config.baseURL)/signup") else {
             throw URLError(.badURL)
         }
         
@@ -67,36 +67,7 @@ class SignUpService{
 
     }
     
-    
-    
-    private func signInUser(email: String, password: String) async throws {
-        guard let url = URL(string: "http://localhost:4000/signin") else {
-            throw URLError(.badURL)
-        }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let body: [String: String] = [
-            "email": email,
-            "password": password
-        ]
-
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, _) = try await URLSession.shared.data(for: request)
-
-        // Expect a JSON with accessToken.
-        if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let token = json["accessToken"] as? String {
-            KeychainHelper.saveAccessToken(token)
-        } else {
-            throw NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Login failed after signup"])
-        }
-    }
-    
-    
     private func createMultipartBody(data: SignUpRequest, boundary: String) -> Data {
         
      

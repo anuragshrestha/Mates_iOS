@@ -19,8 +19,8 @@ struct DropdownSelectorView: View {
             ScrollView {
                 LazyVStack(alignment: .leading) {
                     let filtered = searchText.isEmpty
-                        ? Array(items.prefix(60))
-                        : items.filter { $0.localizedCaseInsensitiveContains(searchText) }
+                    ? Array(items.prefix(60)).uniqued()
+                    : Array(items.filter { $0.localizedCaseInsensitiveContains(searchText) }).uniqued()
 
                     ForEach(filtered, id: \.self) { item in
                         Button(action: {
@@ -32,15 +32,18 @@ struct DropdownSelectorView: View {
                     
                             isPresented = false
                         }) {
-                            Text(item)
-                                .foregroundColor(.black)
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            if selection == item {
-                                Spacer()
-                                Image(systemName: "checkmark")
+                            HStack{
+                                Text(item)
                                     .foregroundColor(.black)
+                                    .padding()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                if selection == item {
+                                   
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.black)
+                                }
                             }
+                            .background(selection == item ? Color.gray.opacity(0.2) : Color.clear)
                         }
                         Divider()
                     }
@@ -56,5 +59,13 @@ struct DropdownSelectorView: View {
         .shadow(radius: 10)
         .transition(.move(edge: .top))
         .zIndex(1)
+    }
+}
+
+
+extension Array where Element: Hashable {
+    func uniqued() -> [Element] {
+        var seen = Set<Element>()
+        return filter { seen.insert($0).inserted }
     }
 }

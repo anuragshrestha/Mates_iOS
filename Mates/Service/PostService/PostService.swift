@@ -30,7 +30,7 @@ class PostService {
     func createPost(request: PostRequest, completion: @escaping (Bool, String?) -> Void){
         
         //check if its a valid url string
-        guard let url = URL(string:"http:/localhost:4000/create-post") else {
+        guard let url = URL(string:"\(Config.baseURL)/create-post") else {
             completion(false, "Invalid URL")
             return
         }

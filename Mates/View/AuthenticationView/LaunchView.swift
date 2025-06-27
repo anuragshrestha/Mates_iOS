@@ -12,7 +12,7 @@ struct LaunchView: View {
     
     @State private var isReady = false
     @AppStorage("isSignedIn") var isSignedIn: Bool = false
-    @State private var navTrigger = false
+  
     
     @ViewBuilder
         private var destinationView: some View {
@@ -26,17 +26,9 @@ struct LaunchView: View {
         var body: some View {
             Group {
                 if isReady {
-                    Group {
-                        NavigationStack {
-                            destinationView
-                        }
-                    }
-                    .id(navTrigger)
-                    .onChange(of: isSignedIn) { newValue in
-                        if !newValue {
-                            navTrigger.toggle()
-                        }
-                    }
+                  
+                    destinationView
+                 
                 } else {
                     VStack {
                         Image("AppIcon1")
@@ -67,8 +59,10 @@ struct LaunchView: View {
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    isSignedIn = signedIn
-                    isReady = true
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                         isSignedIn = signedIn
+                         isReady = true
+                     }
                 }
             }
         }
@@ -76,7 +70,7 @@ struct LaunchView: View {
 }
 
 #Preview {
-    NavigationStack{
+ 
         LaunchView()
-    }
+    
 }

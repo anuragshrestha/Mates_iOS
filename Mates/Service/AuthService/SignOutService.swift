@@ -24,7 +24,7 @@ class SignOutService {
     
     func signout(data:SignOutRequest) async throws -> SignOutResponse {
         
-        guard let url = URL(string: "http://localhost:4000/signout") else{
+        guard let url = URL(string: "\(Config.baseURL)/signout") else{
             throw  URLError(.badURL)
         }
         

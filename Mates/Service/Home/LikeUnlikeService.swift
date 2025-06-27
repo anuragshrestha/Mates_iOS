@@ -35,7 +35,7 @@ class LikeUnlikeService {
             return
         }
         
-        guard let url = URL(string: "http://10.0.0.225:4000/like-post") else{
+        guard let url = URL(string: "\(Config.baseURL)/like-post") else{
             completion(false, "Invalid url")
             return
         }

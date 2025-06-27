@@ -16,6 +16,7 @@ struct ConfirmAccountView: View {
     @State var showAlert: Bool = false
     @State var alertMessage:String = ""
     @State private var isLoading:Bool = false
+    @AppStorage("isSignedIn") var isSignedIn: Bool = false
 
     var email: String
     var password:String
@@ -45,6 +46,9 @@ struct ConfirmAccountView: View {
                                             isLoading = false
                                         if response.success, let accessToken = response.accessToken {
                                             KeychainHelper.saveAccessToken(accessToken)
+                                            DispatchQueue.main.async {
+                                                self.isSignedIn = true
+                                            }
                                             confirmVM.isConfirmed = true
                                         }else{
                                             alertMessage = response.message ?? "Your account is now confirmed, but we couldn’t sign you in. Please sign in manually."
