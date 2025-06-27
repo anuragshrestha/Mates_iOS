@@ -13,6 +13,7 @@ import SwiftUI
 class SignOutViewModel:ObservableObject{
     
     @AppStorage("isSignedIn") var isSignedIn: Bool = false
+    @Published var isSignedOut:Bool = false
     
     
     func signOut(completion: @escaping (Bool, String?) -> Void){

@@ -28,7 +28,7 @@ class ConfirmAccountService{
     func confirmAccount(data: ConfirmAccountRequest)async throws -> ConfirmAccountResponse{
         
         //checks if the url is a valid url
-        guard let url = URL(string: "http://localhost:4000/confirm-Signup") else {
+        guard let url = URL(string: "\(Config.baseURL)/confirm-Signup") else {
             throw URLError(.badURL)
         }
         

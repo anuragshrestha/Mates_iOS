@@ -20,7 +20,7 @@ struct MainView: View {
             VStack {
                 TabView(selection: $mainTabVM.selectedTabIndex) {
                     HomeView().tag(0)
-                    SeacrhView().tag(1)
+                    SearchView().tag(1)
                     PostView().tag(2)
                     ChatView().tag(3)
                     ProfileView().tag(4)
