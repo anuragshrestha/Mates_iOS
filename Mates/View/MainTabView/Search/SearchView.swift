@@ -18,6 +18,7 @@ struct SearchView: View {
     @State private var currentOffset = 0
     @State private var isFetchingMore = false
     @State private var hasMoreResults = true
+    @FocusState private var isTextFieldFocused: Bool
     
     private let limit = 10
     
@@ -33,7 +34,9 @@ struct SearchView: View {
                 }else{
                     fetchResults(for: newQuery)
                 }
-            })
+            },
+             isFocused: $isTextFieldFocused
+            )
                 .padding(22)
                 .background(.white.opacity(0.6))
                 .cornerRadius(12)
@@ -101,7 +104,9 @@ struct SearchView: View {
                                     }
                                     .padding(.horizontal)
                                 }
+                           
                                 .onAppear{
+                                 
                                     if index == users.count - 1{
                                         loadMoreUsers(for: query)
                                     }
@@ -117,12 +122,19 @@ struct SearchView: View {
                     }
                     .padding(.top)
                 }
-                .transition(.opacity)
+//                .transition(.opacity)
           
             }
             Spacer()
         }
         .background(Color.black.ignoresSafeArea())
+        .onAppear{
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if query.isEmpty{
+                    self.isTextFieldFocused = true
+                }
+            }
+        }
     
     }
     

@@ -14,6 +14,7 @@ struct DebouncedTextField: View {
     @State private var debounceTask: DispatchWorkItem?
     var debounceDelay: TimeInterval = 0.5
     var onDebounceChange: (String) -> Void
+    @FocusState.Binding var isFocused: Bool
     
     
     var body: some View {
@@ -22,12 +23,15 @@ struct DebouncedTextField: View {
             
             if text.isEmpty {
                 Text(placeholder)
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(.white.opacity(0.9))
                     .padding(.horizontal, 5)
+                    .font(.system(size: 18))
+                    .fontWeight(.regular)
             }
             
             TextField("", text: $text)
                 .autocorrectionDisabled(true)
+                .focused($isFocused)
                 .onChange(of: text) { newValue in
                     debounceTask?.cancel()
                     
@@ -42,7 +46,22 @@ struct DebouncedTextField: View {
 }
 
 #Preview {
-    DebouncedTextField( placeholder: "Search...",
-                        text: .constant(""),
-                        onDebounceChange: { _ in })
+    struct PreviewWrapper: View {
+        @State private var text = ""
+        @FocusState private var isFocused: Bool
+
+        var body: some View {
+            DebouncedTextField(
+                placeholder: "Search...",
+                text: $text,
+                onDebounceChange: { _ in },
+                isFocused: $isFocused
+            )
+            .onAppear {
+                isFocused = true
+            }
+        }
+    }
+
+    return PreviewWrapper()
 }
