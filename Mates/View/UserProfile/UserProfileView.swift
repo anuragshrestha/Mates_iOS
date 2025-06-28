@@ -19,7 +19,12 @@ struct UserProfileView: View {
             
             ScrollView{
                 VStack(alignment: .leading, spacing: 16) {
-                    HStack(alignment: .top, spacing: 12){
+                  
+                  
+                    /**
+                     * Includes the Profile image, full name, university name, major
+                     */
+                    VStack(alignment: .center, spacing: 8){
                         
                         if let url = URL(string: user.profileImageUrl), !user.profileImageUrl.isEmpty {
                             AsyncImage(url: url) { image in
@@ -46,46 +51,93 @@ struct UserProfileView: View {
                             .minimumScaleFactor(0.9)
                             .truncationMode(.tail)
                 
-                    }
-                    .padding(.bottom, 9)
-                 
-                    
-                    VStack(alignment: .leading, spacing: 6){
+        
                         
                         Text("\(user.schoolYear) at \(user.universityName)")
                             .font(.system(size: 18))
-                            .foregroundColor(.white.opacity(0.9))
+                            .foregroundColor(.white.opacity(0.8))
                             .fontWeight(.regular)
                             .lineLimit(1)
                             .minimumScaleFactor(0.9)
                             .truncationMode(.tail)
                         
-                        Text("Majoring in \(user.major)")
+                        Text("\(user.major)")
                             .font(.system(size: 18))
-                            .foregroundColor(.white.opacity(0.9))
+                            .foregroundColor(.white.opacity(0.8))
                             .fontWeight(.regular)
                             .lineLimit(1)
                             .minimumScaleFactor(0.9)
                             .truncationMode(.tail)
                         
                     }
-                    .padding(.bottom, 8)
-                    
-                    
+                    .frame(maxWidth: .infinity)
+                    .multilineTextAlignment(.center)
+                      
+        
+                    //Button to follow/unfollow the user
                     Button(action: {
                         print("pressed the follow button")
                     }) {
                         Text("Follow")
-                            .font(.system(size: 22, weight: .semibold))
+                            .font(.system(size: 24, weight: .semibold))
                             .foregroundColor(.white)
                             .padding(.vertical, 10)
-                            .padding(.horizontal, 20)
+                            .frame(maxWidth: .infinity)
                             .background(Color.blue)
                             .cornerRadius(12)
-                        
-                        
                     }
-                   
+                    
+                    //Shows the users current posts count and followers count
+                    HStack(spacing: 16){
+                        VStack{
+                            
+                            Text("120")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                            Text("Posts")
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: 80)
+                        .background(Color.white.opacity(0.2))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.6), lineWidth: 1)
+                        )
+                        .cornerRadius(12)
+                        
+                    
+                        VStack{
+                            Text("520")
+                                .font(.system(size:22, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                            Text("Followers")
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: 80)
+                        .background(Color.white.opacity(0.2))
+                        .overlay (
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.6), lineWidth: 1)
+                        )
+                        .cornerRadius(12)
+                    
+                    }
+                    
+               
+                    Divider()
+                        .frame(height: 1)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white.opacity(0.5))
+                        .padding(.top, 8)
+                 
+            
+                 //posts will be shown here
+                    
+                    
                 }
                 .padding(.top, 20)
                 .padding(.horizontal, 16)
