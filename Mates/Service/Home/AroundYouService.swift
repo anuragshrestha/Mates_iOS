@@ -38,7 +38,7 @@ class AroundYouService {
         
         
         //checks if its a valid url
-        guard let url = URL(string: "\(Config.baseURL)/aroundyou-feed") else {
+        guard let url = URL(string: "\(Config.baseURL)/feeds/aroundyou") else {
             throw AroundYouServiceError.urlError
         }
         

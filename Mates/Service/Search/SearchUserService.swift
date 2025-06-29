@@ -17,7 +17,7 @@ class SearchUserService {
     static func fetchUser(for query: String, limit: Int = 10, offset: Int = 0, completion: @escaping (Result<[UserModel], Error>) -> Void) {
         
         guard let encodingQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "\(Config.baseURL)/search-user?query=\(encodingQuery)&limit=\(limit)&offset=\(offset)") else {
+              let url = URL(string: "\(Config.baseURL)/users/search?query=\(encodingQuery)&limit=\(limit)&offset=\(offset)") else {
             return
         }
         
