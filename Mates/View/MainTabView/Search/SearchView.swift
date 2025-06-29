@@ -198,9 +198,8 @@ struct SearchView: View {
 
 
 #Preview {
-    NavigationStack{
-        SearchView()
-    }
    
+    SearchView()
+
 }
 
