@@ -106,6 +106,6 @@ struct ConfirmAccountView: View {
 
 #Preview {
     NavigationStack{
-        ConfirmView(email: "", password: "")
+        ConfirmAccountView(email: "", password: "")
     }
 }

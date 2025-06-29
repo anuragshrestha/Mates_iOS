@@ -70,7 +70,6 @@ struct LaunchView: View {
 }
 
 #Preview {
- 
-        LaunchView()
-    
+
+    LaunchView()
 }
