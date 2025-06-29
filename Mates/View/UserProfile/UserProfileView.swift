@@ -18,33 +18,16 @@ struct UserProfileView: View {
     @State var unFollowUser:Bool = false
     @State var showUnfollowAlert:Bool = false
     
+    // State to track the swipe gesture for dismissal
+     @State private var dragOffset: CGSize = .zero
+    
     
     var body: some View {
         
         ZStack(alignment: .leading){
             Color.black.opacity(0.95).ignoresSafeArea()
             
-            VStack(spacing: 0){
-                
-                
-                HStack {
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 20, weight: .medium))
-                                .foregroundColor(.white)
-                        }
-                    }
-                    
-                    Spacer()
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 10)
-                .padding(.bottom, 8)
-                
-                
+
                 ScrollView{
                     VStack(alignment: .leading, spacing: 16) {
                         
@@ -309,8 +292,40 @@ struct UserProfileView: View {
                 Text("\(alertMessage)")
             }
             .navigationBarBackButtonHidden(true)
-            
-        }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            //SWIPE TO DISMISS MODIFIERS
+            .offset(x: dragOffset.width) // Move the view as the user drags
+            .opacity(1.0 - Double(abs(dragOffset.width) / (UIScreen.main.bounds.width / 2))) // Fade the view out
+            .gesture(
+                DragGesture()
+                    .onChanged { gesture in
+                        // Only track swipes from left to right to avoid conflicts
+                        if gesture.translation.width > 0 {
+                            self.dragOffset = gesture.translation
+                        }
+                    }
+                    .onEnded { gesture in
+                        // If the user swiped more than a third of the screen, dismiss the view
+                        if gesture.translation.width > UIScreen.main.bounds.width / 3 {
+                            dismiss()
+                        }
+                        // Otherwise, animate the view back to its original position
+                        withAnimation(.spring()) {
+                            self.dragOffset = .zero
+                        }
+                    }
+            )
+        
     }
     
     func fetchUserData() {
@@ -328,6 +343,7 @@ struct UserProfileView: View {
             
         }
     }
+    
 }
 
 #Preview {
