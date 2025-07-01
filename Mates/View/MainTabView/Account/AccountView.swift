@@ -1,5 +1,5 @@
 //
-//  ProfileView.swift
+//  AccountView.swift
 //  Mates
 //
 //  Created by Anurag Shrestha on 4/30/25.
