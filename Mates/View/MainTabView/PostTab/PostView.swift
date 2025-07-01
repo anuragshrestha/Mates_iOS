@@ -23,7 +23,7 @@ struct PostView: View {
     var body: some View {
         ZStack{
             
-            Color.black.ignoresSafeArea()
+            Color.black.opacity(0.95).ignoresSafeArea()
             
             VStack(spacing: 0){
                 ZStack{

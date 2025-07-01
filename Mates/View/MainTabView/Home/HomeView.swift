@@ -17,7 +17,7 @@ struct HomeView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            Color.black.ignoresSafeArea()
+            Color.black.opacity(0.95).ignoresSafeArea()
             
             if aroundVM.isLoading {
                 ProgressView()
