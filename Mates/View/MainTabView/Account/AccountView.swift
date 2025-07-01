@@ -15,12 +15,20 @@ struct AccountView: View {
     @State var alertMessage:String = ""
     @State private var isLoading:Bool = false
     
+    
+    @State private var userPosts: [UserPostModel] = [
+ 
+        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,fullName:  "Anurag Shrestha", profileImageUrl: "", likes: 22, comments: 5, hasLiked: true),
+        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,fullName:  "Anurag Shrestha", profileImageUrl: "", likes: 22, comments: 5, hasLiked: false),
+        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,fullName:  "Anurag Shrestha", profileImageUrl: "", likes: 22, comments: 5, hasLiked: true)
+    ]
+    
     var body: some View {
         
         ZStack(alignment: .leading){
             
             Color.black.opacity(0.95).ignoresSafeArea()
-        
+            
             ScrollView{
                 VStack(alignment: .leading){
                     
@@ -38,7 +46,7 @@ struct AccountView: View {
                                 .font(.title)
                                 .foregroundColor(.white)
                         }
-
+                        
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 20)
@@ -107,47 +115,61 @@ struct AccountView: View {
                         //user university name
                         Text("Senior @ Harvard University")
                             .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.white.opacity(0.6))
-                         
+                            .foregroundColor(.white.opacity(0.8))
+                        
                         
                         //user major
                         Text("Computer Science")
                             .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.white.opacity(0.6))
-                    
+                            .foregroundColor(.white.opacity(0.8))
+                        
                         
                         //user Bio: Optional
                         Text("Building the future | Co-founder @ Twitter  Books, Hiking. ")
                             .foregroundColor(.white)
                             .font(.system(size: 18, weight: .medium))
-                          
-                            
+                        
+                        
                     }
                     .padding(.horizontal)
-                   
                     
-               
-                        
-                        
                     
-                  
+                  Divider()
+                        .frame(width: .infinity, height: 1)
+                        .background(Color.gray)
+                        .padding(.vertical, 5)
+                    
+                    
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 2){
+                        
+                        ForEach(userPosts.indices, id: \.self) { index in
+                            NavigationLink(destination: PostDetailView(userPost: $userPosts[index])) {
+                             
+                                Image(systemName: "person.fill")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: UIScreen.main.bounds.width / 3 - 4, height: UIScreen.main.bounds.width / 3 - 4)
+                                    .clipped()
+                                    .foregroundColor(.white)
+                                    .background(Color.gray.opacity(0.3))
+                            }
+                            
+                        }
+                    }
+                    .padding(.horizontal, 2)
+                    .padding(.bottom, 20)
+                    
                 }
-              
             }
-          
-            
-            
-          
-            
-      
         }
-   
-
     }
 }
 
 #Preview {
    
-     AccountView()
+    NavigationStack{
+        AccountView()
+    }
+     
     
 }
