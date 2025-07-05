@@ -19,9 +19,9 @@ struct AccountView: View {
     
     @State private var userPosts: [UserPostModel] = [
  
-        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,fullName:  "Anurag Shrestha", profileImageUrl: "", likes: 22, comments: 5, hasLiked: true),
-        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,fullName:  "Anurag Shrestha", profileImageUrl: "", likes: 22, comments: 5, hasLiked: false),
-        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,fullName:  "Anurag Shrestha", profileImageUrl: "", likes: 22, comments: 5, hasLiked: true)
+        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,likes: 22, comments: 5, hasLiked: true),
+        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,likes: 22, comments: 5, hasLiked: false),
+        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" , likes: 22, comments: 5, hasLiked: true)
     ]
     
     var body: some View {

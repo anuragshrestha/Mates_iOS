@@ -26,7 +26,7 @@ var body: some View {
                         
                         VStack(alignment: .leading, spacing: 4) {
                             
-                            Text(userPost.fullName)
+                            Text("userPost.fullName")
                                 .font(.system(size: 18, weight: .bold))
                                 .foregroundColor(.white)
                             
@@ -137,8 +137,6 @@ struct PostDetailView_Previews: PreviewProvider {
             imageUrl: "",
             createdAt: "2025-06-17T12:00:00Z",
             status: "Hi guys",
-            fullName: "Anurag Shrestha",
-            profileImageUrl: "",
             likes: 23,
             comments: 12,
             hasLiked: true
