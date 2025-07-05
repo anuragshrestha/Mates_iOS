@@ -10,7 +10,6 @@ import Foundation
 struct HomeFeedResponse: Decodable {
     
     let success: Bool
-    let user: UserModel
     let posts: [PostModel]
 }
 

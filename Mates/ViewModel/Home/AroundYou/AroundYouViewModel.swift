@@ -11,7 +11,6 @@ class AroundYouServiceViewModel: ObservableObject {
     
     @Published var isLoading:Bool = false
     @Published var posts: [PostModel] = []
-    @Published var user: UserModel? = nil
     @Published var errorMessage: String?
     @Published var showError: Bool = false
     
@@ -26,7 +25,7 @@ class AroundYouServiceViewModel: ObservableObject {
         do {
             let data = try await AroundYouService.shared.fetchHomeFeed()
             self.posts = data.posts
-            self.user = data.user
+      
             
             print("Fetched posts: \(data.posts.count)")
         

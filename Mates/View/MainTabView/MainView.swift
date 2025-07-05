@@ -24,7 +24,7 @@ struct MainView: View {
                         SearchView().tag(1)
                         PostView().tag(2)
                         ChatView().tag(3)
-                        ProfileView().tag(4)
+                        AccountView().tag(4)
                     }
                     .environmentObject(mainTabVM)
                     .tabViewStyle(.automatic)
