@@ -10,19 +10,23 @@ import SwiftUI
 struct AccountView: View {
     
     
+    @State var userPosts: [UserPostModel] = []
+    @State  var user: UserAccountModel? = nil
     @StateObject var signOutVM = SignOutViewModel()
     @AppStorage("isSignedIn") var isSignedIn:Bool = false
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State private var isLoading:Bool = false
+    @State private var showResult: Bool = false
+    @State private var currentOffset = 0
+    @State private var isFetchingMore = false
+    @State private var hasMoreResults = true
+    
+    private let limit = 2
     
     
-    @State private var userPosts: [UserPostModel] = [
- 
-        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,likes: 22, comments: 5, hasLiked: true),
-        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" ,likes: 22, comments: 5, hasLiked: false),
-        UserPostModel(id: UUID(), imageUrl: "", createdAt: "2025-06-17T12:00:00Z", status: "2025-06-17T12:00:00Z" , likes: 22, comments: 5, hasLiked: true)
-    ]
+    
+   
     
     var body: some View {
         
@@ -144,22 +148,45 @@ struct AccountView: View {
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 2){
                         
                         ForEach(userPosts.indices, id: \.self) { index in
-                            NavigationLink(destination: PostDetailView(userPost: $userPosts[index])) {
-                             
-                                Image(systemName: "person.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: UIScreen.main.bounds.width / 3 - 4, height: UIScreen.main.bounds.width / 3 - 4)
-                                    .clipped()
-                                    .foregroundColor(.white)
-                                    .background(Color.gray.opacity(0.3))
-                            }
+                            //
                             
                         }
                     }
                     .padding(.horizontal, 2)
                     .padding(.bottom, 20)
                     
+                    
+                    
+                }
+            }
+        }
+        .onAppear{
+            fetchUserProfile()
+        }
+    }
+    
+    
+    private func fetchUserProfile(){
+        
+        isLoading = true
+        showResult = false
+        currentOffset = 0
+        hasMoreResults = true
+        
+        AccountService.getAccountInfo(limit: limit,offset: 0) { result, data, message in
+            DispatchQueue.main.async {
+                
+                isLoading = true
+                
+                if result, let data = data {
+                    self.userPosts = data.posts
+                    self.user = data.userProfile
+                    self.hasMoreResults = userPosts.count == limit
+                    self.currentOffset = userPosts.count
+                }else{
+                    self.userPosts = []
+                    self.showResult = true
+                    print("failed to fetched user profile")
                 }
             }
         }
