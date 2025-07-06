@@ -13,8 +13,12 @@ struct MediaItem: Decodable {
 }
 
 
+
+/**
+ * Model for current user post data which is shown in the user account profile
+ */
 struct UserPostModel: Identifiable, Decodable {
-    let id: UUID
+    let id: String
     var mediaUrls:[MediaItem]?
     let createdAt: String
     var status:String
@@ -36,6 +40,9 @@ struct UserPostModel: Identifiable, Decodable {
 }
 
 
+/**
+ * Model for current user Profile data which is shown in the user Account view
+ */
 struct UserAccountModel: Identifiable, Decodable {
     let id: UUID
     let email: String
@@ -59,9 +66,9 @@ struct UserAccountModel: Identifiable, Decodable {
         case schoolYear = "school_year"
         case createdAt = "created_at"
         case profileImageUrl = "profile_image_url"
-        case postCount = "post_count"
-        case followersCount = "followers_count"
-        case followingCount = "following_count"
+        case postCount
+        case followersCount
+        case followingCount
 
     }
 }

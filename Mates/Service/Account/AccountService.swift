@@ -8,7 +8,7 @@
 import Foundation
 
 struct AccountProfileResponse: Decodable {
-    let sucess:Bool
+    let success:Bool
     let message: String
     let userProfile: UserAccountModel
     let posts: [UserPostModel]

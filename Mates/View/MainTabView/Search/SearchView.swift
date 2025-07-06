@@ -139,7 +139,9 @@ struct SearchView: View {
     }
     
     
-    
+    /**
+     * Fetches users with the given limit
+     */
     private func fetchResults(for query: String) {
         
         isLoading = true
@@ -167,6 +169,10 @@ struct SearchView: View {
         }
     }
     
+    
+    /**
+     * fetches more user when the user scrolls down
+     */
     private func loadMoreUsers(for query: String) {
         
         guard !isFetchingMore, hasMoreResults else {return}
