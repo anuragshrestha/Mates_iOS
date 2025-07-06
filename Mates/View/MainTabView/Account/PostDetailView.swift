@@ -49,6 +49,49 @@ var body: some View {
                     
                   
                 //shows the medias
+              
+                    if let mediaUrls = post.mediaUrls, !mediaUrls.isEmpty {
+                        GeometryReader { geometry in
+                            ScrollView(.horizontal, showsIndicators: false){
+                                LazyHStack(spacing: 12) {
+                                    ForEach(mediaUrls.indices, id: \.self){ index in
+                                        let media = mediaUrls[index]
+                                          if media.type == "image",
+                                             let url = URL(string: media.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                                              
+                                              AsyncImage(url: url) { phase in
+                                                  switch phase {
+                                                  case .success(let image):
+                                                      image
+                                                          .resizable()
+                                                          .aspectRatio(contentMode: .fill)
+                                                  case .failure:
+                                                      Color.red
+                                                  case .empty:
+                                                      ProgressView()
+                                                  @unknown default:
+                                                      EmptyView()
+                                                  }
+                                              }
+                                              .frame(width: geometry.size.width, height: 300)
+                                              .clipped()
+                                              .cornerRadius(10)
+                                              
+                                          } else if media.type == "video",
+                                                    let url = URL(string: media.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                                              
+                                              VideoPlayerView(url: url, width: geometry.size.width, height: 300)
+                                                 
+                                        }
+                                        
+                                    }
+                                    
+                                }
+                                .padding(.horizontal, 10)
+                            }
+                        }
+                        .frame(height: 300)
+                    }
                     
                     
         
@@ -58,7 +101,7 @@ var body: some View {
                 .background(.black)
                 
                 Divider()
-                    .frame(width: .infinity, height: 1)
+                    .frame(maxWidth: .infinity, maxHeight: 1)
                     .background(Color.darkGray)
                     .padding(.bottom, 2)
                 
@@ -74,7 +117,7 @@ var body: some View {
                                         post.likes = post.likes - 1
                                     }
                                       //api call to unlike the post
-                                    LikeUnlikeService.shared.unlikePost(request: likeUnlikeRequest(post_id: post.id    .uuidString.lowercased())) { success, message in
+                                    LikeUnlikeService.shared.unlikePost(request: likeUnlikeRequest(post_id: post.id)) { success, message in
                                         if success {
                                             print("successfully unliked the post")
                                         }else{
@@ -86,7 +129,7 @@ var body: some View {
                                     post.likes += 1
                             
                                     //api call to like the post
-                                    LikeUnlikeService.shared.likePost(request: likeUnlikeRequest(post_id: post.id.uuidString.lowercased())) { success, message in
+                                    LikeUnlikeService.shared.likePost(request: likeUnlikeRequest(post_id: post.id)) { success, message in
                                         if success {
                                             print("successfully liked the post")
                                         }else{
@@ -146,7 +189,7 @@ var body: some View {
 struct PostDetailView_Previews: PreviewProvider {
     struct PreviewWrapper: View {
         @State var samplePost = UserPostModel(
-            id: UUID(),
+            id: "1251625176",
             mediaUrls: nil,
             createdAt: "2025-06-17T12:00:00Z",
             status: "Hi guys",
