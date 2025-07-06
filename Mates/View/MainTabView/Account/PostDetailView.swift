@@ -3,64 +3,52 @@ import SwiftUI
 struct PostDetailView: View {
     
     
-    @Binding var userPost: UserPostModel
+    @Binding var post: UserPostModel
+    let user: UserAccountModel
     @State var scale: CGFloat = 1
     
     
 var body: some View {
        
        
-        ScrollView{
+        ZStack{
         
             VStack(alignment: .leading, spacing: 4){
                 
                 //stack that shows the user image, name, post created time, status and image if any
                 VStack(alignment: .leading, spacing: 10) {
                     
-                    //profile row
                     HStack(alignment: .top, spacing: 12) {
-                        Image(systemName: "person.fill")
-                            .resizable()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.white)
+                        
+                        //profile image
+                        AsyncImage(url: URL(string: user.profileImageUrl)) { image in
+                            image.image?.resizable()
+                        }
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 50, height: 50)
+                        .clipShape(Circle())
+
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            
-                            Text("userPost.fullName")
-                                .font(.system(size: 18, weight: .bold))
+                            Text(user.fullName)
+                                .font(.customfont(.bold, fontSize: 18))
                                 .foregroundColor(.white)
                             
-                            
-                            Text(timeAgo(from: userPost.createdAt))
-                                .foregroundColor(.white.opacity(0.8))
+                            Text(timeAgo(from: post.createdAt))
+                                .foregroundColor(.white.opacity(0.6))
                                 .font(.subheadline)
                         }
                     }
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal)
                     
-                    Text(userPost.status)
+                    Text(post.status)
                         .foregroundColor(.white)
                         .font(.system(size: 18))
                         .padding(.horizontal, 10)
                         .padding(.bottom, 5)
                     
                   
-                        if let urlString = userPost.imageUrl,
-                           !urlString.isEmpty,
-                           let url = URL(string: urlString){
-                            AsyncImage(url: url) { image in
-                                image.image?.resizable()
-                                    .scaledToFill()
-                                    .scaleEffect(scale)
-                                    .gesture(MagnificationGesture().onChanged{ value in
-                                        scale = value
-                                    })
-                                
-                            }
-                            .frame(height: UIScreen.main.bounds.height * 0.5)
-                            .clipped()
-                            
-                        }
+                //shows the medias
                     
                     
         
@@ -78,18 +66,43 @@ var body: some View {
                     
                     //like button and count
                     HStack(spacing: 4) {
-                        
-                        Button {
-                            print("pressed like button")
-                        } label: {
+                        Button(action: {
+                            Task{
+                                if post.hasLiked {
+                                    post.hasLiked = false
+                                    if post.likes > 0 {
+                                        post.likes = post.likes - 1
+                                    }
+                                      //api call to unlike the post
+                                    LikeUnlikeService.shared.unlikePost(request: likeUnlikeRequest(post_id: post.id    .uuidString.lowercased())) { success, message in
+                                        if success {
+                                            print("successfully unliked the post")
+                                        }else{
+                                            print("failed to unlike the post")
+                                        }
+                                    }
+                                }else{
+                                    post.hasLiked = true
+                                    post.likes += 1
                             
-                            Image(systemName: userPost.hasLiked ? "heart.fill" : "heart")
-                                .foregroundColor(userPost.hasLiked ? .red : .white)
+                                    //api call to like the post
+                                    LikeUnlikeService.shared.likePost(request: likeUnlikeRequest(post_id: post.id.uuidString.lowercased())) { success, message in
+                                        if success {
+                                            print("successfully liked the post")
+                                        }else{
+                                            print("failed to like the post")
+                                        }
+                                    }
+                               }
+                            }
+                        }){
+                            Image(systemName: post.hasLiked ? "heart.fill" : "heart")
+                                .foregroundColor(post.hasLiked ? .red : .white)
                         }
-                        
-                        Text("\(userPost.likes)")
-                            .foregroundColor(.white)
+
+                        Text("\(post.likes)")
                     }
+                    
                     
                     HStack(spacing: 4){
                         
@@ -100,7 +113,7 @@ var body: some View {
                                 .foregroundColor(.white)
                         }
                         
-                        Text("\(userPost.comments)")
+                        Text("\(post.comments)")
                             .foregroundColor(.white)
                     }
                     
@@ -134,16 +147,30 @@ struct PostDetailView_Previews: PreviewProvider {
     struct PreviewWrapper: View {
         @State var samplePost = UserPostModel(
             id: UUID(),
-            imageUrl: "",
+            mediaUrls: nil,
             createdAt: "2025-06-17T12:00:00Z",
             status: "Hi guys",
             likes: 23,
             comments: 12,
             hasLiked: true
         )
+        
+        let sampleUser = UserAccountModel(
+            id: UUID(),
+            email: "test@example.com",
+            fullName: "Anurag Shrestha",
+            universityName: "Harvard University",
+            major: "Computer Science",
+            schoolYear: "Senior",
+            createdAt: "2024-01-01T00:00:00Z",
+            profileImageUrl: "https://example.com/profile.jpg",
+            postCount: 5,
+            followersCount: 100,
+            followingCount: 80
+        )
 
         var body: some View {
-            PostDetailView(userPost: $samplePost)
+            PostDetailView(post: $samplePost, user: sampleUser)
         }
     }
 
