@@ -23,6 +23,8 @@ struct AccountSetting: View {
     @State var alertMessage:String = ""
     @State private var isLoading:Bool = false
     
+    var user : UserAccountModel?
+    
     
     var body: some View {
        
@@ -200,5 +202,9 @@ struct AccountSetting: View {
 }
 
 #Preview {
-    AccountSetting()
+    
+    NavigationStack{
+        AccountSetting(user: nil)
+    }
+   
 }

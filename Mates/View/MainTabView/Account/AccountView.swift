@@ -12,7 +12,6 @@ struct AccountView: View {
     
     @State var userPosts: [UserPostModel] = []
     @State  var user: UserAccountModel? = nil
-    @StateObject var signOutVM = SignOutViewModel()
     @AppStorage("isSignedIn") var isSignedIn:Bool = false
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
@@ -21,6 +20,7 @@ struct AccountView: View {
     @State private var currentOffset = 0
     @State private var isFetchingMore = false
     @State private var hasMoreResults = true
+    @State private var path = NavigationPath()
     
     private let limit = 2
     
@@ -30,172 +30,183 @@ struct AccountView: View {
     
     var body: some View {
         
-        ZStack(alignment: .leading){
+        NavigationStack(path: $path){
             
-            Color.black.opacity(0.95).ignoresSafeArea()
-            
-            
-            //shows progress view until the data is fetched
-            if isLoading{
+            ZStack(alignment: .leading){
                 
-                VStack{
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(2)
+                Color.black.opacity(0.95).ignoresSafeArea()
+                
+                
+                //shows progress view until the data is fetched
+                if isLoading{
                     
-                    Text("Loading...")
-                        .font(.system(size: 18))
-                        .foregroundColor(.white.opacity(0.8))
-                        .font(.subheadline)
-                        .padding(.top, 5)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-            } else if showResult{
-                ScrollView{
-                    VStack(alignment: .leading){
+                    VStack{
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(2)
                         
-                        HStack(alignment: .top) {
-                            Text(user?.fullName ?? "")
-                                .font(.system(size: 22, weight: .bold))
-                                .foregroundColor(.white)
+                        Text("Loading...")
+                            .font(.system(size: 18))
+                            .foregroundColor(.white.opacity(0.8))
+                            .font(.subheadline)
+                            .padding(.top, 5)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    
+                } else if showResult{
+                    ScrollView{
+                        VStack(alignment: .leading){
                             
-                            Spacer()
-                            
-                            Button {
-                                print("pressed setting icon")
-                            } label: {
-                                Image(systemName: "line.3.horizontal")
-                                    .font(.title)
-                                    .foregroundColor(.white)
-                            }
-                            
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom, 20)
-                        
-                        
-                        //stack to show user image, counts for posts, followers and following
-                        HStack{
-                            AsyncImage(url: URL(string: user?.profileImageUrl ?? "")){ image in
-                                image.image?.resizable()
-                            }
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 80, height: 80)
-                            .clipShape(Circle())
-                            
-                            
-                            Spacer()
-                            
-                            //shows posts count
-                            VStack(spacing: 4){
-                                Text("\(user?.postCount ?? 0)")
+                            HStack(alignment: .top) {
+                                Text(user?.fullName ?? "")
                                     .font(.system(size: 22, weight: .bold))
                                     .foregroundColor(.white)
                                 
-                                Text("POSTS")
-                                    .font(.system(size: 14, weight: .regular))
-                                    .foregroundColor(.white.opacity(0.8))
-                            }
-                            
-                            Spacer()
-                            
-                            //shows followers count
-                            VStack(spacing: 4) {
-                                Text("\(user?.followersCount ?? 0)")
-                                    .font(.system(size: 22, weight: .bold))
-                                    .foregroundColor(.white)
+                                Spacer()
                                 
-                                Text("FOLLOWERS")
-                                    .font(.system(size: 14, weight: .regular))
-                                    .foregroundColor(.white.opacity(0.8))
-                            }
-                            
-                            Spacer()
-                            
-                            //shows following count
-                            VStack(spacing: 4){
-                                Text("\(user?.followingCount ?? 0)")
-                                    .font(.system(size: 22, weight: .bold))
-                                    .foregroundColor(.white)
                                 
-                                Text("FOLLOWING")
-                                    .font(.system(size: 14,weight: .regular))
-                                    .foregroundColor(.white.opacity(0.8))
+                                Button {
+                                    if let user = user {
+                                        path.append(user);                                         print("Navigating to AccountSetting")
+                                    }
+                                    print("pressed setting icon")
+                                    
+                                } label: {
+                                    Image(systemName: "line.3.horizontal")
+                                        .font(.title)
+                                        .foregroundColor(.white)
+                                }
+                                
                             }
+                            .padding(.horizontal)
+                            .padding(.bottom, 20)
                             
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal)
-                        
-                        
-                        
-                        VStack(alignment: .leading, spacing: 2){
-                            //user name
-                            Text(user?.fullName ?? "")
-                                .font(.system(size: 22, weight: .semibold))
-                                .foregroundColor(.white)
-                                .padding(.top, 10)
                             
-                            //user university name
-                            if let year = user?.schoolYear, let uni = user?.universityName {
-                                Text("\(year) @ \(uni)")
+                            //stack to show user image, counts for posts, followers and following
+                            HStack{
+                                AsyncImage(url: URL(string: user?.profileImageUrl ?? "")){ image in
+                                    image.image?.resizable()
+                                }
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 80, height: 80)
+                                .clipShape(Circle())
+                                
+                                
+                                Spacer()
+                                
+                                //shows posts count
+                                VStack(spacing: 4){
+                                    Text("\(user?.postCount ?? 0)")
+                                        .font(.system(size: 22, weight: .bold))
+                                        .foregroundColor(.white)
+                                    
+                                    Text("POSTS")
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
+                                
+                                Spacer()
+                                
+                                //shows followers count
+                                VStack(spacing: 4) {
+                                    Text("\(user?.followersCount ?? 0)")
+                                        .font(.system(size: 22, weight: .bold))
+                                        .foregroundColor(.white)
+                                    
+                                    Text("FOLLOWERS")
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
+                                
+                                Spacer()
+                                
+                                //shows following count
+                                VStack(spacing: 4){
+                                    Text("\(user?.followingCount ?? 0)")
+                                        .font(.system(size: 22, weight: .bold))
+                                        .foregroundColor(.white)
+                                    
+                                    Text("FOLLOWING")
+                                        .font(.system(size: 14,weight: .regular))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
+                                
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal)
+                            
+                            
+                            
+                            VStack(alignment: .leading, spacing: 2){
+                                //user name
+                                Text(user?.fullName ?? "")
+                                    .font(.system(size: 22, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.top, 10)
+                                
+                                //user university name
+                                if let year = user?.schoolYear, let uni = user?.universityName {
+                                    Text("\(year) @ \(uni)")
+                                        .font(.system(size: 18, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.8))
+                                    
+                                } else {
+                                    Text(user?.schoolYear ?? user?.universityName ?? "")
+                                }
+                                
+                                
+                                //user major
+                                Text(user?.major ?? "")
                                     .font(.system(size: 18, weight: .medium))
                                     .foregroundColor(.white.opacity(0.8))
                                 
-                            } else {
-                                Text(user?.schoolYear ?? user?.universityName ?? "")
-                            }
-                           
-                            
-                            //user major
-                            Text(user?.major ?? "")
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.white.opacity(0.8))
-                            
-                            
-                            //user Bio: Optional
-                            Text("Building the future | Co-founder @ Twitter  Books, Hiking. ")
-                                .foregroundColor(.white)
-                                .font(.system(size: 18, weight: .medium))
-                            
-                            
-                        }
-                        .padding(.horizontal)
-                        
-                        
-                        Divider()
-                            .frame(maxWidth: .infinity, maxHeight: 1)
-                            .background(Color.darkGray)
-                            .padding(.bottom, 2)
-                        
-                        LazyVStack{
-                            if let user = user{
-                                ForEach(userPosts.indices, id: \.self) { index in
-                                    PostDetailView(post: $userPosts[index], user: user)
-                                        .onAppear {
-                                            if index == userPosts.count - 1 {
-                                                fetchMoredata()
-                                            }
-                                            
-                                        }
-                                 }
                                 
-                                if isFetchingMore {
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                        .padding()
+                                //user Bio: Optional
+                                Text("Building the future | Co-founder @ Twitter  Books, Hiking. ")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 18, weight: .medium))
+                                
+                                
+                            }
+                            .padding(.horizontal)
+                            
+                            
+                            Divider()
+                                .frame(maxWidth: .infinity, maxHeight: 1)
+                                .background(Color.darkGray)
+                                .padding(.bottom, 2)
+                            
+                            LazyVStack{
+                                if let user = user{
+                                    ForEach(userPosts.indices, id: \.self) { index in
+                                        PostDetailView(post: $userPosts[index], user: user)
+                                            .onAppear {
+                                                if index == userPosts.count - 1 {
+                                                    fetchMoredata()
+                                                }
+                                                
+                                            }
+                                    }
+                                    
+                                    if isFetchingMore {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                            .padding()
+                                    }
                                 }
                             }
                         }
                     }
+                    .padding(.bottom, 10)
+                    
                 }
-                .padding(.bottom, 10)
-              
             }
-        }
-        .onAppear{
-            fetchUserProfile()
+            .onAppear{
+                fetchUserProfile()
+            }
+            .navigationDestination(for: UserAccountModel.self) { selectedUser in
+                AccountSetting(user: selectedUser)
+            }
         }
     }
     
@@ -253,9 +264,8 @@ struct AccountView: View {
 
 #Preview {
    
-    NavigationStack{
+
         AccountView()
-    }
-     
+
     
 }

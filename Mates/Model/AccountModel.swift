@@ -43,7 +43,7 @@ struct UserPostModel: Identifiable, Decodable {
 /**
  * Model for current user Profile data which is shown in the user Account view
  */
-struct UserAccountModel: Identifiable, Decodable {
+struct UserAccountModel: Identifiable, Hashable, Decodable {
     let id: UUID
     let email: String
     let fullName: String
