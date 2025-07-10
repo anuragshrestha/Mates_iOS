@@ -9,12 +9,14 @@ import SwiftUI
 
 struct ForgotPassword: View {
     
-    @StateObject var forgotVM = ForgotPasswordViewModel()
+    @Environment(\.dismiss) var dismiss
+    @ObservedObject var forgotVM = ForgotPasswordViewModel()
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State private var showSuccessAlert:Bool = false
     @State private var isLoading:Bool = false
     
+ 
     
     var body: some View {
         
@@ -70,7 +72,7 @@ struct ForgotPassword: View {
                 .padding(.horizontal, 20)
                 .alert("Success", isPresented: $showSuccessAlert) {
                     Button("Ok"){
-                        forgotVM.isConfirmedForgotPassword = true
+                        dismiss()
                     }
                 }message: {
                     Text("Successfully reset password")
