@@ -46,15 +46,15 @@ struct UserPostModel: Identifiable, Decodable {
 struct UserAccountModel: Identifiable, Hashable, Decodable {
     let id: UUID
     let email: String
-    let fullName: String
+    var fullName: String
     let universityName: String
-    let major: String
-    let schoolYear: String
+    var major: String
+    var schoolYear: String
     let createdAt: String
-    let profileImageUrl: String
-    let postCount:Int
-    let followersCount: Int
-    let followingCount: Int
+    var profileImageUrl: String
+    var postCount:Int
+    var followersCount: Int
+    var followingCount: Int
  
 
     enum CodingKeys: String, CodingKey {
