@@ -27,10 +27,25 @@ struct AccountSetting: View {
     
     var user : UserAccountModel?
     
+    @State var user1 = UserAccountModel(
+        id: UUID(),
+        email: "",
+        fullName: "",
+        universityName: "",
+        major: "",
+        schoolYear: "",
+        createdAt: "",
+        profileImageUrl: "",
+        postCount: 5,
+        followersCount: 100,
+        followingCount: 80
+    )
     
     
     enum SettingsRoute: Hashable{
         case forgotPassword
+        case changePassword
+        case editProfile
     }
     
     var body: some View {
@@ -69,7 +84,7 @@ struct AccountSetting: View {
                             }
                            
                         }){
-                            Image(systemName: "gearshape")
+                            Image(systemName: "lock.rotation")
                                 .font(.system(size: 22, weight: .semibold))
                                 .foregroundColor(.gray)
                                 .frame(width: 30, alignment: .leading)
@@ -96,9 +111,9 @@ struct AccountSetting: View {
                     HStack(spacing: 8) {
                         
                         Button(action:{
-                            print("pressed")
+                            path.append(SettingsRoute.changePassword)
                         }){
-                            Image(systemName: "gearshape")
+                            Image(systemName: "lock.shield.fill")
                                 .font(.system(size: 22, weight: .semibold))
                                 .foregroundColor(.gray)
                                 .frame(width: 30, alignment: .leading)
@@ -125,7 +140,7 @@ struct AccountSetting: View {
                     HStack(spacing: 6) {
                         
                         Button(action: {
-                            
+                            path.append(SettingsRoute.editProfile)
                         }){
                             Image(systemName: "pencil")
                                 .font(.system(size: 22, weight: .semibold))
@@ -222,8 +237,8 @@ struct AccountSetting: View {
                                 isLoading = false
                                 if success{
                                     print("successfully logout.")
-                                    //                            KeychainHelper.deleteAccessToken()
-                                    //                            isSignedIn = false
+                                   // KeychainHelper.deleteAccessToken()
+                                    // isSignedIn = false
                                 }else{
                                     alertMessage = "Failed to Sign Out. \n Please try again later."
                                     showAlert = true
@@ -277,6 +292,10 @@ struct AccountSetting: View {
                 switch route {
                 case .forgotPassword:
                     ForgotPassword(forgotVM: forgotPasswordVM)
+                case .changePassword:
+                    ChangePasswordView()
+                case .editProfile:
+                    EditProfileView(user: $user1)
                 }
             }
         }

@@ -264,8 +264,5 @@ struct AccountView: View {
 
 #Preview {
    
-
-        AccountView()
-
-    
+    AccountView()
 }
