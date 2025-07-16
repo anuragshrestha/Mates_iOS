@@ -229,7 +229,7 @@ struct AccountSetting: View {
                                    // KeychainHelper.deleteAccessToken()
                                     // isSignedIn = false
                                     path.removeLast(path.count)
-                                    dismiss()
+                                      dismiss()
                                 }else{
                                     alertMessage = "Failed to Sign Out. \n Please try again later."
                                     showAlert = true

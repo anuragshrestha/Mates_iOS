@@ -9,4 +9,5 @@ import Foundation
 
 class UserSession: ObservableObject {
     @Published var currentUser: UserAccountModel? = nil
+    @Published var cachedPosts: [UserPostModel] = []
 }
