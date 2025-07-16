@@ -10,6 +10,8 @@ import SwiftUI
 struct MainView: View {
     
     @StateObject var mainTabVM = MainTabViewModel()
+    @StateObject var userSession = UserSession()
+    
     
     var body: some View {
        
@@ -25,8 +27,10 @@ struct MainView: View {
                         PostView().tag(2)
                         ChatView().tag(3)
                         AccountView().tag(4)
+                        
                     }
                     .environmentObject(mainTabVM)
+                    .environmentObject(userSession)
                     .tabViewStyle(.automatic)
                     .safeAreaInset(edge: .bottom) {
                         VStack(spacing: 0){

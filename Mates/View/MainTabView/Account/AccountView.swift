@@ -9,7 +9,9 @@ import SwiftUI
 
 struct AccountView: View {
     
+    @EnvironmentObject var userSession: UserSession
     
+    @State private var path = NavigationPath()
     @State var userPosts: [UserPostModel] = []
     @State  var user: UserAccountModel? = nil
     @AppStorage("isSignedIn") var isSignedIn:Bool = false
@@ -20,17 +22,14 @@ struct AccountView: View {
     @State private var currentOffset = 0
     @State private var isFetchingMore = false
     @State private var hasMoreResults = true
-    @State private var path = NavigationPath()
+    @State var navigateToSetting:Bool = false
     
     private let limit = 2
     
-    
-    
-   
-    
     var body: some View {
-        
+    
         NavigationStack(path: $path){
+            
             
             ZStack(alignment: .leading){
                 
@@ -64,18 +63,15 @@ struct AccountView: View {
                                 
                                 Spacer()
                                 
-                                
                                 Button {
-                                    if let user = user {
-                                        path.append(user);                                         print("Navigating to AccountSetting")
-                                    }
-                                    print("pressed setting icon")
-                                    
+                                    navigateToSetting = true
+                                    print("navigating to account setting")
                                 } label: {
                                     Image(systemName: "line.3.horizontal")
                                         .font(.title)
                                         .foregroundColor(.white)
                                 }
+                                
                                 
                             }
                             .padding(.horizontal)
@@ -195,6 +191,7 @@ struct AccountView: View {
                                     }
                                 }
                             }
+                         
                         }
                     }
                     .padding(.bottom, 10)
@@ -204,9 +201,16 @@ struct AccountView: View {
             .onAppear{
                 fetchUserProfile()
             }
-            .navigationDestination(for: UserAccountModel.self) { selectedUser in
-                AccountSetting(user: selectedUser)
+            .alert("Error", isPresented: $showAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(alertMessage)
             }
+            .navigationDestination(isPresented: $navigateToSetting) {
+                AccountSetting(path: $path)
+                    .environmentObject(userSession)
+            }
+            
         }
     }
     
@@ -230,9 +234,11 @@ struct AccountView: View {
                     self.hasMoreResults = userPosts.count == limit
                     self.currentOffset = userPosts.count
                     self.showResult = true
+                    self.userSession.currentUser = data.userProfile
                 }else{
                     self.userPosts = []
                     self.showResult = true
+                    self.alertMessage = message ?? "Failed to fetch user profile. Please try again."
                     print("failed to fetched user profile")
                 }
             }

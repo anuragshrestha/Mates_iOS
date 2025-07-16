@@ -12,12 +12,13 @@ struct LaunchView: View {
     
     @State private var isReady = false
     @AppStorage("isSignedIn") var isSignedIn: Bool = false
-  
+    @StateObject var userSession = UserSession()
     
     @ViewBuilder
         private var destinationView: some View {
             if isSignedIn && KeychainHelper.loadAccessToken() != nil {
                 MainView()
+                    .environmentObject(userSession)
             } else {
                 SignInView()
             }

@@ -16,31 +16,20 @@ struct AccountSetting: View {
      * feedback
      *help & support*
      */
+    
+    
+    @Binding var path: NavigationPath
+    @EnvironmentObject var userSession: UserSession
     @Environment(\.dismiss) private var dismiss
     @StateObject var signOutVM = SignOutViewModel()
     @AppStorage("isSignedIn") var isSignedIn:Bool = false
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State private var isLoading:Bool = false
-    @State private var path = NavigationPath()
     @StateObject var forgotPasswordVM = ForgotPasswordViewModel()
     
-    var user : UserAccountModel?
-    
-    @State var user1 = UserAccountModel(
-        id: UUID(),
-        email: "",
-        fullName: "",
-        universityName: "",
-        major: "",
-        schoolYear: "",
-        createdAt: "",
-        profileImageUrl: "",
-        postCount: 5,
-        followersCount: 100,
-        followingCount: 80
-    )
-    
+   
+
     
     enum SettingsRoute: Hashable{
         case forgotPassword
@@ -50,7 +39,7 @@ struct AccountSetting: View {
     
     var body: some View {
         
-        NavigationStack(path: $path){
+        let user = userSession.currentUser
             
             ZStack(alignment: .leading){
                 
@@ -84,7 +73,7 @@ struct AccountSetting: View {
                             }
                            
                         }){
-                            Image(systemName: "lock.rotation")
+                            Image(systemName: "lock.fill")
                                 .font(.system(size: 22, weight: .semibold))
                                 .foregroundColor(.gray)
                                 .frame(width: 30, alignment: .leading)
@@ -239,6 +228,8 @@ struct AccountSetting: View {
                                     print("successfully logout.")
                                    // KeychainHelper.deleteAccessToken()
                                     // isSignedIn = false
+                                    path.removeLast(path.count)
+                                    dismiss()
                                 }else{
                                     alertMessage = "Failed to Sign Out. \n Please try again later."
                                     showAlert = true
@@ -295,17 +286,21 @@ struct AccountSetting: View {
                 case .changePassword:
                     ChangePasswordView()
                 case .editProfile:
-                    EditProfileView(user: $user1)
+                    // Use the user parameter with a fallback
+                    EditProfileView(user: Binding(
+                        get: { user ?? UserAccountModel(id: UUID(), email: "", fullName: "", universityName: "", major: "", schoolYear: "", createdAt: "", profileImageUrl: "", postCount: 0, followersCount: 0, followingCount: 0) },
+                        set: { _ in } // Read-only binding for safety
+                    ))
                 }
             }
         }
-    }
+    
 }
 
+
 #Preview {
-    
-    NavigationStack{
-        AccountSetting(user: nil)
+    NavigationStack {
+        AccountSetting(path: .constant(NavigationPath()))
+            .environmentObject(UserSession())
     }
-   
 }
