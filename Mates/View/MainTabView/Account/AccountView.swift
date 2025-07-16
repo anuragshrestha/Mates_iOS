@@ -195,11 +195,25 @@ struct AccountView: View {
                         }
                     }
                     .padding(.bottom, 10)
+                    .refreshable {
+                        refreshUserProfile()
+                    }
                     
                 }
+                
+                
+                
+                
             }
             .onAppear{
-                fetchUserProfile()
+                if let user = userSession.currentUser, !userSession.cachedPosts.isEmpty {
+                    self.user = user
+                    self.userPosts = userSession.cachedPosts
+                    self.showResult = true
+                }else{
+                    fetchUserProfile()
+                }
+               
             }
             .alert("Error", isPresented: $showAlert) {
                 Button("OK", role: .cancel) {}
@@ -235,6 +249,7 @@ struct AccountView: View {
                     self.currentOffset = userPosts.count
                     self.showResult = true
                     self.userSession.currentUser = data.userProfile
+                    self.userSession.cachedPosts = data.posts
                 }else{
                     self.userPosts = []
                     self.showResult = true
@@ -259,16 +274,50 @@ struct AccountView: View {
                 isFetchingMore = false
                 
                 if result, let data = data {
+                    
+                    //append the new post in the userPost and cached it
                     self.userPosts.append(contentsOf: data.posts)
+                    self.userSession.cachedPosts.append(contentsOf: data.posts)
+                    
+                    
                     self.hasMoreResults = data.posts.count == limit
                     self.currentOffset += data.posts.count
                 }
             }
         }
     }
+    
+    
+    /**
+     * This function gets trigger when the user refresh the screen and
+     * it clears all the cached user data and posts then fetch the user
+     * profile again
+    **/
+     
+     private func  refreshUserProfile() {
+        
+        //clear all the cache
+        userSession.currentUser = nil
+        userSession.cachedPosts = []
+        
+        
+        user = nil
+        userPosts = []
+        currentOffset = 0
+        hasMoreResults = true
+        showResult = false
+        
+        //fetch teh user Profile again
+        fetchUserProfile()
+    }
 }
+
+
+
+
 
 #Preview {
    
     AccountView()
+        .environmentObject(UserSession())
 }
