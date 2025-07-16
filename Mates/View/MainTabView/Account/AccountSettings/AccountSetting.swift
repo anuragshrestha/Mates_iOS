@@ -274,9 +274,8 @@ struct AccountSetting: View {
                 }
                 
             }
-            .navigationTitle("Settings and activity")
-            .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
@@ -285,6 +284,12 @@ struct AccountSetting: View {
                         Image(systemName: "chevron.left")
                             .foregroundColor(.white)
                     }
+                }
+                
+                ToolbarItem(placement: .principal) {
+                    Text("Settings and activity")
+                        .foregroundColor(.white)
+                        .font(.system(size:22, weight: .semibold))
                 }
             }
             .navigationDestination(for: SettingsRoute.self) { route in
