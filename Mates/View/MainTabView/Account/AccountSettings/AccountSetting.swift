@@ -228,6 +228,9 @@ struct AccountSetting: View {
                                     print("successfully logout.")
                                    // KeychainHelper.deleteAccessToken()
                                     // isSignedIn = false
+                                    
+                                    userSession.cachedPosts = []
+                                    userSession.currentUser = nil
                                     path.removeLast(path.count)
                                       dismiss()
                                 }else{
@@ -272,11 +275,16 @@ struct AccountSetting: View {
                 
             }
             .navigationTitle("Settings and activity")
-            .navigationBarBackButtonHidden(false)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
             .toolbar {
-                ToolbarItem(placement: .principal) {
-                    EmptyView()
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        dismiss()
+                    }){
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.white)
+                    }
                 }
             }
             .navigationDestination(for: SettingsRoute.self) { route in

@@ -144,6 +144,7 @@ var body: some View {
                         }
 
                         Text("\(post.likes)")
+                            .foregroundColor(.white)
                     }
                     
                     
