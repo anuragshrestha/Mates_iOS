@@ -52,11 +52,14 @@ struct ResetPasswordScreen: View {
                         isLoading = true
                         forgotVM.confirmForgotPassword { success, message in
                             isLoading = false
-                            if success{
-                                showSuccessAlert = true
-                            }else{
-                                alertMessage = message ?? "Failed to reset password"
-                                showAlert = true
+                            
+                            DispatchQueue.main.async {
+                                if success{
+                                    showSuccessAlert = true
+                                } else{
+                                    alertMessage = message ?? "Failed to reset password"
+                                    showAlert = true
+                                }
                             }
                         }
                     }
