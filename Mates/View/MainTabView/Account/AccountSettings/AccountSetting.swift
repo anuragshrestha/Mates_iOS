@@ -61,14 +61,16 @@ struct AccountSetting: View {
                             forgotPasswordVM.email = user?.email ?? ""
                             isLoading = true
                             forgotPasswordVM.forgotPassword { success, message in
-                                isLoading = false
                                 
-                                if success{
-                                    forgotPasswordVM.email = user?.email ?? ""
-                                    path.append(SettingsRoute.forgotPassword)
-                                }else{
-                                    showAlert = true
-                                    alertMessage = "Failed to send code"
+                                DispatchQueue.main.async{
+                                    
+                                    isLoading = false
+                                    if success{
+                                        path.append(SettingsRoute.forgotPassword)
+                                    }else{
+                                        showAlert = true
+                                        alertMessage = "Failed to send code"
+                                    }
                                 }
                             }
                            
@@ -299,11 +301,14 @@ struct AccountSetting: View {
                 case .changePassword:
                     ChangePasswordView()
                 case .editProfile:
-                    // Use the user parameter with a fallback
-                    EditProfileView(user: Binding(
-                        get: { user ?? UserAccountModel(id: UUID(), email: "", fullName: "", universityName: "", major: "", schoolYear: "", createdAt: "", profileImageUrl: "", postCount: 0, followersCount: 0, followingCount: 0) },
-                        set: { _ in } // Read-only binding for safety
-                    ))
+                    if let user = user {
+                        EditProfileView(user: Binding(
+                            get: { user },
+                            set: { userSession.currentUser = $0 }
+                        ))
+                    } else {
+                        Text("Error: User data not available")
+                    }
                 }
             }
         }

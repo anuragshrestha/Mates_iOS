@@ -22,9 +22,16 @@ struct AccountView: View {
     @State private var currentOffset = 0
     @State private var isFetchingMore = false
     @State private var hasMoreResults = true
-    @State var navigateToSetting:Bool = false
+   
     
     private let limit = 2
+    
+    
+  
+    enum AccountRoute: Hashable {
+        case settings
+    }
+    
     
     var body: some View {
     
@@ -64,7 +71,8 @@ struct AccountView: View {
                                 Spacer()
                                 
                                 Button {
-                                    navigateToSetting = true
+//                                    navigateToSetting = true
+                                    path.append(AccountRoute.settings)
                                     print("navigating to account setting")
                                 } label: {
                                     Image(systemName: "line.3.horizontal")
@@ -220,10 +228,13 @@ struct AccountView: View {
             } message: {
                 Text(alertMessage)
             }
-            .navigationDestination(isPresented: $navigateToSetting) {
-                AccountSetting(path: $path)
-                    .environmentObject(userSession)
-            }
+            .navigationDestination(for: AccountRoute.self) { route in
+                           switch route {
+                           case .settings:
+                               AccountSetting(path: $path)
+                                   .environmentObject(userSession)
+                   }
+               }
             
         }
     }

@@ -10,7 +10,7 @@ import SwiftUI
 struct ForgotPassword: View {
     
     @Environment(\.dismiss) var dismiss
-    @ObservedObject var forgotVM = ForgotPasswordViewModel()
+    @ObservedObject var forgotVM: ForgotPasswordViewModel
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State private var showSuccessAlert:Bool = false
@@ -86,7 +86,7 @@ struct ForgotPassword: View {
             .ignoresSafeArea()
       
             
-            //Shows Progress view until we get response from backend after sending the request
+       
             if isLoading {
                 
                 Color.black.opacity(0.6)
@@ -104,8 +104,8 @@ struct ForgotPassword: View {
 
 
 #Preview {
-    
     NavigationStack {
-        ForgotPassword()
+    
+        ForgotPassword(forgotVM: ForgotPasswordViewModel())
     }
 }
