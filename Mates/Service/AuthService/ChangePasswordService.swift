@@ -14,6 +14,15 @@ struct ChangePasswordRequest: Codable {
     let newPassword: String
 }
 
+struct ChangePasswordResponse: Codable {
+    
+    let success: Bool
+    let message:String?
+    let error:String?
+}
+
+
+
 
 
 class ChangePasswordService {
@@ -60,11 +69,14 @@ class ChangePasswordService {
             }
             
             if httpResponse.statusCode == 200 {
-                      completion(true, nil)
-                   } else {
-                       completion(false, "Invalid status code")
+                completion(true, nil)
+            } else if let data = data,
+                      let err = try? JSONDecoder().decode(ChangePasswordResponse.self, from: data),
+                      let errorMsg = err.error ?? err.message {
+                completion(false, errorMsg)
+            } else {
+                completion(false, "failed to change password")
             }
-            
             
         }
         .resume()
