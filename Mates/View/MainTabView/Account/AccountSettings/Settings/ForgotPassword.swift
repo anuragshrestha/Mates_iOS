@@ -66,7 +66,7 @@ struct ForgotPassword: View {
                 }
                 .alert("Error", isPresented: $showAlert) {
                     Button("Ok", role: .cancel){}
-                }message: {
+                } message: {
                     Text(alertMessage)
                 }
                 .padding(.horizontal, 20)
@@ -97,7 +97,18 @@ struct ForgotPassword: View {
                     .scaleEffect(2)
             }
         }
-        
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }){
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.white)
+                }
+            }
+        }
     }
 }
 

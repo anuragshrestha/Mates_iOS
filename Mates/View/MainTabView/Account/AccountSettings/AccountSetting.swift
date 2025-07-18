@@ -53,6 +53,7 @@ struct AccountSetting: View {
                         Button(action:{
                             
                             //clears all the data if exits
+                            forgotPasswordVM.email = ""
                             forgotPasswordVM.confirmationCode = ""
                             forgotPasswordVM.newPassword = ""
                             forgotPasswordVM.confirmNewPassword = ""
