@@ -35,6 +35,8 @@ struct AccountSetting: View {
         case forgotPassword
         case changePassword
         case editProfile
+        case feedBack
+        case helpSupport
     }
     
     var body: some View {
@@ -160,6 +162,8 @@ struct AccountSetting: View {
                         
                         Button(action: {
                             
+                            print("navigating to feedback screen")
+                            path.append(SettingsRoute.feedBack)
                         }){
                             Image(systemName: "envelope")
                                 .font(.system(size: 22, weight: .semibold))
@@ -186,6 +190,8 @@ struct AccountSetting: View {
                         
                         Button(action: {
                             
+                            print("navigating to help and support")
+                            path.append(SettingsRoute.helpSupport)
                         }){
                             Image(systemName: "questionmark.circle")
                                 .font(.system(size: 22, weight: .semibold))
@@ -310,6 +316,10 @@ struct AccountSetting: View {
                     } else {
                         Text("Error: User data not available")
                     }
+                case .feedBack:
+                    FeedBackView()
+                case .helpSupport:
+                    HelpSupportView()
                 }
             }
         }
