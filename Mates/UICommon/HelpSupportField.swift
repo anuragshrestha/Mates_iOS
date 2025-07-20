@@ -32,7 +32,11 @@ struct HelpSupportField: View {
                          .disableAutocorrection(true)
                          .textInputAutocapitalization(.never)
                          .scrollContentBackground(.hidden)
-                         .clipShape(RoundedRectangle(cornerRadius: 12))
+                         .background(RoundedRectangle(cornerRadius: 12)
+                             .fill(Color.white))
+                         .overlay(RoundedRectangle(cornerRadius: 12)
+                             .stroke(Color.white, lineWidth: 2))
+                        
                       
                       // Placeholder if text is empty and not focused on the TextEditor
                       if text.isEmpty && !isFocused {

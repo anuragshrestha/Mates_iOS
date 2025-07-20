@@ -27,6 +27,7 @@ struct FeedBackView: View {
                 //custom post field
                 PostField(text: $message, placeholder: "Any feedback you want to share?")
                     .padding(.bottom, 20)
+                    .padding(.top, UIScreen.main.bounds.height * 0.1)
                     
                 //submit button
                 Button(action: {
