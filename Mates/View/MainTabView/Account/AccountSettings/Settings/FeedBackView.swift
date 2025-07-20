@@ -9,7 +9,9 @@ import SwiftUI
 
 struct FeedBackView: View {
     
-    @State var text: String = ""
+    @Environment(\.dismiss) var dismiss
+    
+    @State var message: String = ""
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State var isLoading:Bool = false
@@ -23,17 +25,31 @@ struct FeedBackView: View {
             VStack{
                 
                 //custom post field
-                PostField(text: $text, placeholder: "Any feedback you want to share?")
+                PostField(text: $message, placeholder: "Any feedback you want to share?")
                     .padding(.bottom, 20)
                     
                 //submit button
                 Button(action: {
-                    if text.isEmpty{
+                    if message.isEmpty{
                         alertMessage = "Please enter your feedback first"
                         showAlert = true
                     } else{
-                        
+                        let request = FeedBackRequest(message: message)
                         //call the send api
+                        isLoading = true
+                        AccountService.sendFeedBack(request: request) { success, mes in
+                            isLoading = false
+                            DispatchQueue.main.async {
+                                if success{
+                                    alertMessage = "Successfully sent the feedback"
+                                    showAlert = true
+                                    message = ""
+                                }else{
+                                    alertMessage = mes ?? "Failed to sent feedback"
+                                    showAlert = true
+                                }
+                            }
+                        }
                     }
                 }) {
                     Text("Submit")
@@ -65,6 +81,24 @@ struct FeedBackView: View {
                     .scaleEffect(2)
             }
          
+        }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar{
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }){
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.white)
+                }
+            }
+            
+            ToolbarItem(placement: .principal) {
+                Text("Send feedback")
+                    .foregroundColor(.white)
+                    .font(.system(size: 22, weight: .semibold))
+            }
         }
     }
 }
