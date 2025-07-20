@@ -55,6 +55,7 @@ struct UserAccountModel: Identifiable, Hashable, Decodable {
     var postCount:Int
     var followersCount: Int
     var followingCount: Int
+    var bio: String
  
 
     enum CodingKeys: String, CodingKey {
@@ -69,6 +70,7 @@ struct UserAccountModel: Identifiable, Hashable, Decodable {
         case postCount
         case followersCount
         case followingCount
+        case bio
 
     }
 }

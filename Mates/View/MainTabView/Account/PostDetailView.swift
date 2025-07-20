@@ -210,7 +210,8 @@ struct PostDetailView_Previews: PreviewProvider {
             profileImageUrl: "https://example.com/profile.jpg",
             postCount: 5,
             followersCount: 100,
-            followingCount: 80
+            followingCount: 80,
+            bio: "Hi guys"
         )
 
         var body: some View {

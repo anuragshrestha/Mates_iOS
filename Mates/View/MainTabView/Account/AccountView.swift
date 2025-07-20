@@ -166,7 +166,7 @@ struct AccountView: View {
                                 
                                 
                                 //user Bio: Optional
-                                Text("Building the future | Co-founder @ Twitter  Books, Hiking. ")
+                                Text(user?.bio ?? "CS guy!")
                                     .foregroundColor(.white)
                                     .font(.system(size: 18, weight: .medium))
                                 

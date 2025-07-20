@@ -308,14 +308,8 @@ struct AccountSetting: View {
                 case .changePassword:
                     ChangePasswordView()
                 case .editProfile:
-                    if let user = user {
-                        EditProfileView(user: Binding(
-                            get: { user },
-                            set: { userSession.currentUser = $0 }
-                        ))
-                    } else {
-                        Text("Error: User data not available")
-                    }
+                  EditProfileView()
+                        .environmentObject(userSession)
                 case .feedBack:
                     FeedBackView()
                 case .helpSupport:
