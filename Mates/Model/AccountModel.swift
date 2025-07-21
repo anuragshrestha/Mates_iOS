@@ -55,8 +55,11 @@ struct UserAccountModel: Identifiable, Hashable, Decodable {
     var postCount:Int
     var followersCount: Int
     var followingCount: Int
-    var bio: String
+    var bio: String?
  
+    var safeBio: String {
+          return bio ?? ""
+      }
 
     enum CodingKeys: String, CodingKey {
         case id = "user_id"
