@@ -134,9 +134,10 @@ struct EditProfileView: View {
                                           userSession.currentUser?.bio = bio
                                           userSession.currentUser?.major = major
                                           userSession.currentUser?.schoolYear = schoolYear
-                                          
-                                if selectedImageData != nil {
-                                              userSession.currentUser?.profileImageUrl = UUID().uuidString
+               
+                                if let currentUrl = userSession.currentUser?.profileImageUrl {
+                                    let refreshedUrl = currentUrl + "?t=\(UUID().uuidString.prefix(6))"
+                                    userSession.currentUser?.profileImageUrl = refreshedUrl
                                 }
                                 
                                 alertMessage = "Successfully updated the info"

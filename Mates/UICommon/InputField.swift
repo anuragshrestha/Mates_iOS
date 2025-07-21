@@ -20,7 +20,10 @@ struct InputField: View {
                   text: $text,
                   prompt: Text(placeholder)
             .foregroundColor(.black.opacity(0.8))
-            .font(.customfont(.semibold, fontSize: 20)))
+            .font(.customfont(.semibold, fontSize: 20))
+            )
+            .foregroundColor(.black.opacity(0.8))
+            .font(.customfont(.semibold, fontSize: 20))
             .multilineTextAlignment(.center)
             .frame(height: 30)
             .disableAutocorrection(true)

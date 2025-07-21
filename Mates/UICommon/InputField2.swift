@@ -22,7 +22,7 @@ struct InputField2: View {
                   prompt: Text(placeholder)
             .foregroundColor(.white)
             .font(.customfont(.semibold, fontSize: 20))
-         )
+            )
            .font(.customfont(.semibold, fontSize: 20))
             .foregroundColor(.white)
             .multilineTextAlignment(.center)

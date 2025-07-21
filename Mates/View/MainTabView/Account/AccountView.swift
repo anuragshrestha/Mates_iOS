@@ -90,7 +90,7 @@ struct AccountView: View {
                             
                             //stack to show user image, counts for posts, followers and following
                             HStack{
-                                AsyncImage(url: URL(string: user?.profileImageUrl ?? "")){ image in
+                                AsyncImage(url: URL(string: userSession.currentUser?.profileImageUrl ?? "")){ image in
                                     image.image?.resizable()
                                 }
                                 .aspectRatio(contentMode: .fill)
@@ -162,7 +162,7 @@ struct AccountView: View {
                                 
                                 
                                 //user major
-                                Text(user?.major ?? "")
+                                Text("Majoring in " + user?.major ?? "")
                                     .font(.system(size: 18, weight: .medium))
                                     .foregroundColor(.white.opacity(0.8))
                                 
