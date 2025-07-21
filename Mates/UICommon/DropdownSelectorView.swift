@@ -30,7 +30,11 @@ struct DropdownSelectorView: View {
                                 selection = item
                             }
                     
-                            isPresented = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                withAnimation {
+                                    isPresented = false
+                                }
+                            }
                         }) {
                             HStack{
                                 Text(item)

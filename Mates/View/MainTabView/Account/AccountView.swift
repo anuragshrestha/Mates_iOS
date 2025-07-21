@@ -162,10 +162,11 @@ struct AccountView: View {
                                 
                                 
                                 //user major
-                                Text("Majoring in " + user?.major ?? "")
-                                    .font(.system(size: 18, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.8))
-                                
+                                if let major = user?.major, !major.isEmpty {
+                                    Text("Majoring in \(major)")
+                                        .font(.system(size: 18, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
                                 
                                 //user Bio: Optional
                                 Text(user?.safeBio ?? "")
