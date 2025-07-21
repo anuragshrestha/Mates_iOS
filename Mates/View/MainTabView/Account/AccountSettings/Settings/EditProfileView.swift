@@ -30,6 +30,10 @@ struct EditProfileView: View {
     @State private var majors = [String]()
     @State private var schoolYears = [String]()
     
+    @State var alertMessage:String = ""
+    @State var showAlert:Bool = false
+    @State var isLoading:Bool = false
+    
     var body: some View {
         
         ZStack{
@@ -69,7 +73,7 @@ struct EditProfileView: View {
                 .padding(.bottom, 10)
                 
                 
-                InputField2(text: $fullName, placeholder: "Enter your full Name")
+                InputField2(text: $fullName, placeholder: "Update your full Name")
                     .padding(.bottom, 10)
                 
                 
@@ -86,10 +90,64 @@ struct EditProfileView: View {
                     searchText = ""
                     showYearPicker.toggle()
                 }
-              
+                
                 
                 Button(action: {
+                    
+                    
+                    guard !fullName.isEmpty else {
+                        alertMessage = "Enter your full name"
+                        showAlert = true
+                        return
+                    }
+                    guard !major.isEmpty else {
+                        alertMessage = "Select your major"
+                        showAlert = true
+                        return
+                    }
+                    guard !schoolYear.isEmpty else {
+                        alertMessage = "Select your school year"
+                        showAlert = true
+                        return
+                    }
+                    
+                    let image: UIImage? = {
+                        if let data = selectedImageData {
+                            return UIImage(data: data)
+                        } else {
+                            return nil
+                        }
+                    }()
+                    
+                    let request = UpdateProfileRequest(bio: bio, major: major,  school_year: schoolYear, full_name: fullName, image: image )
+                    
+                    isLoading = true
+                    
                     //api call to update the info
+                    AccountService.updateProfile(data: request) { success, message in
+                        isLoading = false
+                        
+                        DispatchQueue.main.async{
+                            if success {
+                                
+                                userSession.currentUser?.fullName = fullName
+                                          userSession.currentUser?.bio = bio
+                                          userSession.currentUser?.major = major
+                                          userSession.currentUser?.schoolYear = schoolYear
+                                          
+                                if selectedImageData != nil {
+                                              userSession.currentUser?.profileImageUrl = UUID().uuidString
+                                }
+                                
+                                alertMessage = "Successfully updated the info"
+                                showAlert = true
+                            }else{
+                                alertMessage = message ?? "Failed to update the info"
+                                showAlert = true
+                            }
+                        }
+                    }
+                    
                 }) {
                     Text("Update")
                         .foregroundColor(.white)
@@ -99,10 +157,17 @@ struct EditProfileView: View {
                         .background(Color.blue)
                         .cornerRadius(12)
                 }
+                .alert("", isPresented: $showAlert){
+                    Button("Ok"){
+                        dismiss()
+                    }
+                } message: {
+                    Text(alertMessage)
+                }
                 
                 Spacer()
-                
-            }
+            
+           }
             .padding(.top)
             .navigationBarBackButtonHidden(true)
             .navigationBarTitleDisplayMode(.inline)
@@ -127,7 +192,7 @@ struct EditProfileView: View {
                     fullName = currentUser.fullName
                     major = currentUser.major
                     schoolYear = currentUser.schoolYear
-                    bio = currentUser.bio
+                    bio = currentUser.safeBio
                 }
                 
                 majors = DataLoader.loadArray(from: "schoolMajors")
@@ -163,19 +228,30 @@ struct EditProfileView: View {
                     searchText: $searchText
                 )
             }
-//            .onChange(of: selectedPhoto) { _, newItem in
-//                      Task {
-//                          if let data = try? await newItem?.loadTransferable(type: Data.self) {
-//                              selectedImageData = data
-//                          }
-//                      }
-//            }
-            
+
+            //shows progress view until we get response back from backend
+            if isLoading {
+                
+                Color.black.opacity(0.6)
+                    .ignoresSafeArea()
+                
+               ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(2)
+            }
         }
+        .onChange(of: selectedPhoto) { newItem in
+            Task {
+                if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                    selectedImageData = data
+                }
+            }
+         }
     }
-    
-    
 }
+
+
+
 
 #Preview {
 
