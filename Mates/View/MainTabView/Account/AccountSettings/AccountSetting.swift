@@ -28,8 +28,7 @@ struct AccountSetting: View {
     @State private var isLoading:Bool = false
     @StateObject var forgotPasswordVM = ForgotPasswordViewModel()
     
-   
-
+    @State var sendPasswordCode:Bool = false
     
     enum SettingsRoute: Hashable{
         case forgotPassword
@@ -274,12 +273,22 @@ struct AccountSetting: View {
                 
                 //Shows Progress view until we get response from backend after sending the request
                 if isLoading {
-                    Color.black.opacity(0.4)
-                        .ignoresSafeArea()
-                    
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(2)
+                    ZStack {
+                        Color.black.opacity(0.4)
+                            .ignoresSafeArea()
+
+                        VStack {
+                            Spacer()
+                            HStack {
+                                Spacer()
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(2)
+                                Spacer()
+                            }
+                            Spacer()
+                        }
+                    }
                 }
                 
             }

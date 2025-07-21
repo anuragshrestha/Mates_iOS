@@ -24,6 +24,8 @@ struct AccountView: View {
     @State private var hasMoreResults = true
    
     
+   
+    
     private let limit = 2
     
     
@@ -166,7 +168,7 @@ struct AccountView: View {
                                 
                                 
                                 //user Bio: Optional
-                                Text(user?.bio ?? "CS guy!")
+                                Text(user?.safeBio ?? "")
                                     .foregroundColor(.white)
                                     .font(.system(size: 18, weight: .medium))
                                 
@@ -247,6 +249,8 @@ struct AccountView: View {
         showResult = false
         currentOffset = 0
         hasMoreResults = true
+        
+        print("fetching the user profile once")
         
         AccountService.getAccountInfo(limit: limit,offset: 0) { result, data, message in
             DispatchQueue.main.async {
