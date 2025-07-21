@@ -17,7 +17,8 @@ struct HelpSupportView: View {
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State var isLoading:Bool = false
-    
+    @State var showSuccessAlert:Bool = false
+   
     
     var body: some View {
     
@@ -56,7 +57,7 @@ struct HelpSupportView: View {
                             DispatchQueue.main.async {
                                 if success{
                                     alertMessage = "Successfully sent the request"
-                                    showAlert = true
+                                    showSuccessAlert = true
                                     email = ""
                                     message = ""
                                 }else{
@@ -80,6 +81,14 @@ struct HelpSupportView: View {
                 } message: {
                     Text(alertMessage)
                 }
+                .alert("", isPresented: $showSuccessAlert) {
+                    Button("Ok"){
+                        dismiss()
+                    }
+                } message: {
+                    Text(alertMessage)
+                }
+                
                 
                 Spacer()
                 

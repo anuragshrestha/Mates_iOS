@@ -15,7 +15,7 @@ struct FeedBackView: View {
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State var isLoading:Bool = false
-    
+    @State var showSuccessAlert:Bool = false
     
     var body: some View {
      
@@ -43,7 +43,7 @@ struct FeedBackView: View {
                             DispatchQueue.main.async {
                                 if success{
                                     alertMessage = "Successfully sent the feedback"
-                                    showAlert = true
+                                    showSuccessAlert = true
                                     message = ""
                                 }else{
                                     alertMessage = mes ?? "Failed to sent feedback"
@@ -66,6 +66,14 @@ struct FeedBackView: View {
                 } message: {
                     Text(alertMessage)
                 }
+                .alert("", isPresented: $showSuccessAlert) {
+                    Button("Ok"){
+                        dismiss()
+                    }
+                } message: {
+                    Text(alertMessage)
+                }
+                
                 
                 
                 Spacer()

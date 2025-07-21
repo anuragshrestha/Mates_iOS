@@ -16,12 +16,18 @@ struct SearchResponse: Decodable {
 class SearchUserService {
     static func fetchUser(for query: String, limit: Int = 10, offset: Int = 0, completion: @escaping (Result<[UserModel], Error>) -> Void) {
         
+        guard let accessToken = KeychainHelper.loadAccessToken() else {
+            completion(.failure(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "Unauthorized"])))
+            return
+        }
+        
         guard let encodingQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let url = URL(string: "\(Config.baseURL)/users/search?query=\(encodingQuery)&limit=\(limit)&offset=\(offset)") else {
             return
         }
         
         var request = URLRequest(url: url)
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         
         URLSession.shared.dataTask(with: request) { data, response, error in
