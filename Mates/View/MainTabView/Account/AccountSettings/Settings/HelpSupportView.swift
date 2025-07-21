@@ -11,9 +11,9 @@ struct HelpSupportView: View {
     
     @Environment(\.dismiss) var dismiss
     
-    @State var name:String = ""
+  
     @State var email:String = ""
-    @State var text: String = ""
+    @State var message: String = ""
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
     @State var isLoading:Bool = false
@@ -28,32 +28,43 @@ struct HelpSupportView: View {
             
             VStack{
                 
-            InputField(text: $name, placeholder: "Enter your full name")
-                    .padding(.bottom, 10)
-                    .padding(.top, UIScreen.main.bounds.height * 0.1)
-                
             InputField(text: $email, placeholder: "Best email to reach back to you")
                     .padding(.bottom, 20)
+                    .padding(.top, UIScreen.main.bounds.height * 0.1)
               
-            HelpSupportField(text: $text, placeholder: "How can we help you?")
+            HelpSupportField(text: $message, placeholder: "How can we help you?")
                     .padding(.bottom, 20)
                 
                 Button(action: {
                     
-                    if name.isEmpty{
-                        alertMessage = "Please enter your name"
-                        showAlert = true
-                    } else if email.isEmpty{
+                     if email.isEmpty{
                         alertMessage = "Please enter your email"
                         showAlert = true
                     } else if !checkEmail(_email: email){
                         alertMessage = "Email must be .edu school email"
                         showAlert = true
-                    } else if text.isEmpty {
+                    } else if message.isEmpty {
                         alertMessage = "Enter the help and support you need"
                         showAlert = true
                     } else {
+                        isLoading = true
+                        let request = HelpSupportRequest(email: email, message: message)
                         //call api to send the help and support
+                        AccountService.sendHelpSupport(request: request) { success, mes in
+                            isLoading = false
+                            
+                            DispatchQueue.main.async {
+                                if success{
+                                    alertMessage = "Successfully sent the request"
+                                    showAlert = true
+                                    email = ""
+                                    message = ""
+                                }else{
+                                    alertMessage = mes ?? "Failed to sent the request"
+                                    showAlert = true
+                                }
+                            }
+                        }
                     }
                 }){
                     Text("Send")

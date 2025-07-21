@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E9FF0D8B2E2C94240004B8DB /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E9FF0D8A2E2C94240004B8DB /* .gitignore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		E94FC85B2DB1E09800E09409 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		E94FC8482DB1E09600E09409 /* Mates.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mates.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E94FC85A2DB1E09800E09409 /* MatesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E94FC8642DB1E09800E09409 /* MatesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E9FF0D8A2E2C94240004B8DB /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -88,6 +93,7 @@
 		E94FC83F2DB1E09600E09409 = {
 			isa = PBXGroup;
 			children = (
+				E9FF0D8A2E2C94240004B8DB /* .gitignore */,
 				E94FC84A2DB1E09600E09409 /* Mates */,
 				E94FC85D2DB1E09800E09409 /* MatesTests */,
 				E94FC8672DB1E09800E09409 /* MatesUITests */,
@@ -225,6 +231,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9FF0D8B2E2C94240004B8DB /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

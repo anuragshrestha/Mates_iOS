@@ -24,6 +24,8 @@ struct AccountView: View {
     @State private var hasMoreResults = true
    
     
+   
+    
     private let limit = 2
     
     
@@ -88,7 +90,7 @@ struct AccountView: View {
                             
                             //stack to show user image, counts for posts, followers and following
                             HStack{
-                                AsyncImage(url: URL(string: user?.profileImageUrl ?? "")){ image in
+                                AsyncImage(url: URL(string: userSession.currentUser?.profileImageUrl ?? "")){ image in
                                     image.image?.resizable()
                                 }
                                 .aspectRatio(contentMode: .fill)
@@ -160,13 +162,14 @@ struct AccountView: View {
                                 
                                 
                                 //user major
-                                Text(user?.major ?? "")
-                                    .font(.system(size: 18, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.8))
-                                
+                                if let major = user?.major, !major.isEmpty {
+                                    Text("Majoring in \(major)")
+                                        .font(.system(size: 18, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
                                 
                                 //user Bio: Optional
-                                Text("Building the future | Co-founder @ Twitter  Books, Hiking. ")
+                                Text(user?.safeBio ?? "")
                                     .foregroundColor(.white)
                                     .font(.system(size: 18, weight: .medium))
                                 
@@ -247,6 +250,8 @@ struct AccountView: View {
         showResult = false
         currentOffset = 0
         hasMoreResults = true
+        
+        print("fetching the user profile once")
         
         AccountService.getAccountInfo(limit: limit,offset: 0) { result, data, message in
             DispatchQueue.main.async {

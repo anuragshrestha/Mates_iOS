@@ -15,7 +15,7 @@ struct ForgotPassword: View {
     @State var alertMessage:String = ""
     @State private var showSuccessAlert:Bool = false
     @State private var isLoading:Bool = false
-    
+    @State private var showSentCodeMessage: Bool = true
  
     
     var body: some View {
@@ -23,6 +23,16 @@ struct ForgotPassword: View {
         ZStack{
             
             VStack{
+                
+                if showSentCodeMessage {
+                    Text("A code was sent to your email.")
+                        .foregroundColor(.white)
+                        .font(.system(size: 122, weight: .bold))
+                        .padding(.top, 10)
+                        .padding(.bottom, 10)
+                        .transition(.opacity)
+                        .animation(.easeInOut, value: showSentCodeMessage)
+                }
                 
                 InputField(text: $forgotVM.confirmationCode, placeholder: "Enter confirmation code")
                     .padding(.bottom, 10)
@@ -107,6 +117,12 @@ struct ForgotPassword: View {
                     Image(systemName: "chevron.left")
                         .foregroundColor(.white)
                 }
+            }
+        }
+        .onAppear{
+            showSentCodeMessage = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5){
+                showSentCodeMessage = false
             }
         }
     }

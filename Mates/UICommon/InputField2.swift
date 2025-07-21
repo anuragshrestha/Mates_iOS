@@ -1,9 +1,10 @@
 //
-//  InputField.swift
+//  InputField2.swift
 //  Mates
 //
-//  Created by Anurag Shrestha on 4/17/25.
+//  Created by Anurag Shrestha on 7/19/25.
 //
+
 import SwiftUI
 
 /// A reusable Input text field to enter the email address, name and data like that.
@@ -11,7 +12,7 @@ import SwiftUI
 ///   - email: A binding to the user's input text.
 ///   - placeholder: The placeholder text to show.
 
-struct InputField: View {
+struct InputField2: View {
     @Binding var text: String
     @State var placeholder: String
 
@@ -19,21 +20,20 @@ struct InputField: View {
         TextField("",
                   text: $text,
                   prompt: Text(placeholder)
-            .foregroundColor(.black.opacity(0.8))
+            .foregroundColor(.white)
             .font(.customfont(.semibold, fontSize: 20))
             )
-            .foregroundColor(.black.opacity(0.8))
-            .font(.customfont(.semibold, fontSize: 20))
+           .font(.customfont(.semibold, fontSize: 20))
+            .foregroundColor(.white)
             .multilineTextAlignment(.center)
-            .frame(height: 30)
+            .frame(maxWidth: .infinity, maxHeight: 30)
             .disableAutocorrection(true)
             .textInputAutocapitalization(.never)
             .padding()
-            .background(RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white))
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.1)))
             .overlay(RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.white, lineWidth: 2))
-            .padding(.horizontal, 20)
+                .stroke(Color.black, lineWidth: 2))
+          
     }
 }
 
@@ -44,9 +44,10 @@ struct InputField: View {
         @State var text: String = ""
 
         var body: some View {
-            InputField(text: $text, placeholder: "Enter your school email")
+            InputField2(text: $text, placeholder: "Enter your school email")
                 .padding()
         }
     }
     return PreviewWrapper()
 }
+

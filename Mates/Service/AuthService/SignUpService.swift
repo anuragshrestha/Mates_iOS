@@ -91,7 +91,7 @@ class SignUpService{
         }
 
         // Add image
-        if let imageData = data.image.jpegData(compressionQuality: 0.8) {
+        if let imageData = data.image.jpegData(compressionQuality: 1.0) {
             let filename = "profile.jpg"
             body.append("--\(boundary)\r\n")
             body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(filename)\"\r\n")
