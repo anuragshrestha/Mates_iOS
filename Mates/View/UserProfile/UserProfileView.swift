@@ -5,6 +5,10 @@
 //  Created by Anurag Shrestha on 6/26/25.
 //
 
+/**
+ * This view displays all the information, posts of a user when we view their profile page
+ */
+
 import SwiftUI
 
 struct UserProfileView: View {
@@ -30,8 +34,8 @@ struct UserProfileView: View {
             
 
                 ScrollView{
+                    
                     VStack(alignment: .leading, spacing: 16) {
-                        
                         
                         /**
                          * Includes the Profile image, full name, university name, major
@@ -257,10 +261,11 @@ struct UserProfileView: View {
                             Text("\(user.fullName) has not posted yet.")
                                 .foregroundColor(.white.opacity(0.6))
                                 .padding(.top)
+                                .padding(.horizontal)
                         } else {
                             LazyVStack {
                                 ForEach(userPosts.indices, id: \.self) { index in
-                                    PostDetailView(post: $userPosts[index], user: user)
+                                    UserPostView(post: $userPosts[index], user: user)
                                 }
                             }
                         }
@@ -268,6 +273,7 @@ struct UserProfileView: View {
                     }
                     .padding(.top, 10)
                     .padding(.horizontal, 16)
+                    .background(Color.black.opacity(0.95))
                     
                 }
                 .onAppear{
@@ -286,9 +292,13 @@ struct UserProfileView: View {
                     FollowUnfollowUser.shared.unFollowUser(userId: user.id.uuidString) { success, message in
                         if success {
                             DispatchQueue.main.async{
-                                userProfileData?.isFollowing = false
-                                if userProfileData!.followersCount >= 1 {
-                                    userProfileData?.followersCount -= 1
+                                if var updatedData = self.userProfileData {
+                                    updatedData.isFollowing = false
+                                    if updatedData.followersCount > 0 {
+                                        updatedData.followersCount -= 1
+                                    }
+                                   
+                                    self.userProfileData = updatedData
                                 }
                             }
                         }
@@ -347,6 +357,7 @@ struct UserProfileView: View {
                     self.userProfileData = userData
                     self.showUserProfileData = true
                     self.userPosts = userData.posts
+                    print(self.userPosts)
                 case .failure(_):
                     showAlert = true
                     alertMessage = "Failed to load user profile. \n Restart the app"
