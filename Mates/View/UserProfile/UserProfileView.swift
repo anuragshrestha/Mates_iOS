@@ -12,6 +12,7 @@ struct UserProfileView: View {
     @Environment(\.dismiss) private var dismiss
     let user: UserModel
     @State var userProfileData: UserProfileResponse? = nil
+    @State private var userPosts: [UserProfilePostModel] = []
     @State var showUserProfileData: Bool = false
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
@@ -79,6 +80,11 @@ struct UserProfileView: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.9)
                                 .truncationMode(.tail)
+                            
+                            //bio
+                            Text(user.safeBio)
+                                .foregroundColor(.white)
+                                .font(.system(size: 18, weight: .medium))
                             
                         }
                         .frame(maxWidth: .infinity)
@@ -237,10 +243,7 @@ struct UserProfileView: View {
                             
                         }
                         
-                        
-                        
-                        
-                        
+                    
                         Divider()
                             .frame(height: 1)
                             .frame(maxWidth: .infinity)
@@ -250,9 +253,17 @@ struct UserProfileView: View {
                         
                         //posts will be shown here
                         
-                        
-                        
-                        
+                        if userPosts.isEmpty {
+                            Text("\(user.fullName) has not posted yet.")
+                                .foregroundColor(.white.opacity(0.6))
+                                .padding(.top)
+                        } else {
+                            LazyVStack {
+                                ForEach(userPosts.indices, id: \.self) { index in
+                                    PostDetailView(post: $userPosts[index], user: user)
+                                }
+                            }
+                        }
                         
                     }
                     .padding(.top, 10)
@@ -304,8 +315,8 @@ struct UserProfileView: View {
                 }
             }
             //SWIPE TO DISMISS MODIFIERS
-            .offset(x: dragOffset.width) // Move the view as the user drags
-            .opacity(1.0 - Double(abs(dragOffset.width) / (UIScreen.main.bounds.width / 2))) // Fade the view out
+            .offset(x: dragOffset.width)
+            .opacity(1.0 - Double(abs(dragOffset.width) / (UIScreen.main.bounds.width / 2)))
             .gesture(
                 DragGesture()
                     .onChanged { gesture in
@@ -335,6 +346,7 @@ struct UserProfileView: View {
                 case .success(let userData):
                     self.userProfileData = userData
                     self.showUserProfileData = true
+                    self.userPosts = userData.posts
                 case .failure(_):
                     showAlert = true
                     alertMessage = "Failed to load user profile. \n Restart the app"
@@ -356,7 +368,8 @@ struct UserProfileView: View {
             major: "Computer Science",
             schoolYear: "Senior",
             createdAt: "2025-06-25",
-            profileImageUrl: "https://via.placeholder.com/100"
+            profileImageUrl: "https://via.placeholder.com/100",
+            bio: "Testing bio"
         )
         )
     
