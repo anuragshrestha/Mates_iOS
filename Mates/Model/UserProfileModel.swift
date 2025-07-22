@@ -7,36 +7,39 @@
 
 import Foundation
 
-//Model for the posts being shownn inside user profile
-struct UserProfilePostModel: Identifiable, Codable {
-    let id: UUID
-    var email: String
-    var imageUrl:String?
+
+struct MediaItem1: Decodable, Equatable {
+    let url: String
+    let type: String
+}
+
+
+//Model for the posts being shownn inside other user profile view
+struct UserProfilePostModel: Identifiable, Decodable, Equatable {
+    let id: String
+    var mediaUrls:[MediaItem1]?
     let createdAt: String
     var status:String
-    let userId: String
-    var universityName: String
     var likes: Int
     var comments: Int
     var hasLiked: Bool
     
+    
  enum CodingKeys:String, CodingKey {
     case id = "post_id"
-    case email
-    case imageUrl = "image_url"
+    case mediaUrls = "media_urls"
     case createdAt = "created_at"
     case status
-    case userId = "user_id"
-    case universityName = "university_name"
     case likes
     case comments
     case hasLiked
+
   }
 }
 
 
 //Model for the user profile view except the user personal data
-struct UserProfileResponse: Codable {
+struct UserProfileResponse: Decodable, Equatable  {
     let success: Bool
     var user_id: String
     var followersCount: Int
