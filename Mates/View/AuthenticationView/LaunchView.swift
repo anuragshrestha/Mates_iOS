@@ -46,28 +46,41 @@ struct LaunchView: View {
         }
     
     
+    //checks if the token is experied and not revoked
     private func handleLaunchTokenCheck() {
         DispatchQueue.global(qos: .userInitiated).async {
-            var signedIn = false
-            if let token = KeychainHelper.loadAccessToken(),
-               JWTHelper.isTokenExpired(token) {
-                print("Access token expired. Logging out user.")
+            //var signedIn = false
+            
+            guard let token = KeychainHelper.loadAccessToken(), !JWTHelper.isTokenExpired(token) else {
+                print("Token is nil or expired")
                 KeychainHelper.deleteAccessToken()
-                signedIn = false
-            } else if KeychainHelper.loadAccessToken() != nil {
-                signedIn = true
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                         isSignedIn = signedIn
-                         isReady = true
-                     }
+                DispatchQueue.main.async {
+                    isSignedIn = false
+                    isReady = true
                 }
+                return
             }
+            
+            // Validate with backend
+            var request = URLRequest(url: URL(string: "\((Config.baseURL))/auth/validate")!)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                        isSignedIn = true
+                    } else {
+                        print("Access token revoked or invalid. Logging out.")
+                        KeychainHelper.deleteAccessToken()
+                        isSignedIn = false
+                    }
+                    isReady = true
+                }
+            }.resume()
         }
     }
+    
 }
 
 #Preview {
