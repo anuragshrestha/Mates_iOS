@@ -40,7 +40,23 @@ struct DebouncedTextField: View {
                     }
                     debounceTask = task
                     DispatchQueue.main.asyncAfter(deadline: .now() + debounceDelay, execute: task)
-                }
+            }
+        }
+        
+        
+        if !text.isEmpty{
+            Button(action: {
+                
+                text = ""
+                debounceTask?.cancel()
+                onDebounceChange("")
+            }) {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(.white.opacity(0.7))
+                    .font(.system(size: 14))
+            }
+            .transition(.scale.combined(with: .opacity))
+            
         }
     }
 }

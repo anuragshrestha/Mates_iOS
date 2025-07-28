@@ -19,6 +19,6 @@ struct Config {
 
     static var localIPAddress: String {
         // Replace this with your Mac's actual IP on Wi-Fi
-        return "10.0.0.225"
+        return "10.88.151.51"
     }
 }
