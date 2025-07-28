@@ -6,7 +6,7 @@
 //
 
 /**
- * This view displays all the information, posts of a user when we view their profile page
+ * This view displays all the information, posts of other user when we view their profile page
  */
 
 import SwiftUI
@@ -274,14 +274,23 @@ struct UserProfileView: View {
                     .padding(.top, 10)
                     .padding(.horizontal, 16)
                     .background(Color.black.opacity(0.95))
+                    //call the refresh fucnction
                     
                 }
                 .onAppear{
                     self.unFollowUser = false
-                    fetchUserData()
+                    if let userData = UserProfileCacheManager.shared.getCachedProfile(for: user.id){
+                        print("using the cache data")
+                        self.userProfileData = userData
+                        self.userPosts = userData.posts
+                        self.showUserProfileData = true
+                    }else{
+                        fetchUserData()
+                    }
                 }
                 
             }
+           .transparentNavBar()
             .alert("Are you sure?", isPresented: $showUnfollowAlert) {
                 Button("No", role: .cancel){
                     self.unFollowUser = false
@@ -357,6 +366,8 @@ struct UserProfileView: View {
                     self.userProfileData = userData
                     self.showUserProfileData = true
                     self.userPosts = userData.posts
+                    //cache the user profile data and posts
+                    UserProfileCacheManager.shared.setCachedProfile(userData, for: user.id)
                     print(self.userPosts)
                 case .failure(_):
                     showAlert = true
