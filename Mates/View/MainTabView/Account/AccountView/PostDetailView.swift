@@ -55,7 +55,6 @@ var body: some View {
                     
                   
                 //shows the medias
-              
                     if let mediaUrls = post.mediaUrls, !mediaUrls.isEmpty {
                         GeometryReader { geometry in
                             ScrollView(.horizontal, showsIndicators: false){

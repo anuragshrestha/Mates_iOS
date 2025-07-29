@@ -52,17 +52,54 @@ struct PostScreen: View {
                        
                  
         
-                    if post.imageUrl != nil {
-                        
-                        AsyncImage(url: URL(string: post.imageUrl ?? "no image")) { image in
-                            image.image?.resizable()
-                            
-                        }
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity, minHeight: 120)
-                        .clipped()
-                        
-                    }
+                    
+                  //shows the medias
+                      if let mediaUrls = post.mediaUrls, !mediaUrls.isEmpty {
+                          GeometryReader { geometry in
+                              ScrollView(.horizontal, showsIndicators: false){
+                                  LazyHStack(spacing: 12) {
+                                      ForEach(mediaUrls.indices, id: \.self){ index in
+                                          let media = mediaUrls[index]
+                                            if media.type == "image",
+                                               let url = URL(string: media.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                                                
+                                                AsyncImage(url: url) { phase in
+                                                    switch phase {
+                                                    case .success(let image):
+                                                        image
+                                                            .resizable()
+                                                            .aspectRatio(contentMode: .fill)
+                                                    case .failure:
+                                                        Color.red
+                                                    case .empty:
+                                                        ProgressView()
+                                                    @unknown default:
+                                                        EmptyView()
+                                                    }
+                                                }
+                                                .frame(width: geometry.size.width, height: 300)
+                                                .clipped()
+                                                .cornerRadius(10)
+                                                
+                                            } else if media.type == "video",
+                                                      let url = URL(string: media.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                                                
+                                                VideoPlayerView(url: url, width: geometry.size.width, height: 300)
+                                                   
+                                          }
+                                          
+                                      }
+                                      
+                                  }
+                                  .padding(.horizontal, 10)
+                              }
+                          }
+                          .frame(height: 300)
+                      }
+
+                    
+                    
+                    
                 }
                 .padding(.top,5)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -149,7 +186,7 @@ struct PostScreen: View {
             @State var samplePost = PostModel(
                 id: UUID(),
                 email: "ethan@unm.edu",
-                imageUrl: "https://example.com/image.jpg",
+                mediaUrls: nil,
                 createdAt: "2025-06-17T12:00:00Z",
                 status: "Anyone else feel like the dining hall food has been extra bland lately? #CollegeLife",
                 userId: "user-123",

@@ -8,11 +8,20 @@
 import Foundation
 
 
+struct CurrentUser: Identifiable, Decodable{
+    
+    let id: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "user_id"
+    }
+}
+
 //Post model to show in the Around you screen
 struct PostModel: Identifiable, Decodable {
     let id: UUID
     var email: String
-    var imageUrl:String?
+    var mediaUrls:[MediaItem]?
     let createdAt: String
     var status:String
     let userId: String
@@ -26,7 +35,7 @@ struct PostModel: Identifiable, Decodable {
  enum CodingKeys:String, CodingKey {
     case id = "post_id"
     case email
-    case imageUrl = "image_url"
+    case mediaUrls = "media_urls"
     case createdAt = "created_at"
     case status
     case userId = "user_id"
@@ -42,7 +51,7 @@ struct PostModel: Identifiable, Decodable {
 
 
 struct UserModel: Identifiable, Decodable {
-    let id: UUID
+    let id: String
     let email: String
     var fullName: String
     let universityName: String

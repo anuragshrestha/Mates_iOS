@@ -26,6 +26,8 @@ struct UserProfileView: View {
     // State to track the swipe gesture for dismissal
      @State private var dragOffset: CGSize = .zero
     
+    @State private var hasRecordedVisit: Bool = false
+    
     
     var body: some View {
         
@@ -116,7 +118,7 @@ struct UserProfileView: View {
                             } else if userProfileData?.isFollowing == false && userProfileData?.isFollowed == true {
                                 Button(action: {
                                     print("is follow back pressed")
-                                    FollowUnfollowUser.shared.followUser(userId: user.id.uuidString) { success, message in
+                                    FollowUnfollowUser.shared.followUser(userId: user.id) { success, message in
                                         DispatchQueue.main.async{
                                             if success {
                                                 userProfileData?.isFollowing = true
@@ -139,7 +141,7 @@ struct UserProfileView: View {
                                 //Button to follow/unfollow the user
                                 Button(action: {
                                     print("pressed the follow button")
-                                    FollowUnfollowUser.shared.followUser(userId: user.id.uuidString) { success, message in
+                                    FollowUnfollowUser.shared.followUser(userId: user.id) { success, message in
                                         DispatchQueue.main.async{
                                             if success {
                                                 userProfileData?.isFollowing = true
@@ -279,6 +281,13 @@ struct UserProfileView: View {
                 }
                 .onAppear{
                     self.unFollowUser = false
+                    
+                    // Record the profile visit
+                      if !hasRecordedVisit {
+                          recordProfileVisit()
+                          hasRecordedVisit = true
+                      }
+        
                     if let userData = UserProfileCacheManager.shared.getCachedProfile(for: user.id){
                         print("using the cache data")
                         self.userProfileData = userData
@@ -287,6 +296,10 @@ struct UserProfileView: View {
                     }else{
                         fetchUserData()
                     }
+                }
+                .onDisappear {
+                   // Reset the flag when the view disappears
+                   hasRecordedVisit = false
                 }
                 
             }
@@ -298,7 +311,7 @@ struct UserProfileView: View {
                 
                 Button("Yes"){
                  
-                    FollowUnfollowUser.shared.unFollowUser(userId: user.id.uuidString) { success, message in
+                    FollowUnfollowUser.shared.unFollowUser(userId: user.id) { success, message in
                         if success {
                             DispatchQueue.main.async{
                                 if var updatedData = self.userProfileData {
@@ -359,7 +372,7 @@ struct UserProfileView: View {
     }
     
     func fetchUserData() {
-        UserProfileService.shared.fetchUserProfile(userId: user.id.uuidString){ result in
+        UserProfileService.shared.fetchUserProfile(userId: user.id){ result in
             DispatchQueue.main.async{
                 switch result {
                 case .success(let userData):
@@ -378,12 +391,18 @@ struct UserProfileView: View {
         }
     }
     
+      // Records profile visit using global current user manager
+      private func recordProfileVisit() {
+
+        RecentProfileCacheManager.shared.addRecentProfile(visitedUser: user)
+      }
+    
 }
 
 #Preview {
    
         UserProfileView(user: UserModel(
-            id: UUID(),
+            id: "1111",
             email: "example@example.com",
             fullName: "Anurag Shrestha",
             universityName: "Harvard University",

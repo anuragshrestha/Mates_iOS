@@ -30,16 +30,14 @@ struct AccountView: View {
     @State private var hasMoreResults = true
    
     
-   
+    @State private var hasInitiallyFetched: Bool = false
+    @State private var isFetchingInitial: Bool = false
     
     private let limit = 2
     
-    
-  
     enum AccountRoute: Hashable {
         case settings
     }
-    
     
     var body: some View {
     
@@ -219,14 +217,7 @@ struct AccountView: View {
                 }
             }
             .onAppear{
-                if let user = userSession.currentUser, !userSession.cachedPosts.isEmpty {
-                    self.user = user
-                    self.userPosts = userSession.cachedPosts
-                    self.showResult = true
-                }else{
-                    fetchUserProfile()
-                }
-               
+                initializeViewIfNeeded()
             }
             .alert("Error", isPresented: $showAlert) {
                 Button("OK", role: .cancel) {}
@@ -244,9 +235,33 @@ struct AccountView: View {
         }
     }
     
+    private func initializeViewIfNeeded() {
+      
+          if let user = userSession.currentUser, !userSession.cachedPosts.isEmpty {
+              print("Using cached data - no API call needed")
+              self.user = user
+              self.userPosts = userSession.cachedPosts
+              self.showResult = true
+              self.hasInitiallyFetched = true
+              return
+          }
+          
+     
+          if !hasInitiallyFetched && !isFetchingInitial {
+              print("First time initialization - fetching data")
+              hasInitiallyFetched = true
+              fetchUserProfile()
+          }
+      }
     
     //fetches initial account profile data
     private func fetchUserProfile(){
+        
+        
+        guard !isFetchingInitial else {
+          print("Already fetching initial data, skipping...")
+          return
+        }
         
         isLoading = true
         showResult = false
@@ -258,6 +273,7 @@ struct AccountView: View {
         AccountService.getAccountInfo(limit: limit,offset: 0) { result, data, message in
             DispatchQueue.main.async {
                 
+                self.isFetchingInitial = false
                 isLoading = false
                 
                 if result, let data = data {
@@ -325,6 +341,9 @@ struct AccountView: View {
         hasMoreResults = true
         showResult = false
         
+         hasInitiallyFetched = false
+         isFetchingInitial = false
+         
         //fetch teh user Profile again
         fetchUserProfile()
     }

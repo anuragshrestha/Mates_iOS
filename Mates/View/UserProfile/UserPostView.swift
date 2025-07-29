@@ -214,7 +214,7 @@ struct UserPostView_Previews: PreviewProvider {
         
         // Use UserModel for the preview user
         let sampleUser = UserModel(
-            id: UUID(),
+            id: "11111",
             email: "test@example.com",
             fullName: "Anurag Shrestha",
             universityName: "Harvard University",

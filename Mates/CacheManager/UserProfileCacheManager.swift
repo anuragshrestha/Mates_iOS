@@ -19,10 +19,10 @@ class UserProfileCacheManager {
     
     
     // Returns cached profile data if it exists and hasn't expired
-    func getCachedProfile(for userId: UUID) -> UserProfileResponse? {
+    func getCachedProfile(for userId: String) -> UserProfileResponse? {
         
         
-        let userIdString = userId.uuidString
+        let userIdString = userId
         
         guard let cachedData = profileCache[userIdString] else {
             return nil // No cached data
@@ -43,8 +43,8 @@ class UserProfileCacheManager {
     
     
     // Caches the user profile data with current timestamp
-    func setCachedProfile(_ data: UserProfileResponse, for userId: UUID) {
-        let userIdString = userId.uuidString
+    func setCachedProfile(_ data: UserProfileResponse, for userId: String) {
+        let userIdString = userId
         let cachedData = CachedProfileData(data: data, timestamp: Date())
         profileCache[userIdString] = cachedData
     }
