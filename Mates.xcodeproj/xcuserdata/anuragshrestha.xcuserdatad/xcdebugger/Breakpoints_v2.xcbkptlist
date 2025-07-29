@@ -20,28 +20,28 @@
             landmarkType = "24">
             <Locations>
                <Location
-                  uuid = "7C09F170-E2E9-49BA-AFB1-D38A2B1472EA - 80c41a55a6ce7147"
+                  uuid = "7C09F170-E2E9-49BA-AFB1-D38A2B1472EA - b90b14eba6dfc018"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.DynamicViewContent.onDelete(perform: Swift.Optional&lt;(Foundation.IndexSet) -&gt; ()&gt;) -&gt; some&gt;&gt;.0 in closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.toolbar&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ToolbarContent&gt;(content: () -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0, SwiftUI.Text)&gt; in Mates.ContentView.body.getter : some"
                   moduleName = "Mates.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/anuragshrestha/Documents/Mates/Mates_iOS/Mates/ContentView.swift"
+                  urlString = "file:///Users/anuragshrestha/Downloads/Mates/Mates_iOS/Mates/ContentView.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "23"
                   endingLineNumber = "23">
                </Location>
                <Location
-                  uuid = "7C09F170-E2E9-49BA-AFB1-D38A2B1472EA - d8adbebcb5ec1aa7"
+                  uuid = "7C09F170-E2E9-49BA-AFB1-D38A2B1472EA - e162b002b5fdabf8"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "closure #1 (Mates.Item) -&gt; SwiftUI.NavigationLink&lt;SwiftUI.Text, SwiftUI.Text&gt; in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.DynamicViewContent.onDelete(perform: Swift.Optional&lt;(Foundation.IndexSet) -&gt; ()&gt;) -&gt; some&gt;&gt;.0 in closure #1 () -&gt; SwiftUI.TupleView&lt;(&lt;&lt;opaque return type of SwiftUI.View.toolbar&lt;&#x3c4;_0_0 where &#x3c4;_1_0: SwiftUI.ToolbarContent&gt;(content: () -&gt; &#x3c4;_1_0) -&gt; some&gt;&gt;.0, SwiftUI.Text)&gt; in Mates.ContentView.body.getter : some"
                   moduleName = "Mates.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/anuragshrestha/Documents/Mates/Mates_iOS/Mates/ContentView.swift"
+                  urlString = "file:///Users/anuragshrestha/Downloads/Mates/Mates_iOS/Mates/ContentView.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "23"

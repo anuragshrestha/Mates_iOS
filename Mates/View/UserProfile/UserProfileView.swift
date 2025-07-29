@@ -5,6 +5,10 @@
 //  Created by Anurag Shrestha on 6/26/25.
 //
 
+/**
+ * This view displays all the information, posts of other user when we view their profile page
+ */
+
 import SwiftUI
 
 struct UserProfileView: View {
@@ -12,6 +16,7 @@ struct UserProfileView: View {
     @Environment(\.dismiss) private var dismiss
     let user: UserModel
     @State var userProfileData: UserProfileResponse? = nil
+    @State private var userPosts: [UserProfilePostModel] = []
     @State var showUserProfileData: Bool = false
     @State var showAlert:Bool = false
     @State var alertMessage:String = ""
@@ -21,6 +26,8 @@ struct UserProfileView: View {
     // State to track the swipe gesture for dismissal
      @State private var dragOffset: CGSize = .zero
     
+    @State private var hasRecordedVisit: Bool = false
+    
     
     var body: some View {
         
@@ -29,8 +36,8 @@ struct UserProfileView: View {
             
 
                 ScrollView{
+                    
                     VStack(alignment: .leading, spacing: 16) {
-                        
                         
                         /**
                          * Includes the Profile image, full name, university name, major
@@ -80,6 +87,11 @@ struct UserProfileView: View {
                                 .minimumScaleFactor(0.9)
                                 .truncationMode(.tail)
                             
+                            //bio
+                            Text(user.safeBio)
+                                .foregroundColor(.white)
+                                .font(.system(size: 18, weight: .medium))
+                            
                         }
                         .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
@@ -106,7 +118,7 @@ struct UserProfileView: View {
                             } else if userProfileData?.isFollowing == false && userProfileData?.isFollowed == true {
                                 Button(action: {
                                     print("is follow back pressed")
-                                    FollowUnfollowUser.shared.followUser(userId: user.id.uuidString) { success, message in
+                                    FollowUnfollowUser.shared.followUser(userId: user.id) { success, message in
                                         DispatchQueue.main.async{
                                             if success {
                                                 userProfileData?.isFollowing = true
@@ -129,7 +141,7 @@ struct UserProfileView: View {
                                 //Button to follow/unfollow the user
                                 Button(action: {
                                     print("pressed the follow button")
-                                    FollowUnfollowUser.shared.followUser(userId: user.id.uuidString) { success, message in
+                                    FollowUnfollowUser.shared.followUser(userId: user.id) { success, message in
                                         DispatchQueue.main.async{
                                             if success {
                                                 userProfileData?.isFollowing = true
@@ -237,10 +249,7 @@ struct UserProfileView: View {
                             
                         }
                         
-                        
-                        
-                        
-                        
+                    
                         Divider()
                             .frame(height: 1)
                             .frame(maxWidth: .infinity)
@@ -250,21 +259,51 @@ struct UserProfileView: View {
                         
                         //posts will be shown here
                         
-                        
-                        
-                        
+                        if userPosts.isEmpty {
+                            Text("\(user.fullName) has not posted yet.")
+                                .foregroundColor(.white.opacity(0.6))
+                                .padding(.top)
+                                .padding(.horizontal)
+                        } else {
+                            LazyVStack {
+                                ForEach(userPosts.indices, id: \.self) { index in
+                                    UserPostView(post: $userPosts[index], user: user)
+                                }
+                            }
+                        }
                         
                     }
                     .padding(.top, 10)
                     .padding(.horizontal, 16)
+                    .background(Color.black.opacity(0.95))
+                    //call the refresh fucnction
                     
                 }
                 .onAppear{
                     self.unFollowUser = false
-                    fetchUserData()
+                    
+                    // Record the profile visit
+                      if !hasRecordedVisit {
+                          recordProfileVisit()
+                          hasRecordedVisit = true
+                      }
+        
+                    if let userData = UserProfileCacheManager.shared.getCachedProfile(for: user.id){
+                        print("using the cache data")
+                        self.userProfileData = userData
+                        self.userPosts = userData.posts
+                        self.showUserProfileData = true
+                    }else{
+                        fetchUserData()
+                    }
+                }
+                .onDisappear {
+                   // Reset the flag when the view disappears
+                   hasRecordedVisit = false
                 }
                 
             }
+           .transparentNavBar()
             .alert("Are you sure?", isPresented: $showUnfollowAlert) {
                 Button("No", role: .cancel){
                     self.unFollowUser = false
@@ -272,12 +311,16 @@ struct UserProfileView: View {
                 
                 Button("Yes"){
                  
-                    FollowUnfollowUser.shared.unFollowUser(userId: user.id.uuidString) { success, message in
+                    FollowUnfollowUser.shared.unFollowUser(userId: user.id) { success, message in
                         if success {
                             DispatchQueue.main.async{
-                                userProfileData?.isFollowing = false
-                                if userProfileData!.followersCount >= 1 {
-                                    userProfileData?.followersCount -= 1
+                                if var updatedData = self.userProfileData {
+                                    updatedData.isFollowing = false
+                                    if updatedData.followersCount > 0 {
+                                        updatedData.followersCount -= 1
+                                    }
+                                   
+                                    self.userProfileData = updatedData
                                 }
                             }
                         }
@@ -304,8 +347,8 @@ struct UserProfileView: View {
                 }
             }
             //SWIPE TO DISMISS MODIFIERS
-            .offset(x: dragOffset.width) // Move the view as the user drags
-            .opacity(1.0 - Double(abs(dragOffset.width) / (UIScreen.main.bounds.width / 2))) // Fade the view out
+            .offset(x: dragOffset.width)
+            .opacity(1.0 - Double(abs(dragOffset.width) / (UIScreen.main.bounds.width / 2)))
             .gesture(
                 DragGesture()
                     .onChanged { gesture in
@@ -329,12 +372,16 @@ struct UserProfileView: View {
     }
     
     func fetchUserData() {
-        UserProfileService.shared.fetchUserProfile(userId: user.id.uuidString){ result in
+        UserProfileService.shared.fetchUserProfile(userId: user.id){ result in
             DispatchQueue.main.async{
                 switch result {
                 case .success(let userData):
                     self.userProfileData = userData
                     self.showUserProfileData = true
+                    self.userPosts = userData.posts
+                    //cache the user profile data and posts
+                    UserProfileCacheManager.shared.setCachedProfile(userData, for: user.id)
+                    print(self.userPosts)
                 case .failure(_):
                     showAlert = true
                     alertMessage = "Failed to load user profile. \n Restart the app"
@@ -344,19 +391,26 @@ struct UserProfileView: View {
         }
     }
     
+      // Records profile visit using global current user manager
+      private func recordProfileVisit() {
+
+        RecentProfileCacheManager.shared.addRecentProfile(visitedUser: user)
+      }
+    
 }
 
 #Preview {
    
         UserProfileView(user: UserModel(
-            id: UUID(),
+            id: "1111",
             email: "example@example.com",
             fullName: "Anurag Shrestha",
             universityName: "Harvard University",
             major: "Computer Science",
             schoolYear: "Senior",
             createdAt: "2025-06-25",
-            profileImageUrl: "https://via.placeholder.com/100"
+            profileImageUrl: "https://via.placeholder.com/100",
+            bio: "Testing bio"
         )
         )
     

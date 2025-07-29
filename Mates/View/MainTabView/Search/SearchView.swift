@@ -124,6 +124,10 @@ struct SearchView: View {
                 }
 //                .transition(.opacity)
           
+            }else{
+                
+                //shows the recent searched profile
+                RecentProfilesSection()
             }
             Spacer()
         }

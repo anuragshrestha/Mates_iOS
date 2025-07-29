@@ -1,3 +1,9 @@
+
+/**
+ * This view shows the posts details of the current user who is logged in
+ */
+
+
 import SwiftUI
 
 struct PostDetailView: View {
@@ -12,7 +18,7 @@ var body: some View {
        
        
         ZStack{
-        
+                    
             VStack(alignment: .leading, spacing: 4){
                 
                 //stack that shows the user image, name, post created time, status and image if any
@@ -49,7 +55,6 @@ var body: some View {
                     
                   
                 //shows the medias
-              
                     if let mediaUrls = post.mediaUrls, !mediaUrls.isEmpty {
                         GeometryReader { geometry in
                             ScrollView(.horizontal, showsIndicators: false){
@@ -92,13 +97,11 @@ var body: some View {
                         }
                         .frame(height: 300)
                     }
-                    
-                    
         
                 }
                 .padding(.top, 5)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.black)
+   
                 
                 Divider()
                     .frame(maxWidth: .infinity, maxHeight: 1)
@@ -111,6 +114,8 @@ var body: some View {
                     HStack(spacing: 4) {
                         Button(action: {
                             Task{
+                                
+                                //checks if the post is liked
                                 if post.hasLiked {
                                     post.hasLiked = false
                                     if post.likes > 0 {
@@ -178,9 +183,8 @@ var body: some View {
             }
             .padding(.top)
         }
-        .background(Color.black.ignoresSafeArea())
-        .navigationTitle("Posts")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("")
+        .navigationBarBackButtonHidden(true)
 }
 }
 

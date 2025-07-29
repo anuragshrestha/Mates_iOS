@@ -11,6 +11,7 @@ class AroundYouServiceViewModel: ObservableObject {
     
     @Published var isLoading:Bool = false
     @Published var posts: [PostModel] = []
+    @Published var userId: String?
     @Published var errorMessage: String?
     @Published var showError: Bool = false
     
@@ -25,9 +26,14 @@ class AroundYouServiceViewModel: ObservableObject {
         do {
             let data = try await AroundYouService.shared.fetchHomeFeed()
             self.posts = data.posts
+            self.userId = data.user_id
       
+            // Set the current user in the global manager
+            let currentUser = CurrentUser(id: data.user_id)
+            CurrentUserManager.shared.setCurrentUser(currentUser)
             
             print("Fetched posts: \(data.posts.count)")
+            print("Current user id is: \(data.user_id)")
         
             
             if data.posts.isEmpty {
