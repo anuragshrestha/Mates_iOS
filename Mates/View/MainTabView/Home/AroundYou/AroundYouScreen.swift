@@ -39,7 +39,7 @@ struct AroundYouScreen: View {
         @State var samplePost = [ PostModel(
             id: UUID(),
             email: "Ethan Harper",
-            imageUrl: "ethan@unm.edu",
+            mediaUrls: nil,
             createdAt: UUID().uuidString,
             status: "https://example.com/avatar.jpg",
             userId: "https://example.com/dining-hall.jpg",

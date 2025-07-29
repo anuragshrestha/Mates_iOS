@@ -11,6 +11,7 @@ struct HomeFeedResponse: Decodable {
     
     let success: Bool
     let posts: [PostModel]
+    let user_id: String
 }
 
 enum AroundYouServiceError: Error {
@@ -57,7 +58,7 @@ class AroundYouService {
                 print("successfully fetched data ", "status code: \(httpResponse.statusCode)", data)
                 do {
                     let decodedResponse = try JSONDecoder().decode(HomeFeedResponse.self, from: data)
-                    print("successfully decoded  \(decodedResponse)")
+                    print("successfully decoded  \(decodedResponse.user_id)")
                          return decodedResponse
                 }catch {
                     print("decoding error")
