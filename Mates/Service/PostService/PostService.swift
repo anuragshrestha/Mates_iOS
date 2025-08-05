@@ -7,11 +7,12 @@
 
 import Foundation
 import UIKit
+import UniformTypeIdentifiers
 
 
 struct PostRequest{
   let status:String
-    let media: [MediaItems]
+  let media: [MediaItems]
 }
 
 
@@ -21,6 +22,13 @@ struct PostResponse {
     let error: String?
 }
 
+
+extension URL {
+    func mimeType() -> String? {
+        guard let uti = UTType(filenameExtension: pathExtension) else { return nil }
+        return uti.preferredMIMEType
+    }
+}
 
 class PostService {
     
@@ -57,21 +65,32 @@ class PostService {
         
         
         
+        //add the media files
         for (index, media) in request.media.enumerated() {
-            if media.type == .image, let image = media.image, let imageData = image.jpegData(compressionQuality: 1.0) {
-                body.append("--\(boundary)\r\n".data(using: .utf8)!)
-                body.append("Content-Disposition: form-data; name=\"media\"; filename=\"media_\(index).jpg\"\r\n".data(using: .utf8)!)
-                body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-                body.append(imageData)
-                body.append("\r\n".data(using: .utf8)!)
-            } else if media.type == .video, let url = media.url, let videoData = try? Data(contentsOf: url) {
-                body.append("--\(boundary)\r\n".data(using: .utf8)!)
-                body.append("Content-Disposition: form-data; name=\"media\"; filename=\"media_\(index).mp4\"\r\n".data(using: .utf8)!)
-                body.append("Content-Type: video/mp4\r\n\r\n".data(using: .utf8)!)
-                body.append(videoData)
-                body.append("\r\n".data(using: .utf8)!)
-            }
-        }
+              if media.type == .image {
+                  // Use the stored data instead of re-compressing
+                  if let imageData = media.data {
+                      body.append("--\(boundary)\r\n".data(using: .utf8)!)
+                      body.append("Content-Disposition: form-data; name=\"media\"; filename=\"media_\(index).jpg\"\r\n".data(using: .utf8)!)
+                      body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+                      body.append(imageData)
+                      body.append("\r\n".data(using: .utf8)!)
+                  }
+              } else if media.type == .video {
+                  // Use the stored data for video
+                  if let videoData = media.data {
+                      let mimeType = media.url?.mimeType() ?? "video/mp4"
+                      let fileExtension = media.url?.pathExtension.lowercased() ?? "mp4"
+                      
+                      body.append("--\(boundary)\r\n".data(using: .utf8)!)
+                      body.append("Content-Disposition: form-data; name=\"media\"; filename=\"media_\(index).\(fileExtension)\"\r\n".data(using: .utf8)!)
+                      body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+                      body.append(videoData)
+                      body.append("\r\n".data(using: .utf8)!)
+                  }
+              }
+          }
+        
         
         //closes the body boundary
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
@@ -87,10 +106,19 @@ class PostService {
             print("no access token found")
         }
         
+        // Set timeout for large uploads
+        urlRequest.timeoutInterval = 300
+        
+        // Create URLSession with custom configuration for large uploads
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 300
+        configuration.timeoutIntervalForResource = 600
+        let session = URLSession(configuration: configuration)
+        
     
         
         //sends the URL request to the backend
-        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+        session.dataTask(with: urlRequest) { data, response, error in
             
             
             //checks if there is a network error
@@ -108,11 +136,8 @@ class PostService {
             
             
             //checks if the response is success
-            if htttpResponse.statusCode == 201, let data = data {
-                if let json = try?  JSONSerialization.jsonObject(with: data) as? [String:Any],
-                   let postId = json["postId"] as? String {
-                    completion(true, "Post Created with id: \(postId)")
-                }
+            if htttpResponse.statusCode == 200 {
+                completion(true, "Successfully created post")
             }else{
                 let errorMessage = data.flatMap{ String(data: $0, encoding: .utf8)} ?? "Uknow Server error"
                 completion(false, errorMessage)
