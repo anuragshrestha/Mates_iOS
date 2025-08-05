@@ -6,7 +6,9 @@
 //
 
 import Foundation
-import _PhotosUI_SwiftUI
+import PhotosUI
+import SwiftUI
+import AVFoundation
 
 
 struct MediaItems: Identifiable {
@@ -14,6 +16,8 @@ struct MediaItems: Identifiable {
     let type: MediaType
     let image: UIImage?
     let url: URL?
+    let thumbnail: UIImage?
+    let data: Data?
 }
 
 enum MediaType {
@@ -29,6 +33,128 @@ class PostViewModel: ObservableObject{
   
     @Published var selectedItem: [PhotosPickerItem] = []
     @Published var selectedMedia: [MediaItems] = []
+    
+    
+      // Clean up temporary files when deinitialized
+       deinit {
+           cleanupTemporaryFiles()
+       }
+    
+    
+    func loadMedia(from items: [PhotosPickerItem]) async {
+        
+            // Process items concurrently and collect results
+            let mediaItems = await withTaskGroup(of: MediaItems?.self) { group in
+                for item in items {
+                    group.addTask {
+                        await self.processMediaItem(item)
+                    }
+                }
+                
+                var results: [MediaItems] = []
+                for await mediaItem in group {
+                    if let mediaItem = mediaItem {
+                        results.append(mediaItem)
+                    }
+                }
+                return results
+            }
+            
+            await MainActor.run {
+                self.selectedMedia = mediaItems
+            }
+        }
+        
+    
+    
+        private func processMediaItem(_ item: PhotosPickerItem) async -> MediaItems? {
+            do {
+                if let data = try await item.loadTransferable(type: Data.self) {
+                    if item.supportedContentTypes.first(where: { $0.conforms(to: .image) }) != nil {
+                        // Handle image
+                        if let uiImage = UIImage(data: data) {
+                            // Compress image to reduce size
+                            let compressedData = uiImage.jpegData(compressionQuality: 0.8) ?? data
+                            return MediaItems(
+                                type: .image,
+                                image: uiImage,
+                                url: nil,
+                                thumbnail: nil,
+                                data: compressedData
+                            )
+                        }
+                    } else if item.supportedContentTypes.first(where: { $0.conforms(to: .movie) }) != nil {
+                      
+                        // Handle video
+                        let tempURL = FileManager.default.temporaryDirectory
+                            .appendingPathComponent(UUID().uuidString)
+                            .appendingPathExtension("mov")
+                        
+                        try data.write(to: tempURL)
+                        
+                        // Generate thumbnail
+                        let thumbnail = await generateThumbnail(from: tempURL)
+                        
+                        return MediaItems(
+                            type: .video,
+                            image: nil,
+                            url: tempURL,
+                            thumbnail: thumbnail,
+                            data: data
+                        )
+                    }
+                }
+            } catch {
+                print("Error loading media item: \(error)")
+            }
+            return nil
+        }
+    
+    
+    
+    
+    
+    func generateThumbnail(from url: URL) async -> UIImage? {
+            return await withCheckedContinuation { continuation in
+                DispatchQueue.global().async {
+                    let asset = AVAsset(url: url)
+                    let imageGenerator = AVAssetImageGenerator(asset: asset)
+                    imageGenerator.appliesPreferredTrackTransform = true
+                    
+                    let time = CMTime(seconds: 1, preferredTimescale: 60)
+                    
+                    do {
+                        let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+                        let thumbnail = UIImage(cgImage: cgImage)
+                        continuation.resume(returning: thumbnail)
+                    } catch {
+                        print("Error generating thumbnail: \(error)")
+                        continuation.resume(returning: nil)
+                    }
+                }
+            }
+        }
+        
+    
+    
+        func removeMedia(_ media: MediaItems) {
+            selectedMedia.removeAll { $0.id == media.id }
+            
+            // Cleans up temporary file if it's a video
+            if media.type == .video, let url = media.url {
+                try? FileManager.default.removeItem(at: url)
+            }
+        }
+    
+    
+        
+        func cleanupTemporaryFiles() {
+            for media in selectedMedia {
+                if media.type == .video, let url = media.url {
+                    try? FileManager.default.removeItem(at: url)
+                }
+            }
+        }
     
     
     func submitPost(completion: @escaping (Bool, String?) -> Void){
