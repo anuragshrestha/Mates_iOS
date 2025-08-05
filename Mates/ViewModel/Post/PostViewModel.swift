@@ -8,20 +8,34 @@
 import Foundation
 import _PhotosUI_SwiftUI
 
+
+struct MediaItems: Identifiable {
+    let id = UUID()
+    let type: MediaType
+    let image: UIImage?
+    let url: URL?
+}
+
+enum MediaType {
+    case image
+    case video
+}
+
+
 class PostViewModel: ObservableObject{
     
     @Published var postText:String = ""
     @Published var isLoading:Bool = false
   
-    @Published var selectedItem: PhotosPickerItem? = nil
-    @Published var selectedImage: UIImage? = nil
+    @Published var selectedItem: [PhotosPickerItem] = []
+    @Published var selectedMedia: [MediaItems] = []
     
     
     func submitPost(completion: @escaping (Bool, String?) -> Void){
         
         isLoading = true
         
-        let request = PostRequest(status: postText, image: selectedImage)
+        let request = PostRequest(status: postText, media: selectedMedia)
         
         PostService.shared.createPost(request: request) { success, message in
             DispatchQueue.main.async {
