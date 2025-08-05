@@ -12,6 +12,8 @@ struct PostDetailView: View {
     @Binding var post: UserPostModel
     let user: UserAccountModel
     @State var scale: CGFloat = 1
+    @State var showOptionsModal:Bool = false
+    @State var showDeleteModal:Bool = false
     
     
 var body: some View {
@@ -44,6 +46,18 @@ var body: some View {
                                 .foregroundColor(.white.opacity(0.6))
                                 .font(.subheadline)
                         }
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            showOptionsModal = true
+                        }){
+                            Image(systemName: "ellipsis")
+                                .font(.system(size: 18))
+                                .foregroundColor(.white)
+                        }
+                        
+                        
                     }
                     .padding(.horizontal)
                     
@@ -185,8 +199,26 @@ var body: some View {
         }
         .navigationTitle("")
         .navigationBarBackButtonHidden(true)
-}
-}
+        .sheet(isPresented: $showOptionsModal) {
+            PostOptionModal(showModal: $showOptionsModal, showDeleteModal: $showDeleteModal, onUpdate: {
+                print("update")
+            })
+            .presentationDetents([.height(150)])
+            .presentationDragIndicator(.hidden)
+            .presentationCornerRadius(20)
+        }
+        .alert("Delete Post", isPresented: $showDeleteModal){
+            Button("Cancel", role: .cancel){
+                showDeleteModal = false
+            }
+            Button("Delete", role: .destructive){
+                print("deleted")
+            }
+        }message: {
+            Text("Do you want to delete this post?")
+        }
+      }
+   }
 
 
 
