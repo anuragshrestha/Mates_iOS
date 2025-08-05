@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import AVKit
 
 struct PostView: View {
     
@@ -35,8 +36,8 @@ struct PostView: View {
                     HStack{
                         Button(action: {
                             postVM.postText = ""
-                            postVM.selectedImage = nil
-                            postVM.selectedItem = nil
+                            postVM.selectedItem = []
+                            postVM.selectedMedia = []
                             mainTabVM.selectedTabIndex = 0
                         }){
                             Image(systemName: "xmark")
@@ -64,8 +65,8 @@ struct PostView: View {
                                         showAlert = true
                                         alertMessage = "Successfully uploaded post"
                                         postVM.postText = ""
-                                        postVM.selectedImage = nil
-                                        postVM.selectedImage = nil
+                                        postVM.selectedItem = []
+                                        postVM.selectedMedia = []
                                     }else{
                                         showAlert = true
                                         alertMessage = "Failed to upload post. \n Try again"
@@ -89,24 +90,61 @@ struct PostView: View {
                 
                 PostField(text: $postVM.postText, placeholder: "What's on your mind?")
                 
-                HStack{
-                    if let image = postVM.selectedImage {
-                        Image(uiImage: image)
-                            .resizable()
-                            .frame(minWidth: 120, maxWidth: 160, minHeight: 140, maxHeight: 160)
+             
+                //shows the selected media
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack{
+                        ForEach(postVM.selectedMedia, id: \.id) { media in
+                            ZStack(alignment: .topTrailing) {
+                                if media.type == .image, let image = media.image {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .frame(width: 100, height: 100)
+                                        .cornerRadius(12)
+                                        .padding(.horizontal, 4)
+                                }else if media.type == .video {
+                                    ZStack{
+                                        if let thumbnail = media.thumbnail {
+                                            Image(uiImage: thumbnail)
+                                                .resizable()
+                                                .frame(width: 100, height: 100)
+                                                .cornerRadius(12)
+                                                .padding(.horizontal, 4)
+                                        }else{
+                                            Rectangle()
+                                                .fill(Color.gray.opacity(0.3))
+                                                .frame(width: 100, height: 100)
+                                        }
+                                        
+                                        Image(systemName: "play.circle.fill")
+                                         .font(.system(size: 40))
+                                         .foregroundColor(.white)
+                                         .shadow(radius: 4)
+                                     
+                                    }
+                                    .cornerRadius(12)
+                                }
+                                
+                                Button(action: {
+                                    postVM.removeMedia(media)
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(.white)
+                                        .background(Circle().fill(Color.black.opacity(0.6)))
+                                }
+                                .padding(4)
+                            }
                             .padding(.horizontal, 4)
-                            .padding(.top, 20)
-                            .cornerRadius(14)
-                         
-                        
+                        }
                     }
-                    Spacer()
+                    .padding()
                 }
-                .padding()
-          
+                .padding(.top, 20)
+                
                 
                 HStack {
-                    PhotosPicker(selection: $postVM.selectedItem, matching: .images, photoLibrary: .shared()){
+                    PhotosPicker(selection: $postVM.selectedItem, maxSelectionCount: 10, matching: .any(of: [.images, .videos]), photoLibrary: .shared()){
                         VStack(alignment: .leading){
                             Image(systemName: "photo.on.rectangle.angled")
                                 .font(.system(size: 24))
@@ -115,12 +153,13 @@ struct PostView: View {
                                 .clipShape(Circle())
                         
                             
-                            Text("Add image")
+                            Text("Add media")
                                 .font(.customfont(.semibold, fontSize: 22))
                                 .foregroundColor(.white)
                         }
                         .padding(.horizontal)
                     }
+                    .disabled(postVM.isLoading)
                     
                     Spacer()
                 }
@@ -158,12 +197,9 @@ struct PostView: View {
         }message: {
             Text(alertMessage)
         }
-        .onChange(of: postVM.selectedItem) { newItem in
+        .onChange(of: postVM.selectedItem) { newItems in
             Task{
-                if let data = try? await newItem?.loadTransferable(type: Data.self),
-                   let uiImage = UIImage(data: data){
-                    postVM.selectedImage = uiImage
-                }
+                await postVM.loadMedia(from: newItems)
             }
         }
         .onChange(of: navigateToHome) { newValue in
