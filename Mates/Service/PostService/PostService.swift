@@ -11,7 +11,7 @@ import UIKit
 
 struct PostRequest{
   let status:String
-  let image : UIImage?
+    let media: [MediaItems]
 }
 
 
@@ -56,15 +56,21 @@ class PostService {
         body.append("\(request.status)\r\n".data(using: .utf8)!)
         
         
-        //checks if there is a image
-        if let image = request.image,
-           let imageData = image.jpegData(compressionQuality: 1.0) {
-            
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"image\"; filename=\"post.jpg\"\r\n".data(using: .utf8)!)
-            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-            body.append(imageData)
-            body.append("\r\n".data(using: .utf8)!)
+        
+        for (index, media) in request.media.enumerated() {
+            if media.type == .image, let image = media.image, let imageData = image.jpegData(compressionQuality: 1.0) {
+                body.append("--\(boundary)\r\n".data(using: .utf8)!)
+                body.append("Content-Disposition: form-data; name=\"media\"; filename=\"media_\(index).jpg\"\r\n".data(using: .utf8)!)
+                body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+                body.append(imageData)
+                body.append("\r\n".data(using: .utf8)!)
+            } else if media.type == .video, let url = media.url, let videoData = try? Data(contentsOf: url) {
+                body.append("--\(boundary)\r\n".data(using: .utf8)!)
+                body.append("Content-Disposition: form-data; name=\"media\"; filename=\"media_\(index).mp4\"\r\n".data(using: .utf8)!)
+                body.append("Content-Type: video/mp4\r\n\r\n".data(using: .utf8)!)
+                body.append(videoData)
+                body.append("\r\n".data(using: .utf8)!)
+            }
         }
         
         //closes the body boundary
