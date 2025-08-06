@@ -157,6 +157,8 @@ class PostViewModel: ObservableObject{
         }
     
     
+    
+    //creates a new post
     func submitPost(completion: @escaping (Bool, String?) -> Void){
         
         isLoading = true
@@ -177,4 +179,53 @@ class PostViewModel: ObservableObject{
             
         }
     }
+    
+    
+    //updates the status of the post with the post_id
+    func updatePost(post_id: String, status: String, completion: @escaping(Bool, String?) -> Void) {
+        
+        isLoading = true
+        
+        let request = PostUpdateRequest(post_id: post_id, status: status)
+        
+        PostService.shared.updatePost(request: request) { success, message in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                
+                if success {
+                    print("Successfully updated post \(String(describing: message))")
+                }else{
+                    print("Failed to update post \(String(describing: message))")
+                }
+            }
+            
+            completion(success, message)
+        }
+    }
+    
+    
+    
+    //calls the delete post service to delete the post: post_id
+    func deletePost(post_id: String, completion: @escaping (Bool, String?) -> Void) {
+        
+        isLoading = true
+        
+        let request = PostDeleteRequest(post_id: post_id)
+        
+        PostService.shared.deletePost(request: request) { success, message in
+            DispatchQueue.main.async {
+                self.isLoading = false
+                if success {
+                    print("Successfully deleted post \(String(describing: message))")
+                }else{
+                    print("Failed to delete post \(String(describing: message))")
+                }
+            }
+            
+            completion(success, message)
+            
+        }
+    }
+    
+
 }
