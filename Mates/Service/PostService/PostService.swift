@@ -16,11 +16,16 @@ struct PostRequest{
 }
 
 
-struct PostResponse {
-    let success: Bool
-    let message: String?
-    let error: String?
+struct PostDeleteRequest{
+    let post_id: String
 }
+
+struct PostUpdateRequest: Codable{
+    let post_id: String
+    let status: String
+}
+
+
 
 
 extension URL {
@@ -143,5 +148,97 @@ class PostService {
                 completion(false, errorMessage)
             }
         }.resume()
+    }
+    
+    
+    
+    /**
+     * Updates the post wth post_id. The user can only update the status
+     */
+    func updatePost(request: PostUpdateRequest, completion: @escaping(Bool, String?) -> Void) {
+        
+        guard let accessToken = KeychainHelper.loadAccessToken() else {
+            completion(false, "Unauthorized user")
+            return
+        }
+        
+        guard let url = URL(string: "\(Config.baseURL)/post/\(request.post_id)") else {
+            completion(false, "Invalid url")
+            return
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "PUT"
+        urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        urlRequest.httpBody = try? JSONEncoder().encode(request)
+        
+        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            
+            if let error = error {
+                completion(false, error.localizedDescription)
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(false, "Invalid url response")
+                return
+            }
+            
+            
+            if response.statusCode == 200 {
+                completion(true, nil)
+            }else {
+                completion(false, "Invalid response")
+                return
+            }
+            
+        }.resume()
+    }
+    
+    
+    
+    /**
+     * Deletes a specific post with the post_id
+     */
+    func deletePost(request: PostDeleteRequest, completion: @escaping (Bool, String?) -> Void) {
+        
+        
+        guard let accessToken = KeychainHelper.loadAccessToken() else {
+            completion(false, "Unauthorized user")
+            return
+        }
+        
+        guard let url = URL(string: "\(Config.baseURL)/posts/\(request.post_id)") else {
+            completion(false, "Invalid url")
+            return
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "DELETE"
+        urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        
+        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            
+            if let error = error {
+                completion(false, error.localizedDescription)
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                completion(false, "Invalid http response")
+                return
+            }
+            
+            if response.statusCode == 200 {
+                completion(true, nil)
+                
+            }else{
+                completion(false, "Invalid response")
+                return
+            }
+            
+        }.resume()
+        
     }
 }
