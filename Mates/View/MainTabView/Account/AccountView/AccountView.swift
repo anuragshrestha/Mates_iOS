@@ -190,10 +190,14 @@ struct AccountView: View {
                             LazyVStack{
                                 if let user = user{
                                     ForEach(userPosts.indices, id: \.self) { index in
-                                        PostDetailView(post: $userPosts[index], user: user)
+                                        PostDetailView(post: $userPosts[index], user: user, onPostDeleted: {
+                                            updateCachePost(withId: userPosts[index].id)
+                                        })
                                             .onAppear {
                                                 if index == userPosts.count - 1 {
-                                                    fetchMoredata()
+                                                    Task {
+                                                        await fetchMoredata()
+                                                    }
                                                 }
                                                 
                                             }
@@ -211,13 +215,13 @@ struct AccountView: View {
                     }
                     .padding(.bottom, 10)
                     .refreshable {
-                        refreshUserProfile()
+                        await refreshUserProfile()
                     }
                     
                 }
             }
-            .onAppear{
-                initializeViewIfNeeded()
+            .task{
+                await initializeViewIfNeeded()
             }
             .alert("Error", isPresented: $showAlert) {
                 Button("OK", role: .cancel) {}
@@ -225,20 +229,19 @@ struct AccountView: View {
                 Text(alertMessage)
             }
             .navigationDestination(for: AccountRoute.self) { route in
-                           switch route {
-                           case .settings:
-                               AccountSetting(path: $path)
-                                   .environmentObject(userSession)
-                   }
+               switch route {
+               case .settings:
+                   AccountSetting(path: $path)
+                       .environmentObject(userSession)
                }
+           }
             
         }
     }
     
-    private func initializeViewIfNeeded() {
+    private func initializeViewIfNeeded() async {
       
           if let user = userSession.currentUser, !userSession.cachedPosts.isEmpty {
-              print("Using cached data - no API call needed")
               self.user = user
               self.userPosts = userSession.cachedPosts
               self.showResult = true
@@ -250,12 +253,12 @@ struct AccountView: View {
           if !hasInitiallyFetched && !isFetchingInitial {
               print("First time initialization - fetching data")
               hasInitiallyFetched = true
-              fetchUserProfile()
+              await fetchUserProfile()
           }
       }
     
     //fetches initial account profile data
-    private func fetchUserProfile(){
+    private func fetchUserProfile() async {
         
         
         guard !isFetchingInitial else {
@@ -270,57 +273,59 @@ struct AccountView: View {
         
         print("fetching the user profile once")
         
-        AccountService.getAccountInfo(limit: limit,offset: 0) { result, data, message in
-            DispatchQueue.main.async {
+        let result = await AccountService.getAccountInfo(limit: limit,offset: 0)
+         
                 
-                self.isFetchingInitial = false
-                isLoading = false
+        isFetchingInitial = false
+        isLoading = false
                 
-                if result, let data = data {
-                    self.userPosts = data.posts
-                    self.user = data.userProfile
-                    self.hasMoreResults = userPosts.count == limit
-                    self.currentOffset = userPosts.count
-                    self.showResult = true
-                    self.userSession.currentUser = data.userProfile
-                    self.userSession.cachedPosts = data.posts
-                }else{
-                    self.userPosts = []
-                    self.showResult = true
-                    self.alertMessage = message ?? "Failed to fetch user profile. Please try again."
-                    print("failed to fetched user profile")
-                }
-            }
+        switch result{
+        case .success(let data):
+          self.userPosts = data.posts
+          self.user = data.userProfile
+          self.hasMoreResults = userPosts.count == limit
+          self.currentOffset = userPosts.count
+          self.showResult = true
+          self.userSession.currentUser = data.userProfile
+          self.userSession.cachedPosts = data.posts
+        case .failure(let error):
+          self.userPosts = []
+          self.showResult = true
+          self.alertMessage = error.localizedDescription
+          print("failed to fetched user profile")
+      
         }
-    }
+      }
     
     
     
     //fetches more data when the user scrolls down
-    private func fetchMoredata(){
+    private func fetchMoredata() async{
         
         guard !isFetchingMore, hasMoreResults else { return }
         
         isFetchingMore = true
         
-        AccountService.getAccountInfo(limit: limit, offset: currentOffset) { result, data, message in
-            DispatchQueue.main.async {
-                isFetchingMore = false
-                
-                if result, let data = data {
-                    
-                    //append the new post in the userPost and cached it
-                    self.userPosts.append(contentsOf: data.posts)
-                    self.userSession.cachedPosts.append(contentsOf: data.posts)
-                    
-                    
-                    self.hasMoreResults = data.posts.count == limit
-                    self.currentOffset += data.posts.count
-                }
-            }
+        let result = await AccountService.getAccountInfo(limit: limit, offset: currentOffset)
+        
+        
+        switch result {
+            
+        case .success(let data):
+            //append the new post in the userPost and cached it
+            self.userPosts.append(contentsOf: data.posts)
+            self.userSession.cachedPosts.append(contentsOf: data.posts)
+            
+            
+            self.hasMoreResults = data.posts.count == limit
+            self.currentOffset += data.posts.count
+            
+        case .failure(let error):
+            self.alertMessage = error.localizedDescription
+            
+            isFetchingMore = false
         }
     }
-    
     
     /**
      * This function gets trigger when the user refresh the screen and
@@ -328,7 +333,7 @@ struct AccountView: View {
      * profile again
     **/
      
-     private func  refreshUserProfile() {
+     private func  refreshUserProfile() async {
         
         //clear all the cache
         userSession.currentUser = nil
@@ -344,8 +349,21 @@ struct AccountView: View {
          hasInitiallyFetched = false
          isFetchingInitial = false
          
-        //fetch teh user Profile again
-        fetchUserProfile()
+        //fetch the user Profile again
+        await fetchUserProfile()
+    }
+    
+    
+    //deletes the post from both local and cache data
+    private func updateCachePost(withId postId: String){
+        
+        //deletes the post from local data
+        userPosts.removeAll{ $0.id == postId}
+        
+        //deletes the cache post
+        userSession.cachedPosts.removeAll{ $0.id == postId}
+        
+        print("Post \(postId) removed from UI and cache.")
     }
 }
 

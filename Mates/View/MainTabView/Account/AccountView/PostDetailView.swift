@@ -17,6 +17,8 @@ struct PostDetailView: View {
     @State var  showDeleteUpdate:Bool = false
     @State var deleteUpdateMessage:String = ""
     
+    var onPostDeleted: () -> Void
+    
 var body: some View {
        
        
@@ -236,6 +238,7 @@ var body: some View {
                     DispatchQueue.main.async{
                         showDeleteUpdate = true
                         if success{
+                            onPostDeleted()
                             deleteUpdateMessage = "Successfully deleted post"
                         }else{
                             deleteUpdateMessage = "Failed to delete post. \nPlease try again"
@@ -285,7 +288,7 @@ struct PostDetailView_Previews: PreviewProvider {
         )
 
         var body: some View {
-            PostDetailView(post: $samplePost, user: sampleUser)
+            PostDetailView(post: $samplePost, user: sampleUser, onPostDeleted: {})
         }
     }
 

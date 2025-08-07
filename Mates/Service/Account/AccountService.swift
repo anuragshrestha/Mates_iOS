@@ -61,53 +61,39 @@ class AccountService {
  
     
     //Service for fetching account profile
-    static func getAccountInfo(limit: Int = 2, offset: Int = 0, completion: @escaping (Bool, AccountProfileResponse?,  String?) -> Void) {
+    static func getAccountInfo(limit: Int = 2, offset: Int = 0) async -> Result<AccountProfileResponse, Error> {
         
-        //loads the access token from keychain
         guard let accessToken = KeychainHelper.loadAccessToken() else {
-            completion(false, nil, "unauthorized user")
-            return
+            return .failure(URLError(.userAuthenticationRequired))
         }
         
-        
-        //checks the url
-        guard let url = URL(string: "\(Config.baseURL)/account?limit=\(limit)&offset=\(offset)") else{
-            completion(false,nil, "Invalid url")
-            return
+        guard let url = URL(string: "\(Config.baseURL)/account?limit=\(limit)&offset=\(offset)") else {
+            return .failure(URLError(.badURL))
         }
         
-        //create a new http request
         var httpRequest = URLRequest(url: url)
         httpRequest.httpMethod = "GET"
         httpRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         
-        URLSession.shared.dataTask(with: httpRequest) { data, response, error in
+        do {
+   
+            let (data, response) = try await URLSession.shared.data(for: httpRequest)
             
-            if let error = error {
-                completion(false, nil, error.localizedDescription)
-                return
+            guard response is HTTPURLResponse else {
+                return .failure(URLError(.badServerResponse))
             }
             
-            guard let data = data else{
-                completion(false, nil, "no data found")
-                return
-            }
+       
+            let decodedResponse = try JSONDecoder().decode(AccountProfileResponse.self, from: data)
+            return .success(decodedResponse)
             
-            guard response is HTTPURLResponse else{
-                completion(false, nil, "Invalid response")
-                return
-            }
-            
-            do {
-                let decodedResponse = try JSONDecoder().decode(AccountProfileResponse.self, from: data)
-                completion(true, decodedResponse, nil)
-            }catch {
-                completion(false, nil, error.localizedDescription)
-            }
-            
+        } catch {
+            return .failure(error)
         }
-        .resume()
     }
+    
+    
+    
     
     
     //sends feedback message
