@@ -8,13 +8,14 @@ import SwiftUI
 
 struct PostDetailView: View {
     
-    
+    @EnvironmentObject var postVM: PostViewModel
     @Binding var post: UserPostModel
     let user: UserAccountModel
     @State var scale: CGFloat = 1
     @State var showOptionsModal:Bool = false
     @State var showDeleteModal:Bool = false
-    
+    @State var  showDeleteUpdate:Bool = false
+    @State var deleteUpdateMessage:String = ""
     
 var body: some View {
        
@@ -196,6 +197,23 @@ var body: some View {
                 
             }
             .padding(.top)
+            
+            
+            if postVM.isLoading {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .blur(radius: 4)
+                    .transition(.opacity)
+                
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(2)
+                    .padding()
+                    .background(Color.black.opacity(0.7))
+                    .cornerRadius(12)
+                
+            }
+            
         }
         .navigationTitle("")
         .navigationBarBackButtonHidden(true)
@@ -212,10 +230,26 @@ var body: some View {
                 showDeleteModal = false
             }
             Button("Delete", role: .destructive){
+                //call te delete api 
                 print("deleted")
+                postVM.deletePost(post_id: post.id) { success, message in
+                    DispatchQueue.main.async{
+                        showDeleteUpdate = true
+                        if success{
+                            deleteUpdateMessage = "Successfully deleted post"
+                        }else{
+                            deleteUpdateMessage = "Failed to delete post. \nPlease try again"
+                        }
+                    }
+                }
             }
-        }message: {
+        } message: {
             Text("Do you want to delete this post?")
+        }
+        .alert("", isPresented: $showDeleteUpdate) {
+            Button("Ok", role: .cancel){}
+        } message : {
+            Text(deleteUpdateMessage)
         }
       }
    }

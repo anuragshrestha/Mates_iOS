@@ -13,7 +13,7 @@ struct PostView: View {
     
     
     @EnvironmentObject var mainTabVM: MainTabViewModel
-    @StateObject var postVM = PostViewModel()
+    @EnvironmentObject var postVM: PostViewModel
     @State var cancelPost:Bool = false
     @Environment(\.dismiss) private var dismiss
     @State var showAlert:Bool = false

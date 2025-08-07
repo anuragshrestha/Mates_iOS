@@ -11,6 +11,7 @@ struct MainView: View {
     
     @StateObject var mainTabVM = MainTabViewModel()
     @StateObject var userSession = UserSession()
+    @StateObject var postVM = PostViewModel()
     
     
     var body: some View {
@@ -31,6 +32,7 @@ struct MainView: View {
                     }
                     .environmentObject(mainTabVM)
                     .environmentObject(userSession)
+                    .environmentObject(postVM)
                     .tabViewStyle(.automatic)
                     .safeAreaInset(edge: .bottom) {
                         VStack(spacing: 0){
