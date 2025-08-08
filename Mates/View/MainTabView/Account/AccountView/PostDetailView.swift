@@ -226,6 +226,9 @@ var body: some View {
             .presentationDragIndicator(.hidden)
             .presentationCornerRadius(20)
         }
+        .sheet(isPresented: $showEditModal){
+            EditPostModal(showEditModal: $showEditModal, post: $post, postVM: postVM)
+        }
         .alert("Delete Post", isPresented: $showDeleteModal){
             Button("Cancel", role: .cancel){
                 showDeleteModal = false
