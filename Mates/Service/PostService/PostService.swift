@@ -162,15 +162,25 @@ class PostService {
             return
         }
         
-        guard let url = URL(string: "\(Config.baseURL)/post/\(request.post_id)") else {
+        guard let url = URL(string: "\(Config.baseURL)/posts/\(request.post_id)") else {
             completion(false, "Invalid url")
             return
         }
         
         var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "PUT"
+        urlRequest.httpMethod = "PATCH"
         urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        urlRequest.httpBody = try? JSONEncoder().encode(request)
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let bodyDict = ["status": request.status]
+        
+        do{
+            let jsonData = try JSONSerialization.data(withJSONObject: bodyDict)
+            urlRequest.httpBody = jsonData
+        }catch {
+            completion(false, "Failed to encode request")
+            return
+        }
         
         URLSession.shared.dataTask(with: urlRequest) { data, response, error in
             
