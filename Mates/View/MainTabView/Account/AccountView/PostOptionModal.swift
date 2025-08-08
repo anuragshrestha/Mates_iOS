@@ -11,7 +11,8 @@ struct PostOptionModal: View {
     
     @Binding var showModal: Bool
     @Binding var showDeleteModal: Bool
-    let onUpdate: () -> Void
+    @Binding var showEditModal: Bool
+  
   
     
     var body: some View {
@@ -27,7 +28,9 @@ struct PostOptionModal: View {
             VStack(spacing: 0) {
                 Button(action:{
                     showModal = false
-                    onUpdate()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showEditModal = true
+                    }
                 }){
                     HStack{
                         Image(systemName: "pencil")

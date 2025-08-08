@@ -15,6 +15,7 @@ struct PostDetailView: View {
     @State var showOptionsModal:Bool = false
     @State var showDeleteModal:Bool = false
     @State var  showDeleteUpdate:Bool = false
+    @State  var showEditModal: Bool = false
     @State var deleteUpdateMessage:String = ""
     
     var onPostDeleted: () -> Void
@@ -220,9 +221,7 @@ var body: some View {
         .navigationTitle("")
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showOptionsModal) {
-            PostOptionModal(showModal: $showOptionsModal, showDeleteModal: $showDeleteModal, onUpdate: {
-                print("update")
-            })
+            PostOptionModal(showModal: $showOptionsModal, showDeleteModal: $showDeleteModal, showEditModal: $showEditModal)
             .presentationDetents([.height(150)])
             .presentationDragIndicator(.hidden)
             .presentationCornerRadius(20)
