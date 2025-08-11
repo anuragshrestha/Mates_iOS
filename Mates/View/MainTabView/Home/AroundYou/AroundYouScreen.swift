@@ -19,15 +19,40 @@ struct AroundYouScreen: View {
                 Text("No posts loaded")
                         .foregroundColor(.white)
             }else{
-                
                 ForEach(aroundVM.visiblePosts.indices, id: \.self) { index in
                     let post = aroundVM.visiblePosts[index]
                     PostScreen(post: .constant(post))
                         .padding(.bottom, 20)
                         .onAppear {
+                            
+                            // Load more posts when user reaches near the end
+                              if aroundVM.shouldLoadMorePosts(currentIndex: index) {
+                                  Task {
+                                      await aroundVM.loadMorePosts()
+                                  }
+                              }
+                        }
+                        .onDisappear {
                             aroundVM.markPostSeen(post)
                         }
                 }
+                
+                // Loading indicator for pagination
+                  if aroundVM.isLoadingMore {
+                      ProgressView()
+                          .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                          .scaleEffect(1.5)
+                          .padding()
+                  }
+                  
+                  // End of posts indicator
+                  if !aroundVM.hasMorePosts && !aroundVM.visiblePosts.isEmpty {
+                      Text("No more posts available")
+                          .foregroundColor(.gray)
+                          .font(.system(size: 18))
+                          .padding()
+                         
+                  }
             }
         }
         .onAppear {
