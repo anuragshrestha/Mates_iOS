@@ -9,9 +9,12 @@ import Foundation
 
 struct HomeFeedResponse: Decodable {
     
-    let success: Bool
-    let posts: [PostModel]
-    let user_id: String
+     let success: Bool
+     let posts: [PostModel]
+     let user_id: String
+     let hasMore: Bool?
+     let currentPage: Int?
+     let totalPosts: Int?
 }
 
 enum AroundYouServiceError: Error {
@@ -28,7 +31,7 @@ class AroundYouService {
     static let shared = AroundYouService()
     private init(){}
     
-    func fetchHomeFeed() async throws -> HomeFeedResponse {
+    func fetchHomeFeed(page: Int = 1, limit: Int = 6) async throws -> HomeFeedResponse {
         
         
         //checks if there is a access token
@@ -38,7 +41,16 @@ class AroundYouService {
         
         
         //checks if its a valid url
-        guard let url = URL(string: "\(Config.baseURL)/feeds/aroundyou") else {
+        guard var urlComponents = URLComponents(string: "\(Config.baseURL)/feeds/aroundyou") else {
+            throw AroundYouServiceError.urlError
+        }
+        
+        urlComponents.queryItems = [
+            URLQueryItem(name: "page", value: String(page)),
+            URLQueryItem(name: "limit", value: String(limit))
+        ]
+        
+        guard let url = urlComponents.url else {
             throw AroundYouServiceError.urlError
         }
         
