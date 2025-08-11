@@ -26,7 +26,6 @@ struct MainView: View {
                         HomeView().tag(0)
                         SearchView().tag(1)
                         PostView().tag(2)
-                        ChatView().tag(3)
                         AccountView().tag(4)
                         
                     }

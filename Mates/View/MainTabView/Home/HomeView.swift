@@ -26,7 +26,7 @@ struct HomeView: View {
             }else{
                 TabView(selection: $selectedTab) {
              
-                    ScrollableTabContent (content: {AroundYouScreen(posts: $aroundVM.posts)}, lastOffSet: $lastOffset, hideHeader: $hideHeader)
+                    ScrollableTabContent (content: {AroundYouScreen(aroundVM: aroundVM)}, lastOffSet: $lastOffset, hideHeader: $hideHeader)
                         .tag(TabSelection.aroundyou)
                     
                     

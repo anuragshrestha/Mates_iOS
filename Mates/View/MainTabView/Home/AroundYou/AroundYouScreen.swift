@@ -9,25 +9,29 @@ import SwiftUI
 
 struct AroundYouScreen: View {
     
-    @Binding var posts: [PostModel]
+    @ObservedObject var aroundVM: AroundYouServiceViewModel
     
     
     var body: some View {
       
         VStack(spacing: 0) {
-            if posts.isEmpty {
+            if aroundVM.visiblePosts.isEmpty {
                 Text("No posts loaded")
                         .foregroundColor(.white)
             }else{
                 
-                ForEach(posts.indices, id: \.self) { index in
-                    PostScreen(post: $posts[index])
+                ForEach(aroundVM.visiblePosts.indices, id: \.self) { index in
+                    let post = aroundVM.visiblePosts[index]
+                    PostScreen(post: .constant(post))
                         .padding(.bottom, 20)
+                        .onAppear {
+                            aroundVM.markPostSeen(post)
+                        }
                 }
             }
         }
         .onAppear {
-            print("AroundYouScreen received \(posts.count) posts")
+            print("AroundYouScreen showing \(aroundVM.visiblePosts.count) posts (filtered)")
         }
     }
 }
@@ -53,7 +57,7 @@ struct AroundYouScreen: View {
         ]
         
         var body: some View{
-            AroundYouScreen(posts: $samplePost)
+            AroundYouScreen(aroundVM: AroundYouServiceViewModel())
         }
     }
     

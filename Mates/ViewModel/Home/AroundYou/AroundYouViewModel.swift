@@ -8,43 +8,50 @@
 import Foundation
 
 class AroundYouServiceViewModel: ObservableObject {
-    
-    @Published var isLoading:Bool = false
-    @Published var posts: [PostModel] = []
+    @Published var isLoading: Bool = false
+    @Published private(set) var posts: [PostModel] = []
+    @Published var seenPostIDs: Set<String> = []
     @Published var userId: String?
     @Published var errorMessage: String?
     @Published var showError: Bool = false
-    
-    
+
+    /// Only fetch if posts are empty or forceRefresh is true
     @MainActor
-    func laodAroundYouFeed() async {
-        
+    func laodAroundYouFeed(forceRefresh: Bool = false) async {
+        guard forceRefresh || posts.isEmpty else { return }
+
         isLoading = true
-        
-        defer{isLoading = false}
-        
+        defer { isLoading = false }
+
         do {
             let data = try await AroundYouService.shared.fetchHomeFeed()
-            self.posts = data.posts
+
+            // Append only new posts
+            let newPosts = data.posts.filter { !seenPostIDs.contains($0.id.uuidString) }
+            self.posts.append(contentsOf: newPosts)
+
             self.userId = data.user_id
-      
-            // Set the current user in the global manager
-            let currentUser = CurrentUser(id: data.user_id)
-            CurrentUserManager.shared.setCurrentUser(currentUser)
-            
-            print("Fetched posts: \(data.posts.count)")
-            print("Current user id is: \(data.user_id)")
-        
-            
-            if data.posts.isEmpty {
+            CurrentUserManager.shared.setCurrentUser(CurrentUser(id: data.user_id))
+
+            if posts.isEmpty {
                 self.errorMessage = "No post"
                 self.showError = true
             }
-            
-        }catch {
-            print("failed to fetch the posts")
+        } catch {
+            print("failed to fetch the posts: \(error)")
             self.errorMessage = "Something went wrong. \n Please signin again."
             self.showError = true
         }
+    }
+
+    /// Filtered posts for display (hide seen)
+    var visiblePosts: [PostModel] {
+        let unseen = posts.filter { !seenPostIDs.contains($0.id.uuidString) }
+        return unseen.isEmpty ? posts : unseen
+    }
+
+    /// Mark post as seen
+    func markPostSeen(_ post: PostModel) {
+        seenPostIDs.insert(post.id.uuidString)
     }
 }
