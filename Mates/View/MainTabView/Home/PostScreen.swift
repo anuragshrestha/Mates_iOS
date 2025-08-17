@@ -118,23 +118,34 @@ struct PostScreen: View {
                                         }
                                           //api call to unlike the post
                                         LikeUnlikeService.shared.unlikePost(request: likeUnlikeRequest(post_id: post.id.uuidString.lowercased())) { success, message in
-                                            if success {
-                                                print("successfully unliked the post")
-                                            }else{
-                                                print("failed to unlike the post")
+                                            DispatchQueue.main.async {
+                                                if success {
+                                                    print("successfully unliked the post")
+                                                }else{
+                                                    post.hasLiked = true
+                                                    print("failed to unlike the post")
+                                                }
                                             }
+                                        
                                         }
                                     }else{
                                         post.hasLiked = true
                                         post.likes += 1
-                                
+                                        
                                         //api call to like the post
                                         LikeUnlikeService.shared.likePost(request: likeUnlikeRequest(post_id: post.id.uuidString.lowercased())) { success, message in
-                                            if success {
-                                                print("successfully liked the post")
-                                            }else{
-                                                print("failed to like the post")
+                                            DispatchQueue.main.async {
+                                                if success {
+                                                    print("successfully liked the post")
+                                                }else{
+                                                    post.hasLiked = false
+                                                   if post.likes > 0 {
+                                                        post.likes -= 1
+                                                    }
+                                                    print("failed to like the post")
+                                                }
                                             }
+                                         
                                         }
                                    }
                                 }

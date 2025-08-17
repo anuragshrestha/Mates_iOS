@@ -19,22 +19,25 @@ struct AroundYouScreen: View {
                 Text("No posts loaded")
                         .foregroundColor(.white)
             }else{
-                ForEach(aroundVM.visiblePosts.indices, id: \.self) { index in
-                    let post = aroundVM.visiblePosts[index]
-                    PostScreen(post: .constant(post))
-                        .padding(.bottom, 20)
-                        .onAppear {
-                            
-                            // Load more posts when user reaches near the end
-                              if aroundVM.shouldLoadMorePosts(currentIndex: index) {
-                                  Task {
-                                      await aroundVM.loadMorePosts()
+                ForEach(aroundVM.visiblePosts) { post in
+                    if let postBinding = aroundVM.binding(for: post.id){
+                        PostScreen(post: postBinding)
+                            .padding(.bottom, 20)
+                            .onAppear {
+                                
+                                // Load more posts when user reaches near the end
+                                if let visibleIdx = aroundVM.visiblePosts.firstIndex(where: {$0.id == post.id}),
+                                  aroundVM.shouldLoadMorePosts(currentIndex: visibleIdx) {
+                                      Task {
+                                          await aroundVM.loadMorePosts()
+                                      }
                                   }
-                              }
-                        }
-                        .onDisappear {
-                            aroundVM.markPostSeen(post)
-                        }
+                            }
+                            .onDisappear {
+                                aroundVM.markPostSeen(post)
+                            }
+                    }
+         
                 }
                 
                 // Loading indicator for pagination

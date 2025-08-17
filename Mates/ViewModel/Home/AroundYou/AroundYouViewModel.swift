@@ -5,6 +5,7 @@
 //  Created by Anurag Shrestha on 6/18/25.
 //
 
+import SwiftUI
 import Foundation
 
 class AroundYouServiceViewModel: ObservableObject {
@@ -20,6 +21,15 @@ class AroundYouServiceViewModel: ObservableObject {
        
     private var currentPage: Int = 1
     private let pageSize: Int = 6
+    
+    /// Binding to a post inside `posts` by id.
+     func binding(for id: UUID) -> Binding<PostModel>? {
+         guard let i = posts.firstIndex(where: { $0.id == id }) else { return nil }
+         return Binding<PostModel>(
+             get: { self.posts[i] },
+             set: { self.posts[i] = $0 }
+         )
+     }
 
     /// Only fetch if posts are empty or forceRefresh is true
     @MainActor
