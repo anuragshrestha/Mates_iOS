@@ -8,11 +8,8 @@
 import SwiftUI
 
 struct ForYouScreen: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
-
-#Preview {
-    ForYouScreen()
+    @ObservedObject var vm: FeedViewModel
+    
+    
+    var body: some View { FeedListScreen(vm: vm) }
 }
