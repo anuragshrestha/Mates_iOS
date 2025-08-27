@@ -45,14 +45,6 @@ class LikeUnlikeService {
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         
-//        let body: [String: Any] = ["post_id" : request.post_id]
-//        
-//        do {
-//            urlRequest.httpBody = try JSONSerialization.data(withJSONObject: body)
-//        }catch {
-//            completion(false, "Error converting body to data")
-//        }
-        
         URLSession.shared.dataTask(with: urlRequest) { data, response, error in
             
             if let error = error {
