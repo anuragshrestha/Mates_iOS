@@ -4,116 +4,87 @@
 //
 //  Created by Anurag Shrestha on 6/18/25.
 //
-
 import SwiftUI
 import Foundation
 
-class AroundYouServiceViewModel: ObservableObject {
-    @Published var isLoading: Bool = false
-    @Published var isLoadingMore: Bool = false
+@MainActor
+final class FeedViewModel: ObservableObject {
+    let kind: FeedKind
+    
+    @Published var isLoading = false
+    @Published var isLoadingMore = false
     @Published private(set) var posts: [PostModel] = []
     @Published var seenPostIDs: Set<String> = []
     @Published var userId: String?
     @Published var errorMessage: String?
-    @Published var showError: Bool = false
+    @Published var showError = false
+    @Published var hasMorePosts = true
     
-    @Published var hasMorePosts: Bool = true
-       
     private var currentPage: Int = 1
     private let pageSize: Int = 6
     
-    /// Binding to a post inside `posts` by id.
-     func binding(for id: UUID) -> Binding<PostModel>? {
-         guard let i = posts.firstIndex(where: { $0.id == id }) else { return nil }
-         return Binding<PostModel>(
-             get: { self.posts[i] },
-             set: { self.posts[i] = $0 }
-         )
-     }
-
-    /// Only fetch if posts are empty or forceRefresh is true
-    @MainActor
-    func laodAroundYouFeed(forceRefresh: Bool = false) async {
+    init(kind: FeedKind) {
+        self.kind = kind
+    }
+    
+    func binding(for id: UUID) -> Binding<PostModel>? {
+        guard let i = posts.firstIndex(where: { $0.id == id }) else { return nil }
+        return Binding(get: { self.posts[i] }, set: { self.posts[i] = $0 })
+    }
+    
+    func loadInitial(forceRefresh: Bool = false) async {
         guard forceRefresh || posts.isEmpty else { return }
-
         if forceRefresh {
-             // Reset pagination state
-             currentPage = 1
-             hasMorePosts = true
-             posts.removeAll()
-             seenPostIDs.removeAll()
-         }
-        
+            currentPage = 1
+            hasMorePosts = true
+            posts.removeAll()
+            seenPostIDs.removeAll()
+        }
         isLoading = true
         defer { isLoading = false }
-
         do {
-            let data = try await AroundYouService.shared.fetchHomeFeed(page: currentPage, limit: pageSize)
-
-          
-            self.posts = data.posts
-            self.userId = data.user_id
-            self.hasMorePosts = data.hasMore ?? false
-            
+            let data = try await FeedService.shared.fetchFeed(kind: kind, page: currentPage, limit: pageSize)
+            posts = data.posts
+            userId = data.user_id
+            hasMorePosts = data.hasMore ?? false
             CurrentUserManager.shared.setCurrentUser(CurrentUser(id: data.user_id))
-
             if posts.isEmpty {
-                self.errorMessage = "No post"
-                self.showError = true
+                errorMessage = "No post"
+                showError = true
             }
         } catch {
-            print("failed to fetch the posts: \(error)")
-            self.errorMessage = "Failed to load posts"
-            self.showError = true
+            errorMessage = "Failed to load posts"
+            showError = true
         }
     }
     
+    func loadMore() async {
+        guard !isLoadingMore && hasMorePosts else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        let next = currentPage + 1
+        do {
+            let data = try await FeedService.shared.fetchFeed(kind: kind, page: next, limit: pageSize)
+            let newPosts = data.posts.filter { newPost in
+                !posts.contains { $0.id == newPost.id }
+            }
+            posts.append(contentsOf: newPosts)
+            currentPage = next
+            hasMorePosts = data.hasMore ?? false
+        } catch {
+            errorMessage = "Failed to load more posts."
+            showError = true
+        }
+    }
     
-    
-    /// Load more posts for pagination
-      @MainActor
-      func loadMorePosts() async {
-          guard !isLoadingMore && hasMorePosts else { return }
-          
-          isLoadingMore = true
-          defer { isLoadingMore = false }
-          
-          let nextPage = currentPage + 1
-          
-          do {
-              let data = try await AroundYouService.shared.fetchHomeFeed(page: nextPage, limit: pageSize)
-              
-              // Filter out posts we already have
-              let newPosts = data.posts.filter { newPost in
-                  !posts.contains { existingPost in
-                      existingPost.id == newPost.id
-                  }
-              }
-              
-              self.posts.append(contentsOf: newPosts)
-              self.currentPage = nextPage
-              self.hasMorePosts = data.hasMore ?? false
-              
-          } catch {
-              print("failed to load more posts: \(error)")
-              self.errorMessage = "Failed to load more posts."
-              self.showError = true
-          }
-      }
-
-    /// Filtered posts for display (hide seen)
     var visiblePosts: [PostModel] {
         let unseen = posts.filter { !seenPostIDs.contains($0.id.uuidString) }
         return unseen.isEmpty ? posts : unseen
     }
-
-    /// Mark post as seen
-    func markPostSeen(_ post: PostModel) {
-        seenPostIDs.insert(post.id.uuidString)
-    }
     
-    /// Check if we should load more posts when user reaches near the end
-    func shouldLoadMorePosts(currentIndex: Int) -> Bool {
-          return currentIndex >= visiblePosts.count - 1 && hasMorePosts && !isLoadingMore
+    func markPostSeen(_ post: PostModel) { seenPostIDs.insert(post.id.uuidString) }
+    
+    func shouldLoadMore(currentIndex: Int) -> Bool {
+        currentIndex >= visiblePosts.count - 1 && hasMorePosts && !isLoadingMore
     }
 }
