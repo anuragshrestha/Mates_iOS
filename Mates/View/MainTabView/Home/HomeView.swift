@@ -2,44 +2,42 @@ import SwiftUI
 
 
 
-enum TabSelection: Hashable {
-   case aroundyou, foryou
-}
+enum TabSelection: Hashable { case aroundyou, foryou }
 
 struct HomeView: View {
+    @StateObject var aroundVM = FeedViewModel(kind: .aroundYou)
+    @StateObject var forYouVM = FeedViewModel(kind: .forYou)
     
-    @StateObject var aroundVM = AroundYouServiceViewModel()
     @Namespace private var underline
     @State private var lastOffset: CGFloat = 0
     @State private var hideHeader: Bool = false
-    @State private var selectedTab:TabSelection = .aroundyou
+    @State private var selectedTab: TabSelection = .aroundyou
     
-
     var body: some View {
         ZStack(alignment: .top) {
             Color.black.ignoresSafeArea()
             
-            if aroundVM.isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .scaleEffect(2)
-            }else{
+            if (selectedTab == .aroundyou ? aroundVM.isLoading : forYouVM.isLoading) &&
+                (selectedTab == .aroundyou ? aroundVM.posts.isEmpty : forYouVM.posts.isEmpty) {
+                ProgressView().progressViewStyle(CircularProgressViewStyle()).scaleEffect(2)
+            } else {
                 TabView(selection: $selectedTab) {
-             
-                    ScrollableTabContent (content: {AroundYouScreen(aroundVM: aroundVM)}, lastOffSet: $lastOffset, hideHeader: $hideHeader)
-                        .tag(TabSelection.aroundyou)
+                    ScrollableTabContent(
+                        content: { AroundYouScreen(vm: aroundVM) },
+                        lastOffSet: $lastOffset,
+                        hideHeader: $hideHeader
+                    )
+                    .tag(TabSelection.aroundyou)
                     
-                    
-                    ScrollableTabContent(content: {ForYouScreen()}, lastOffSet: $lastOffset, hideHeader: $hideHeader)
-                        .tag(TabSelection.foryou)
-                    
+                    ScrollableTabContent(
+                        content: { ForYouScreen(vm: forYouVM) },
+                        lastOffSet: $lastOffset,
+                        hideHeader: $hideHeader
+                    )
+                    .tag(TabSelection.foryou)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
-            
-
-            
-            
             
             // Header
             if !hideHeader {
@@ -50,44 +48,41 @@ struct HomeView: View {
                         .foregroundColor(.white)
                     
                     HStack(spacing: 20) {
-                        ForEach([TabSelection.aroundyou, .foryou], id: \.self){ tab in
-                            VStack(spacing: 4){
+                        ForEach([TabSelection.aroundyou, .foryou], id: \.self) { tab in
+                            VStack(spacing: 4) {
                                 Text(tab == .aroundyou ? "Around you" : "For you")
                                     .font(.customfont(.semibold, fontSize: 24))
                                     .foregroundColor(selectedTab == tab ? .white : .gray)
-                                    
-                                    if selectedTab == tab {
+                                
+                                if selectedTab == tab {
                                     Capsule()
                                         .fill(Color.white)
                                         .frame(height: 2)
                                         .matchedGeometryEffect(id: "underline", in: underline)
-                                }else{
+                                } else {
                                     Capsule()
                                         .fill(Color.clear)
                                         .frame(height: 2)
                                 }
                             }
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .onTapGesture {
-                                withAnimation(.easeInOut){
-                                    selectedTab = tab
-                                }
-                            }
+                            .frame(maxWidth: .infinity)
+                            .onTapGesture { withAnimation(.easeInOut) { selectedTab = tab } }
                         }
                     }
-
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.top, 10)
-                .padding(.bottom, 10)
+                .padding(.vertical, 10)
                 .background(Color.black.opacity(0.95))
                 .transition(.move(edge: .top))
             }
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
-        .task{
-            await aroundVM.laodAroundYouFeed()
+        .task { await aroundVM.loadInitial() }
+        .onChange(of: selectedTab) { newTab in
+            if newTab == .foryou && forYouVM.posts.isEmpty {
+                Task { await forYouVM.loadInitial() }
+            }
         }
     }
 }
