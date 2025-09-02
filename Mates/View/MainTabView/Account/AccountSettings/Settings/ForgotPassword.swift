@@ -27,7 +27,7 @@ struct ForgotPassword: View {
                 if showSentCodeMessage {
                     Text("A code was sent to your email.")
                         .foregroundColor(.white)
-                        .font(.system(size: 122, weight: .bold))
+                        .font(.system(size: 22, weight: .bold))
                         .padding(.top, 10)
                         .padding(.bottom, 10)
                         .transition(.opacity)
