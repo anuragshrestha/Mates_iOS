@@ -274,7 +274,6 @@ struct AccountView: View {
         print("fetching the user profile once")
         
         let result = await AccountService.getAccountInfo(limit: limit,offset: 0)
-         
                 
         isFetchingInitial = false
         isLoading = false

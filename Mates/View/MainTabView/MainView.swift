@@ -26,7 +26,7 @@ struct MainView: View {
                         HomeView().tag(0)
                         SearchView().tag(1)
                         PostView().tag(2)
-                        AccountView().tag(4)
+                        AccountView().tag(3)
                         
                     }
                     .environmentObject(mainTabVM)
@@ -59,16 +59,10 @@ struct MainView: View {
                                     }
                                 }
                                 
-                                TabButton(title: "", filledIcon: "ellipsis.message.fill", unFilledIcon: "ellipsis.message", isSelect: mainTabVM.selectedTabIndex == 3) {
+                          
+                                TabButton(title: "", filledIcon: "person.fill", unFilledIcon: "person", isSelect: mainTabVM.selectedTabIndex == 3) {
                                     withAnimation {
                                         mainTabVM.selectedTabIndex = 3
-                                    }
-                                }
-                                
-                                
-                                TabButton(title: "", filledIcon: "person.fill", unFilledIcon: "person", isSelect: mainTabVM.selectedTabIndex == 4) {
-                                    withAnimation {
-                                        mainTabVM.selectedTabIndex = 4
                                     }
                                 }
                             }
