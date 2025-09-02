@@ -10,6 +10,7 @@ import Foundation
 @MainActor
 final class FeedViewModel: ObservableObject {
     let kind: FeedKind
+    @Published var refreshStamp = Date()
     
     @Published var isLoading = false
     @Published var isLoadingMore = false
@@ -31,6 +32,25 @@ final class FeedViewModel: ObservableObject {
         guard let i = posts.firstIndex(where: { $0.id == id }) else { return nil }
         return Binding(get: { self.posts[i] }, set: { self.posts[i] = $0 })
     }
+    
+  
+
+    func refresh() async {
+        guard !isLoading && !isLoadingMore else { return }
+        print("REFRESH START \(kind)")
+        isLoading = true
+        await loadInitial(forceRefresh: true)
+        isLoading = false
+        await MainActor.run { refreshStamp = Date() }
+        print("REFRESH END \(kind)")
+    }
+      func remove(postID: UUID) {
+          posts.removeAll { $0.id == postID }
+          
+          if posts.count < pageSize, hasMorePosts, !isLoadingMore {
+              Task { await loadMore() }
+          }
+      }
     
     func loadInitial(forceRefresh: Bool = false) async {
         guard forceRefresh || posts.isEmpty else { return }

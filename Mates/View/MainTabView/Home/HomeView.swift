@@ -25,15 +25,19 @@ struct HomeView: View {
                     ScrollableTabContent(
                         content: { AroundYouScreen(vm: aroundVM) },
                         lastOffSet: $lastOffset,
-                        hideHeader: $hideHeader
+                        hideHeader: $hideHeader,
+                        onRefresh: { await aroundVM.refresh()}
                     )
+                    .id(aroundVM.refreshStamp)
                     .tag(TabSelection.aroundyou)
                     
                     ScrollableTabContent(
                         content: { ForYouScreen(vm: forYouVM) },
                         lastOffSet: $lastOffset,
-                        hideHeader: $hideHeader
+                        hideHeader: $hideHeader,
+                        onRefresh: { await forYouVM.refresh()}
                     )
+                    .id(forYouVM.refreshStamp)
                     .tag(TabSelection.foryou)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -92,6 +96,7 @@ struct ScrollableTabContent<Content: View>: View {
     let content: () -> Content
     @Binding var lastOffSet: CGFloat
     @Binding var hideHeader:Bool
+    var onRefresh: (() async -> Void)? = nil
     
     var body: some View {
         
@@ -101,6 +106,9 @@ struct ScrollableTabContent<Content: View>: View {
                     content()
                 }
                 .padding(.top, 100)
+                .refreshable {
+                    await onRefresh?()
+                }
             }
             .background(
                 GeometryReader { geometry in
@@ -127,6 +135,7 @@ struct ScrollableTabContent<Content: View>: View {
                 DragGesture()
                     .onChanged { value in
                         let translation = value.translation.height
+                
                         if abs(translation) > 20 {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 hideHeader = translation < 0
