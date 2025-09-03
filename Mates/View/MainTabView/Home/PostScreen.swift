@@ -10,6 +10,7 @@ import SwiftUI
 struct PostScreen: View {
     
     @Binding var post: PostModel
+  
     
     var body: some View {
         
@@ -19,28 +20,40 @@ struct PostScreen: View {
             VStack(alignment: .leading, spacing: 4) {
                 VStack(alignment: .leading, spacing: 10){
                     
-                    //Profile row
-                    HStack(alignment: .top, spacing: 12) {
-                        AsyncImage(url: URL(string: post.profileImageUrl)){ image in
-                            image.image?.resizable()
-                        }
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 50, height: 50)
-                        .clipShape(Circle())
-                        
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(post.fullName)
-                                .font(.customfont(.bold, fontSize: 18))
-                                .foregroundColor(.white)
-                            
-                            Text(timeAgo(from: post.createdAt))
-                                .foregroundColor(.white.opacity(0.6))
-                                .font(.subheadline)
-                        }
-                        
-                    }
-                    .padding(.horizontal, 10)
+                    NavigationLink(
+                       value: UserModel(
+                           id: post.userId,
+                           email: post.email,
+                           fullName: post.fullName,
+                           universityName: post.universityName,
+                           major: post.major,
+                           schoolYear: post.schoolYear,
+                           createdAt: post.createdAt,
+                           profileImageUrl: post.profileImageUrl,
+                           bio: post.bio
+                       )
+                   ) {
+                       HStack(alignment: .top, spacing: 12) {
+                           AsyncImage(url: URL(string: post.profileImageUrl)) { image in
+                               image.image?.resizable()
+                           }
+                           .aspectRatio(contentMode: .fill)
+                           .frame(width: 50, height: 50)
+                           .clipShape(Circle())
+
+                           VStack(alignment: .leading, spacing: 4) {
+                               Text(post.fullName)
+                                   .font(.customfont(.bold, fontSize: 18))
+                                   .foregroundColor(.white)
+                               Text(timeAgo(from: post.createdAt))
+                                   .foregroundColor(.white.opacity(0.6))
+                                   .font(.subheadline)
+                           }
+                           Spacer()
+                       }
+                       .padding(.horizontal, 10)
+                   }
+                   .buttonStyle(.plain)
                     
                     //Post Content
                     Text(post.status)
@@ -165,11 +178,6 @@ struct PostScreen: View {
                             Text("\(post.comments)")
                         }
                         
-                        HStack(spacing: 4) {
-                            Image(systemName: "paperplane")
-                            
-                            Text("0")
-                        }
                     }
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(.white)
@@ -206,7 +214,10 @@ struct PostScreen: View {
                 profileImageUrl: "https://example.com/profile.jpg",
                 likes: 23,
                 comments: 12,
-                hasLiked: true
+                hasLiked: true,
+                major: "Computer Science",
+                schoolYear: "Junior",
+                bio: "Living my life!"
             )
 
             var body: some View {

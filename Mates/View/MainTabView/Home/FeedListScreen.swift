@@ -9,6 +9,8 @@ import SwiftUI
 
 struct FeedListScreen: View {
     @ObservedObject var vm: FeedViewModel
+
+    
     
     var body: some View {
         VStack(spacing: 0) {
@@ -19,14 +21,14 @@ struct FeedListScreen: View {
                 ForEach(vm.visiblePosts) { post in
                     if let binding = vm.binding(for: post.id) {
                         PostScreen(post: binding)
-                            .padding(.bottom, 20)
-                            .onAppear {
-                                if let idx = vm.visiblePosts.firstIndex(where: {$0.id == post.id}),
-                                   vm.shouldLoadMore(currentIndex: idx) {
-                                    Task { await vm.loadMore() }
-                                }
+                        .padding(.bottom, 20)
+                        .onAppear {
+                            if let idx = vm.visiblePosts.firstIndex(where: {$0.id == post.id}),
+                               vm.shouldLoadMore(currentIndex: idx) {
+                                Task { await vm.loadMore() }
                             }
-                            .onDisappear { vm.markPostSeen(post) }
+                        }
+                        .onDisappear { vm.markPostSeen(post) }
                     }
                 }
                 if vm.isLoadingMore {
