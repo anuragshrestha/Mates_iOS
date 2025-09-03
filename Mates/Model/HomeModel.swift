@@ -31,6 +31,14 @@ struct PostModel: Identifiable, Decodable {
     var likes: Int
     var comments: Int
     var hasLiked: Bool
+    var major: String
+    var schoolYear: String
+    var bio: String?
+    
+    
+    var safeBio: String {
+          return bio ?? ""
+      }
     
  enum CodingKeys:String, CodingKey {
     case id = "post_id"
@@ -45,12 +53,15 @@ struct PostModel: Identifiable, Decodable {
     case likes
     case comments
     case hasLiked
+    case major
+    case schoolYear = "school_year"
+    case bio
   }
 }
 
 
 
-struct UserModel: Identifiable, Decodable {
+struct UserModel: Identifiable, Decodable, Hashable {
     let id: String
     let email: String
     var fullName: String
