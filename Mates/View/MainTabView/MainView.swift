@@ -12,6 +12,7 @@ struct MainView: View {
     @StateObject var mainTabVM = MainTabViewModel()
     @StateObject var userSession = UserSession()
     @StateObject var postVM = PostViewModel()
+    @State private var path = NavigationPath()
     
     
     var body: some View {
@@ -21,57 +22,62 @@ struct MainView: View {
                 
                 Color.black.ignoresSafeArea()
                 
-                VStack {
-                    TabView(selection: $mainTabVM.selectedTabIndex) {
-                        HomeView().tag(0)
-                        SearchView().tag(1)
-                        PostView().tag(2)
-                        AccountView().tag(3)
-                        
-                    }
-                    .environmentObject(mainTabVM)
-                    .environmentObject(userSession)
-                    .environmentObject(postVM)
-                    .tabViewStyle(.automatic)
-                    .safeAreaInset(edge: .bottom) {
-                        VStack(spacing: 0){
+                NavigationStack(path: $path){
+                    VStack {
+                        TabView(selection: $mainTabVM.selectedTabIndex) {
+                            HomeView().tag(0)
+                            SearchView().tag(1)
+                            PostView().tag(2)
+                            AccountView().tag(3)
                             
-                            Divider()
-                                .background(Color.white)
-                            
-                            HStack{
-                                TabButton(title: "", filledIcon: "house.fill", unFilledIcon: "house", isSelect: mainTabVM.selectedTabIndex == 0) {
-                                    withAnimation {
-                                        mainTabVM.selectedTabIndex = 0
+                        }
+                        .environmentObject(mainTabVM)
+                        .environmentObject(userSession)
+                        .environmentObject(postVM)
+                        .tabViewStyle(.automatic)
+                        .safeAreaInset(edge: .bottom) {
+                            VStack(spacing: 0){
+                                
+                                Divider()
+                                    .background(Color.white)
+                                
+                                HStack{
+                                    TabButton(title: "", filledIcon: "house.fill", unFilledIcon: "house", isSelect: mainTabVM.selectedTabIndex == 0) {
+                                        withAnimation {
+                                            mainTabVM.selectedTabIndex = 0
+                                        }
+                                    }
+                                    
+                                    TabButton(title: "",  filledIcon: "magnifyingglass",  unFilledIcon: "magnifyingglass", isSelect: mainTabVM.selectedTabIndex == 1) {
+                                        withAnimation {
+                                            mainTabVM.selectedTabIndex = 1
+                                        }
+                                    }
+                                    
+                                    
+                                    TabButton(title: "",filledIcon: "plus.circle.fill",unFilledIcon: "plus.circle", isSelect: mainTabVM.selectedTabIndex == 2) {
+                                        withAnimation {
+                                            mainTabVM.selectedTabIndex = 2
+                                        }
+                                    }
+                                    
+                                    
+                                    TabButton(title: "", filledIcon: "person.fill", unFilledIcon: "person", isSelect: mainTabVM.selectedTabIndex == 3) {
+                                        withAnimation {
+                                            mainTabVM.selectedTabIndex = 3
+                                        }
                                     }
                                 }
-                                
-                                TabButton(title: "",  filledIcon: "magnifyingglass",  unFilledIcon: "magnifyingglass", isSelect: mainTabVM.selectedTabIndex == 1) {
-                                    withAnimation {
-                                        mainTabVM.selectedTabIndex = 1
-                                    }
-                                }
-                                
-                                
-                                TabButton(title: "",filledIcon: "plus.circle.fill",unFilledIcon: "plus.circle", isSelect: mainTabVM.selectedTabIndex == 2) {
-                                    withAnimation {
-                                        mainTabVM.selectedTabIndex = 2
-                                    }
-                                }
-                                
-                          
-                                TabButton(title: "", filledIcon: "person.fill", unFilledIcon: "person", isSelect: mainTabVM.selectedTabIndex == 3) {
-                                    withAnimation {
-                                        mainTabVM.selectedTabIndex = 3
-                                    }
-                                }
+                                .padding(.top, 10)
+                                .background(Color.black)
                             }
-                            .padding(.top, 10)
-                            .background(Color.black)
                         }
                     }
+                    .ignoresSafeArea(.keyboard, edges: .bottom)
+                    .navigationDestination(for: UserModel.self) { user in
+                        UserProfileView(user:user)
+                    }
                 }
-                .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
