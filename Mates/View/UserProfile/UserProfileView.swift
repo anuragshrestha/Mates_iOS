@@ -123,6 +123,14 @@ struct UserProfileView: View {
                                             if success {
                                                 userProfileData?.isFollowing = true
                                                 userProfileData?.followersCount += 1
+                                                if let updated = userProfileData {
+                                                     UserProfileCacheManager.shared.setCachedProfile(updated, for: user.id)
+                                                 } else {
+                                                     UserProfileCacheManager.shared.updateCachedProfile({ p in
+                                                         p.isFollowing = true
+                                                         p.followersCount = max(0, p.followersCount + 1)
+                                                     }, for: user.id)
+                                                 }
                                             }
                                         }
                                         
@@ -146,6 +154,14 @@ struct UserProfileView: View {
                                             if success {
                                                 userProfileData?.isFollowing = true
                                                 userProfileData?.followersCount += 1
+                                                if let updated = userProfileData {
+                                                     UserProfileCacheManager.shared.setCachedProfile(updated, for: user.id)
+                                                 } else {
+                                                     UserProfileCacheManager.shared.updateCachedProfile({ p in
+                                                         p.isFollowing = true
+                                                         p.followersCount = max(0, p.followersCount + 1)
+                                                     }, for: user.id)
+                                                 }
                                             }
                                         }
                                     }
@@ -293,6 +309,7 @@ struct UserProfileView: View {
                         self.userProfileData = userData
                         self.userPosts = userData.posts
                         self.showUserProfileData = true
+                        fetchUserData()
                     }else{
                         fetchUserData()
                     }
@@ -316,11 +333,14 @@ struct UserProfileView: View {
                             DispatchQueue.main.async{
                                 if var updatedData = self.userProfileData {
                                     updatedData.isFollowing = false
-                                    if updatedData.followersCount > 0 {
-                                        updatedData.followersCount -= 1
-                                    }
-                                   
+                                    updatedData.followersCount = max(0, updatedData.followersCount - 1)
                                     self.userProfileData = updatedData
+                                    UserProfileCacheManager.shared.setCachedProfile(updatedData, for: user.id)
+                                }else {
+                                    UserProfileCacheManager.shared.updateCachedProfile({ p in
+                                        p.isFollowing = false
+                                        p.followersCount = max(0, p.followersCount - 1)
+                                    }, for: user.id)
                                 }
                             }
                         }

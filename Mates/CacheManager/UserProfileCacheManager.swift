@@ -55,4 +55,17 @@ class UserProfileCacheManager {
         profileCache.removeAll()
     }
     
+    
+    func updateCachedProfile(_ transform: (inout UserProfileResponse) -> Void,
+                              for userId: String) {
+         let key = userId
+         guard var cached = profileCache[key]?.data else { return }
+         transform(&cached)
+         profileCache[key] = CachedProfileData(data: cached, timestamp: Date())
+     }
+
+     func invalidate(for userId: String) {
+         profileCache.removeValue(forKey: userId)
+     }
+    
 }
